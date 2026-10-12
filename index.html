@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142a43">
+  <meta name="description" content="سوملي — اطلبها، قارنها، واختار. اكتشف المنتجات والعروض من المحلات العراقية.">
+  <title>سوملي | اطلبها، قارنها، واختار</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="سوملي الرئيسية"><span class="brand-mark">س</span><span>سوملي</span></a>
+    <nav class="desktop-nav" aria-label="التنقل الرئيسي">
+      <a class="active" href="#home">الرئيسية</a><a href="#offers">العروض</a><a href="#how">شلون يشتغل؟</a>
+    </nav>
+    <div class="top-actions">
+      <button class="btn btn-ghost" id="sellerBtn">أنا صاحب محل</button>
+      <button class="btn btn-primary" id="openRequestTop">اطلب سعر</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="live-dot"></span> سوق عراقي، خيارات أكثر</span>
+        <h1>لا تشتري قبل<br><span>ما تقارن.</span></h1>
+        <p>اكتب شنو تحتاج، وشوف عروض المحلات. قارن السعر والتوصيل والضمان واختار اللي يناسبك.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" id="openRequestHero">اطلب سعر لمنتجك <span>←</span></button>
+          <a class="btn btn-outline btn-lg" href="#offers">شوف العروض</a>
+        </div>
+        <div class="trust-row"><span>✓ مجاني للزبائن</span><span>✓ عروض من محلات عراقية</span><span>✓ قارن براحتك</span></div>
+      </div>
+      <div class="hero-art" aria-label="ملخص بصري للعروض">
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="floating-tag tag-top">أفضل عرض؟ صار أسهل ✨</div>
+        <div class="product-card main-product">
+          <div class="product-emoji">🎧</div>
+          <div><strong>سماعات لاسلكية</strong><small>3 عروض وصلن</small></div>
+          <b class="price">٤٩٬٠٠٠ د.ع</b>
+        </div>
+        <div class="mini-offer offer-one"><span class="mini-icon">📱</span><span><b>موبايل جديد</b><small>عرض محل موثّق</small></span><strong>السعر؟</strong></div>
+        <div class="mini-offer offer-two"><span class="mini-icon">🚚</span><span><b>توصيل للمحافظة</b><small>تفاصيل واضحة</small></span><strong>قارن</strong></div>
+        <div class="floating-tag tag-bottom">سعر + توصيل + ضمان</div>
+      </div>
+    </section>
+
+    <section class="search-panel" aria-label="البحث عن منتج">
+      <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="شنو دا تدوّر؟ موبايل، أثاث، ملابس..." autocomplete="off"><button id="clearSearch" aria-label="مسح البحث">×</button></label>
+      <label class="select-wrap"><span>المحافظة</span><select id="governorateFilter"><option value="">كل العراق</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label>
+      <button class="btn btn-primary search-submit" id="searchBtn">ابحث</button>
+    </section>
+
+    <section class="section categories-section">
+      <div class="section-heading"><div><span class="eyebrow">اختار مجالك</span><h2>تسوّق حسب الفئة</h2></div><button class="text-link" id="allCategories">كل الفئات ←</button></div>
+      <div class="categories" id="categories">
+        <button class="category selected" data-category=""><span>✨</span><b>الكل</b></button>
+        <button class="category" data-category="إلكترونيات"><span>📱</span><b>إلكترونيات</b></button>
+        <button class="category" data-category="أزياء"><span>👟</span><b>أزياء وملابس</b></button>
+        <button class="category" data-category="منزل"><span>🛋️</span><b>البيت والأثاث</b></button>
+        <button class="category" data-category="سيارات"><span>🚗</span><b>سيارات وقطع</b></button>
+        <button class="category" data-category="أجهزة منزلية"><span>🧺</span><b>أجهزة منزلية</b></button>
+        <button class="category" data-category="جمال"><span>🧴</span><b>جمال وعناية</b></button>
+        <button class="category" data-category="أخرى"><span>📦</span><b>أخرى</b></button>
+      </div>
+    </section>
+
+    <section class="section" id="offers">
+      <div class="section-heading"><div><span class="eyebrow">من السوق العراقي</span><h2>عروض تستحق المقارنة</h2><p class="section-subtitle">أمثلة تجريبية للعرض — مو أسعار سوق حقيقية.</p></div><button class="btn btn-outline" id="openRequestSection">ما لكيت طلبك؟ اطلب سعر</button></div>
+      <div class="product-grid" id="productGrid"></div>
+      <div class="empty-state hidden" id="emptyState"><span>🔎</span><h3>ما لقينا نتائج</h3><p>جرّب كلمة ثانية أو اطلب السعر وخلي المحلات تجاوبك.</p><button class="btn btn-primary" id="emptyRequest">اطلب سعر هسه</button></div>
+    </section>
+
+    <section class="request-banner" id="how">
+      <div class="banner-icon">💬</div>
+      <div><span class="eyebrow">ما تحتاج تلف على المحلات</span><h2>إنت اطلب، وخلي العروض تجيك.</h2><p>اكتب المنتج والمواصفات والميزانية. قارن العروض حسب السعر والتوصيل والضمان.</p></div>
+      <button class="btn btn-light btn-lg" id="openRequestBanner">أنشئ طلب سعر <span>←</span></button>
+    </section>
+
+    <section class="steps section">
+      <div class="section-heading"><div><span class="eyebrow">بثلاث خطوات</span><h2>شلون يشتغل سوملي؟</h2></div></div>
+      <div class="steps-grid">
+        <article><span class="step-number">01</span><div class="step-emoji">📝</div><h3>اكتب طلبك</h3><p>حدد المنتج والميزانية والمحافظة.</p></article>
+        <article><span class="step-number">02</span><div class="step-emoji">🏪</div><h3>استلم العروض</h3><p>المحلات ترسل السعر والتفاصيل.</p></article>
+        <article><span class="step-number">03</span><div class="step-emoji">⚖️</div><h3>قارن واختار</h3><p>شوف السعر النهائي والضمان والتوصيل.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="#"><span class="brand-mark">س</span><span>سوملي</span></a><p>نسخة تجريبية قيد التطوير. تحقق من تفاصيل المنتج والبائع قبل الشراء.</p><span>© <span id="year"></span> سوملي</span></footer>
+
+  <dialog id="requestDialog" class="modal">
+    <form id="requestForm">
+      <div class="modal-head"><div><span class="eyebrow">خلّي العروض تجيك</span><h2>اطلب سعر</h2></div><button type="button" class="close-modal" data-close="requestDialog" aria-label="إغلاق">×</button></div>
+      <p class="modal-note">هذا نموذج تجريبي: الطلبات تبقى على جهازك حالياً، وما تنرسل للمحلات إلا بعد ربط قاعدة البيانات.</p>
+      <label>شنو المنتج اللي تريده؟<input name="title" required maxlength="100" placeholder="مثلاً: موبايل ذاكرة 256GB"></label>
+      <div class="form-row"><label>الفئة<select name="category" required><option value="إلكترونيات">إلكترونيات</option><option>أزياء</option><option>منزل</option><option>سيارات</option><option>أجهزة منزلية</option><option>جمال</option><option>أخرى</option></select></label><label>المحافظة<select name="governorate" required><option value="">اختار المحافظة</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label></div>
+      <div class="form-row"><label>ميزانيتك (د.ع)<input name="budget" type="number" min="0" step="1000" placeholder="اختياري"></label><label>الحالة<select name="condition"><option>جديد</option><option>مستعمل</option><option>ما يفرق</option></select></label></div>
+      <label>تفاصيل إضافية<textarea name="details" rows="3" maxlength="500" placeholder="الموديل، اللون، الضمان أو مواصفات ثانية..."></textarea></label>
+      <button class="btn btn-primary btn-full" type="submit">حفظ الطلب التجريبي</button>
+    </form>
+  </dialog>
+
+  <dialog id="sellerDialog" class="modal">
+    <form id="sellerForm">
+      <div class="modal-head"><div><span class="eyebrow">لأصحاب المحلات</span><h2>سجّل اهتمامك</h2></div><button type="button" class="close-modal" data-close="sellerDialog" aria-label="إغلاق">×</button></div>
+      <p class="modal-note">نموذج اهتمام فقط. ما راح ننشر بياناتك أو نتواصل وياك قبل ربط الخدمة فعلياً.</p>
+      <label>اسم المحل<input name="shop" required maxlength="100" placeholder="اسم المحل"></label>
+      <div class="form-row"><label>المحافظة<select name="governorate" required><option value="">اختار</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label><label>الفئة الرئيسية<select name="category"><option>إلكترونيات</option><option>أزياء</option><option>منزل</option><option>سيارات</option><option>أجهزة منزلية</option><option>جمال</option><option>أخرى</option></select></label></div>
+      <label>رقم تواصل (اختياري)<input name="contact" inputmode="tel" maxlength="30" placeholder="لا تدخل معلومات حساسة"></label>
+      <button class="btn btn-primary btn-full" type="submit">حفظ اهتمامي</button>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
