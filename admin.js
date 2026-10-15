@@ -54,6 +54,20 @@ function renderSellers(){
   list.innerHTML=sellers.map(s=>'<article class="admin-item"><h3>'+esc(s.shop_name)+'</h3><p>الفئة: '+esc(s.category)+' · المحافظة: '+esc(s.governorate)+'</p><p>رقم التواصل: <b>'+esc(s.contact||"ما مضاف")+'</b></p><p>الحالة: <b>'+esc(s.status)+'</b></p><p class="admin-meta">تاريخ الطلب: '+esc(dateLabel(s.created_at))+'</p>'+(s.status==="pending"?'<div class="admin-actions"><button class="approve" data-seller="'+esc(s.id)+'" data-status="approved">موافقة</button><button class="reject" data-seller="'+esc(s.id)+'" data-status="rejected">رفض</button></div>':"")+'</article>').join("");
 }
 
+
+async function loadPaymentSettings(){
+ const {data,error}=await db.from("market_payment_settings").select("zain_cash_account,super_qi_account,other_instructions,support_phone").eq("id",true).maybeSingle();
+ if(error){$("#paymentSettingsMessage").textContent="تعذر تحميل بيانات الدفع: "+error.message;return;}
+ const form=$("#paymentSettingsForm");if(!form)return;
+ if(data)for(const key of ["zain_cash_account","super_qi_account","other_instructions","support_phone"])form.elements[key].value=data[key]||"";
+}
+$("#paymentSettingsForm").addEventListener("submit",async e=>{
+ e.preventDefault();const form=e.currentTarget,fd=new FormData(form),btn=$("#savePaymentSettings");btn.disabled=true;btn.textContent="جاري الحفظ...";
+ try{const {error}=await db.from("market_payment_settings").upsert({id:true,zain_cash_account:String(fd.get("zain_cash_account")||"").trim(),super_qi_account:String(fd.get("super_qi_account")||"").trim(),other_instructions:String(fd.get("other_instructions")||"").trim(),support_phone:String(fd.get("support_phone")||"").trim(),updated_at:new Date().toISOString()},{onConflict:"id"});if(error)throw error;$("#paymentSettingsMessage").textContent="تم حفظ بيانات الاستلام.";showNotice("تم تحديث بيانات الدفع التي تظهر للمستخدمين.");}
+ catch(err){$("#paymentSettingsMessage").textContent="تعذر حفظ البيانات: "+(err.message||"خطأ");}
+ finally{btn.disabled=false;btn.textContent="حفظ بيانات الدفع";}
+});
+
 function renderPayments(){
  const list=$("#paymentsList");
  if(!payments.length){list.innerHTML=empty("ماكو طلبات دفع حالياً.");return;}
@@ -115,6 +129,6 @@ $("#requestsList").addEventListener("click",e=>{const b=e.target.closest("[data-
 $("#sellersList").addEventListener("click",e=>{const b=e.target.closest("[data-seller]");if(b)changeSeller(b.dataset.seller,b.dataset.status);});
 $("#productsList").addEventListener("click",e=>{const b=e.target.closest("[data-product]");if(b)changeProduct(b.dataset.product,b.dataset.status);});
 $("#paymentsList").addEventListener("click",e=>{const b=e.target.closest("[data-payment]");if(b)reviewPayment(b.dataset.payment,b.dataset.status);});
-$("#reloadBtn").addEventListener("click",async()=>{try{if(await verifyAdmin())await loadData();}catch(e){showNotice("صار خطأ بالتحميل: "+(e.message||"حاول مرة ثانية"));}});
+$("#reloadBtn").addEventListener("click",async()=>{try{if(await verifyAdmin()){await loadData();await loadPaymentSettings();}}catch(e){showNotice("صار خطأ بالتحميل: "+(e.message||"حاول مرة ثانية"));}});
 $("#logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.href="./";});
-(async()=>{try{if(await verifyAdmin())await loadData();}catch(e){showNotice("تعذر تحميل اللوحة: "+(e.message||"خطأ غير معروف"));}})();
+(async()=>{try{if(await verifyAdmin()){await loadData();await loadPaymentSettings();}}catch(e){showNotice("تعذر تحميل اللوحة: "+(e.message||"خطأ غير معروف"));}})();
