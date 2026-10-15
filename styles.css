@@ -91,3 +91,66 @@ footer{background:linear-gradient(180deg,#fbfdff,#f1f7fa)}
 @media(max-width:760px){.topbar{height:auto;min-height:66px;padding:10px 14px;gap:12px;flex-wrap:wrap}.brand{font-size:21px}.desktop-nav{order:3;width:100%;overflow-x:auto;gap:20px;padding:2px 0 6px}.top-actions{gap:5px;flex-wrap:wrap}.top-actions .btn{padding:8px 10px;font-size:11px}.hero{padding-top:38px;padding-bottom:38px}.somli-gif-card{width:82px;top:0;right:0;padding:5px;border-radius:16px}.somli-gif-card span{font-size:9px}.market-hero{padding:23px;grid-template-columns:1fr}.market-hero-art{max-width:150px;margin:0 auto}.market-hero-gif{width:145px}.market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.market-card-img{height:150px}}
 @media(max-width:420px){.market-grid{gap:9px}.market-card-body{padding:10px}.market-card-img{height:125px}.market-card h3{font-size:14px}.top-actions .btn{font-size:10px;padding:7px 8px}}
 @media(prefers-reduced-motion:reduce){.somli-gif-card,.market-hero-gif{animation:none}}
+
+
+/* SOMLI premium motion pack */
+:root{--somli-glow:#19cbb5;--somli-gold:#ffc36b}
+body{overflow-x:hidden}
+.topbar{isolation:isolate}
+.topbar:after{content:"";position:absolute;inset:auto 0 -1px;height:2px;background:linear-gradient(90deg,transparent,#17c6b0,#f9b765,#17c6b0,transparent);background-size:220% 100%;animation:lineFlow 7s linear infinite;z-index:-1}
+.brand-mark{position:relative;isolation:isolate;animation:brandBreathe 3.5s ease-in-out infinite}
+.brand-mark:after{content:"";position:absolute;inset:-4px;border:1px solid #12b8a650;border-radius:16px;animation:brandRing 2.7s ease-out infinite;z-index:-1}
+.btn-primary{position:relative;overflow:hidden;isolation:isolate}
+.btn-primary:after{content:"";position:absolute;top:-60%;left:-45%;width:32%;height:220%;background:linear-gradient(90deg,transparent,#ffffff70,transparent);transform:rotate(24deg);animation:buttonShine 5s ease-in-out infinite;pointer-events:none}
+.hero-showcase{isolation:isolate}
+.hero-showcase:before{content:"";position:absolute;width:78%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#16cbb51f 0,#16cbb500 68%);animation:glowBreathe 5s ease-in-out infinite;pointer-events:none}
+.hero-showcase:after{content:"✦";position:absolute;left:8%;top:13%;color:#e5a449;font-size:30px;text-shadow:0 0 20px #ffc36b80;animation:starDrift 4.5s ease-in-out infinite;pointer-events:none}
+.showcase-image{will-change:transform,opacity}
+.showcase-image.active{animation:showcaseIn .85s cubic-bezier(.2,.8,.2,1) both}
+.showcase-dots button{cursor:pointer}
+.somli-gif-card{animation:gifBob 4s ease-in-out infinite,cardGlow 4s ease-in-out infinite}
+.somli-gif-card img{animation:cartWiggle 5s ease-in-out infinite}
+.market-strip{position:relative}
+.market-strip-track{animation:stripRun 25s linear infinite}
+.market-strip:hover .market-strip-track{animation-play-state:paused}
+.market-dual-card{position:relative;overflow:hidden}
+.market-dual-card:after{content:"";position:absolute;top:-80%;left:-35%;height:260%;width:22%;background:linear-gradient(90deg,transparent,#12b8a618,transparent);transform:rotate(25deg);animation:cardSweep 7s ease-in-out infinite;pointer-events:none}
+.category,.product-tile,.market-card,.shop-panel,.admin-panel,.admin-stat{transform:translateZ(0)}
+.category:hover span{animation:iconHop .55s ease}
+.category span,.market-card-img img,.tile-art img{will-change:transform}
+.product-tile:hover .tile-art img,.market-card:hover .market-card-img img{transform:scale(1.08)}
+.request-banner{isolation:isolate}
+.request-banner:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 15%,#ffffff0b 45%,transparent 75%);background-size:200% 100%;animation:bannerSweep 9s linear infinite;z-index:-1;pointer-events:none}
+.somli-motion-ticker{overflow:hidden;position:relative;background:#0c263d;color:#e9fffb;border-bottom:1px solid #ffffff15}
+.somli-motion-ticker-track{display:flex;align-items:center;gap:32px;width:max-content;padding:10px 0;animation:tickerFlow 34s linear infinite;font-size:12px;font-weight:800;letter-spacing:.1px}
+.somli-motion-ticker-track span{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+.somli-motion-ticker-track i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffbd66;box-shadow:0 0 0 4px #ffbd661b}
+.somli-motion-ticker:hover .somli-motion-ticker-track{animation-play-state:paused}
+.somli-float-pill{position:absolute;z-index:3;display:flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid #ffffffb8;border-radius:999px;background:#ffffffdf;box-shadow:0 12px 28px #10253d18;backdrop-filter:blur(12px);font-size:11px;font-weight:900;color:#17364e;animation:floatPill 5s ease-in-out infinite}
+.somli-float-pill b{display:grid;place-items:center;width:25px;height:25px;border-radius:9px;background:#e1faf5;color:#087f75;font-size:14px}
+.somli-float-pill.pill-a{left:0;top:23%;animation-delay:-1.3s}
+.somli-float-pill.pill-b{right:2%;bottom:14%;animation-delay:-3s}
+.market-hero{position:relative;isolation:isolate}
+.market-hero:before{content:"";position:absolute;inset:-30% auto auto -10%;width:350px;height:350px;border-radius:50%;background:#ffffff0b;box-shadow:0 0 0 36px #ffffff06,0 0 0 76px #ffffff04;animation:orbitPulse 8s ease-in-out infinite;pointer-events:none;z-index:-1}
+.market-hero-gif{animation:gifBob 4.2s ease-in-out infinite,cardGlow 4s ease-in-out infinite}
+.market-card,.product-tile,.category,.shop-panel,.admin-panel,.admin-stat{animation:cardArrive .65s both;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.market-card:nth-child(3n+2),.product-tile:nth-child(3n+2),.category:nth-child(3n+2){animation-delay:.08s}
+.market-card:nth-child(3n+3),.product-tile:nth-child(3n+3),.category:nth-child(3n+3){animation-delay:.16s}
+@keyframes lineFlow{0%{background-position:100% 0}100%{background-position:-120% 0}}
+@keyframes brandBreathe{0%,100%{filter:drop-shadow(0 0 0 #12b8a600)}50%{filter:drop-shadow(0 5px 10px #12b8a64a)}}
+@keyframes brandRing{0%{transform:scale(.88);opacity:.7}100%{transform:scale(1.28);opacity:0}}
+@keyframes buttonShine{0%,65%,100%{left:-45%}78%{left:125%}}
+@keyframes glowBreathe{0%,100%{transform:scale(.88);opacity:.65}50%{transform:scale(1.12);opacity:1}}
+@keyframes starDrift{0%,100%{transform:translateY(0) rotate(0);opacity:.65}50%{transform:translateY(-13px) rotate(75deg);opacity:1}}
+@keyframes showcaseIn{from{opacity:.55;filter:blur(4px);transform:translate(-50%,12px) scale(.97)}to{opacity:1;filter:blur(0);transform:translate(-50%,0) scale(1)}}
+@keyframes cardGlow{0%,100%{box-shadow:0 16px 38px #102b4620}50%{box-shadow:0 20px 48px #12b8a635}}
+@keyframes cartWiggle{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-4deg)}96%{transform:rotate(4deg)}}
+@keyframes cardSweep{0%,68%,100%{left:-35%;opacity:0}75%{opacity:1}92%{left:125%;opacity:0}}
+@keyframes iconHop{0%,100%{transform:translateY(0)}40%{transform:translateY(-8px) rotate(-6deg)}70%{transform:translateY(1px) rotate(4deg)}}
+@keyframes bannerSweep{from{background-position:200% 0}to{background-position:-200% 0}}
+@keyframes tickerFlow{from{transform:translateX(0)}to{transform:translateX(50%)}}
+@keyframes floatPill{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+@keyframes orbitPulse{0%,100%{transform:scale(.9);opacity:.45}50%{transform:scale(1.08);opacity:.9}}
+@keyframes cardArrive{from{opacity:.72;translate:0 8px}to{opacity:1;translate:0 0}}
+@media(max-width:760px){.somli-float-pill{font-size:9px;padding:6px 8px}.somli-float-pill b{width:21px;height:21px}.somli-float-pill.pill-a{left:-2%;top:10%}.somli-float-pill.pill-b{right:-1%;bottom:9%}.hero-showcase:after{font-size:22px}.somli-motion-ticker-track{gap:24px;padding:8px 0;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.topbar:after,.brand-mark,.brand-mark:after,.btn-primary:after,.hero-showcase:before,.hero-showcase:after,.showcase-image.active,.somli-gif-card,.somli-gif-card img,.market-strip-track,.market-dual-card:after,.request-banner:before,.somli-motion-ticker-track,.somli-float-pill,.market-hero:before,.market-hero-gif,.market-card,.product-tile,.category,.shop-panel,.admin-panel,.admin-stat{animation:none!important;transition:none!important}}
