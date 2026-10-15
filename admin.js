@@ -60,20 +60,25 @@ function renderProducts(){
   }).join("");
 }
 async function changeProduct(id,status){
-  const {error}=await db.from("products").update({status}).eq("id",id);
-  if(error){showNotice("ما قدرنا نحدّث المنتج. تأكد من صلاحيات المدير.");return;}
-  await loadData(); showNotice(status==="approved"?"تم اعتماد المنتج ونشره.":"تم رفض المنتج.");
+  const {data,error}=await db.from("products").update({status}).eq("id",id).select("id");
+  if(error){showNotice("فشل تحديث المنتج: "+error.message);return;}
+  if(!data?.length){showNotice("ما تغير المنتج. غالباً ما وصل تحديث الصلاحيات أو المنتج غير موجود؛ حدّث الصفحة وحاول مرة ثانية.");return;}
+  try { await loadData(); showNotice(status==="approved"?"تم اعتماد المنتج ونشره.":"تم رفض المنتج."); }
+  catch(e){showNotice("تم تحديث المنتج، لكن تعذر تحديث القائمة: "+(e.message||"خطأ غير معروف"));}
 }
 
 async function changeSeller(id,status){
   const {error}=await db.rpc("admin_review_seller_application",{p_application_id:id,p_status:status});
-  if(error){showNotice("ما قدرنا نحدّث طلب المحل. تأكد من صلاحيات المدير.");return;}
-  await loadData(); showNotice(status==="approved"?"تمت الموافقة على طلب المحل.":"تم رفض طلب المحل.");
+  if(error){showNotice("فشل تحديث طلب المحل: "+error.message);return;}
+  try { await loadData(); showNotice(status==="approved"?"تمت الموافقة على طلب المحل وتفعيل المحل.":"تم رفض طلب المحل."); }
+  catch(e){showNotice("تم تحديث الطلب، لكن تعذر تحديث القائمة: "+(e.message||"خطأ غير معروف"));}
 }
 async function closeRequest(id){
-  const {error}=await db.from("quote_requests").update({status:"closed"}).eq("id",id);
-  if(error){showNotice("ما قدرنا نغلق الطلب. تأكد من صلاحيات المدير.");return;}
-  await loadData(); showNotice("تم إغلاق طلب السعر.");
+  const {data,error}=await db.from("quote_requests").update({status:"closed"}).eq("id",id).select("id");
+  if(error){showNotice("فشل إغلاق طلب السعر: "+error.message);return;}
+  if(!data?.length){showNotice("الطلب ما تغير. حدّث الصفحة وتأكد من صلاحيات المدير.");return;}
+  try { await loadData(); showNotice("تم إغلاق طلب السعر."); }
+  catch(e){showNotice("تم إغلاق الطلب، لكن تعذر تحديث القائمة: "+(e.message||"خطأ غير معروف"));}
 }
 document.querySelectorAll("[data-tab]").forEach(btn=>btn.addEventListener("click",()=>{
   currentTab=btn.dataset.tab;
