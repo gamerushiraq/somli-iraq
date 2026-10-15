@@ -7,6 +7,15 @@
   <meta name="description" content="سوملي — اطلبها، قارنها، واختار. اكتشف المنتجات والعروض من المحلات العراقية.">
   <title>سوملي | اطلبها، قارنها، واختار</title>
   <link rel="stylesheet" href="styles.css">
+
+<style>
+.market-dual-cta{max-width:1180px;margin:24px auto 8px;padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.market-dual-card{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center;padding:19px;border:1px solid #dfe9ef;border-radius:18px;background:#fff;text-decoration:none;color:#10253d;box-shadow:0 8px 28px #10253d08;transition:transform .2s,box-shadow .2s}
+.market-dual-card:hover{transform:translateY(-3px);box-shadow:0 15px 35px #10253d12}
+.market-dual-icon{grid-row:span 2;width:54px;height:54px;border-radius:15px;display:grid;place-items:center;background:#e7f8f5;font-size:27px}
+.market-dual-card strong{display:block;font-size:18px}.market-dual-card small{display:block;color:#66788a;line-height:1.7;margin-top:4px}.market-dual-card>b{grid-column:2;color:#087f75;font-size:12px}.market-dual-card.sell .market-dual-icon{background:#fff2df}
+@media(max-width:640px){.market-dual-cta{padding:0 13px;grid-template-columns:1fr;gap:10px}.market-dual-card{padding:14px}}
+</style>
 </head>
 <body>
   <header class="topbar">
@@ -53,6 +62,8 @@
       <label class="select-wrap"><span>المحافظة</span><select id="governorateFilter"><option value="">كل العراق</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label>
       <button class="btn btn-primary search-submit" id="searchBtn">ابحث</button>
     </section>
+
+    <section class="market-dual-cta" aria-label="البيع والشراء في سوملي"><a class="market-dual-card buy" href="market.html#marketListings"><span class="market-dual-icon">🛍️</span><span><strong>أريد أشتري</strong><small>تصفّح المنتجات، شوف الصور والتفاصيل واتصل بالبائع مباشرة.</small></span><b>تصفّح السوق ←</b></a><a class="market-dual-card sell" href="market.html#sellDialog"><span class="market-dual-icon">📦</span><span><strong>أريد أبيع</strong><small>انشر منتجك مع الصور والسعر والمحافظة ورقم التواصل.</small></span><b>أضف إعلانك ←</b></a></section>
 
     <div class="market-strip" aria-label="مميزات سوملي"><div class="market-strip-track"><span>✦ سوق عراقي واحد</span><span>⌕ بحث حسب المحافظة</span><span>⚖️ قارن قبل الشراء</span><span>🏪 طلب تسجيل للمحلات</span><span>✦ سوق عراقي واحد</span><span>⌕ بحث حسب المحافظة</span><span>⚖️ قارن قبل الشراء</span><span>🏪 طلب تسجيل للمحلات</span></div></div>\n\n    <section class="section categories-section">
       <div class="section-heading"><div><span class="eyebrow">اختار مجالك</span><h2>تسوّق حسب الفئة</h2></div><button class="text-link" id="allCategories">كل الفئات ←</button></div>
