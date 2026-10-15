@@ -34,7 +34,7 @@ function renderProducts() {
       <div class="tile-art">${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `<span class="tile-category">${escapeHtml(p.category)}</span><span>الصورة غير متوفرة</span>`}</div>
       <div class="tile-body">
         <h3>${escapeHtml(p.title)}</h3>
-        <div class="tile-shop">${escapeHtml(p.shop)} <span>·</span> ${escapeHtml(p.governorate)}</div>
+        <div class="tile-shop">${escapeHtml(p.shop)} ${p.isPro?'<span class="pro-shop-badge">⭐ محل احترافي</span>':""} <span>·</span> ${escapeHtml(p.governorate)}</div>
         <div class="tile-price-row"><strong class="tile-price">${p.price == null ? "السعر عند الطلب" : formatPrice(p.price)}</strong><span class="tile-location">منتج معتمد</span></div>
         <div class="tile-footer"><span>من محل معتمد</span><button data-ask="${p.id}">اطلب سعر مشابه</button></div>
       </div>
