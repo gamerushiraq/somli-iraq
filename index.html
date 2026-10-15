@@ -15,6 +15,7 @@
       <a class="active" href="#home">الرئيسية</a><a href="#offers">العروض</a><a href="#how">شلون يشتغل؟</a>
     </nav>
     <div class="top-actions">
+      <button class="btn btn-ghost" id="authBtn">دخول / حساب جديد</button>
       <button class="btn btn-ghost" id="sellerBtn">أنا صاحب محل</button>
       <button class="btn btn-primary" id="openRequestTop">اطلب سعر</button>
     </div>
@@ -118,6 +119,19 @@
       <div class="form-row"><label>المحافظة<select name="governorate" required><option value="">اختار</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label><label>الفئة الرئيسية<select name="category"><option>إلكترونيات</option><option>أزياء</option><option>منزل</option><option>سيارات</option><option>أجهزة منزلية</option><option>جمال</option><option>أخرى</option></select></label></div>
       <label>رقم تواصل (اختياري)<input name="contact" inputmode="tel" maxlength="30" placeholder="لا تدخل معلومات حساسة"></label>
       <button class="btn btn-primary btn-full" type="submit">حفظ اهتمامي</button>
+    </form>
+  </dialog>
+
+  <dialog id="authDialog" class="modal">
+    <form id="authForm">
+      <div class="modal-head"><div><span class="eyebrow">حساب سوملي</span><h2 id="authTitle">دخول للحساب</h2></div><button type="button" class="close-modal" data-close="authDialog" aria-label="إغلاق">×</button></div>
+      <p class="modal-note" id="authNote">سجّل دخولك حتى تتابع طلباتك.</p>
+      <label id="authNameWrap" class="hidden">الاسم الكامل<input name="full_name" maxlength="100" autocomplete="name" placeholder="اسمك الكامل"></label>
+      <label>البريد الإلكتروني<input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="name@example.com"></label>
+      <label>كلمة المرور<input name="password" type="password" required minlength="8" maxlength="128" autocomplete="current-password" placeholder="8 أحرف على الأقل"></label>
+      <button class="btn btn-primary btn-full" id="authSubmit" type="submit">دخول</button>
+      <button class="text-link" id="authToggle" type="button">ما عندك حساب؟ أنشئ حساب جديد</button>
+      <button class="text-link hidden" id="authLogout" type="button">تسجيل الخروج</button>
     </form>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
