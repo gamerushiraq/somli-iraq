@@ -306,3 +306,20 @@ table{color:#24334b!important}
 footer,.site-footer{color:#65728a!important;border-color:#e4e9f1!important}
 hr,.divider{border-color:#e4e9f1!important}
 ::selection{background:rgba(0,169,145,.2);color:#182338}
+
+
+/* SOMLI: force all readable text to black on the white theme */
+html,body,body *{
+ color:#000!important;
+}
+input,select,textarea,option,
+input::placeholder,textarea::placeholder{
+ color:#000!important;
+}
+a,a:hover,a:visited,
+button,.btn,.button,
+.btn-primary,button.primary,.button-primary,input[type=submit],
+.btn-secondary,.btn-outline,.button-secondary{
+ color:#000!important;
+}
+::placeholder{color:#333!important;opacity:1!important}
