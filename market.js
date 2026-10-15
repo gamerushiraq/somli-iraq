@@ -2,7 +2,7 @@ const SUPABASE_URL="https://vpducjdkjrbxeosdxvdi.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_K9GLIlPYh55utqPq77pgwA_hp3QQYDf";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const $=s=>document.querySelector(s);
-const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;',"'":"&#39;"}[c]));
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=v=>v===null||v===undefined||v===""?"السعر قابل للتفاوض":Number(v)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";
 let currentUser=null, listings=[], authMode="login", toastTimer;
 function toast(t){const el=$("#marketToast");el.textContent=t;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),3500);}
