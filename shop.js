@@ -2,7 +2,7 @@ const SUPABASE_URL="https://vpducjdkjrbxeosdxvdi.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_K9GLIlPYh55utqPq77pgwA_hp3QQYDf";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const $=s=>document.querySelector(s);
-let user=null,shop=null,categories=[];
+let user=null,shop=null,categories=[],requests=[],ownQuotes=[];
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function message(t){$("#shopMessage").textContent=t;}
 function money(v){return v==null?"السعر عند الطلب":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";}
@@ -18,7 +18,7 @@ async function boot(){
  if(!shop||shop.status!=="approved"){ $("#shopGate").textContent="طلب المحل قيد المراجعة أو يحتاج مراجعة الإدارة.";return;}
  $("#shopIdentity").textContent=shop.name+" · "+shop.governorate+" · محل معتمد";
  $("#shopGate").classList.add("shop-hidden");$("#shopWorkspace").classList.remove("shop-hidden");
- await Promise.all([loadCategories(),loadProducts()]);
+ await Promise.all([loadCategories(),loadProducts(),loadRequests()]);
 }
 async function loadCategories(){
  const {data,error}=await db.from("categories").select("id,name_ar").order("name_ar");if(error)throw error;categories=data||[];
@@ -31,6 +31,46 @@ async function loadProducts(){
  if(!data?.length){$("#shopProducts").innerHTML='<div class="shop-note">بعد ما ضفت منتجات. ابدأ بأول منتج من النموذج.</div>';return;}
  $("#shopProducts").innerHTML=data.map(p=>'<article class="shop-product"><strong>'+esc(p.name)+'</strong><div>'+esc(money(p.price_iqd))+'</div><small>الفئة: '+esc(p.categories?.name_ar||"أخرى")+' · الحالة: '+esc(p.status==="approved"?"منشور":p.status==="pending"?"بانتظار المراجعة":"مرفوض")+' · '+esc(new Date(p.created_at).toLocaleDateString("ar-IQ"))+'</small></article>').join("");
 }
+async function loadRequests(){
+ const host=$("#shopRequests");
+ host.innerHTML='<p class="shop-muted">جاري تحميل طلبات الزبائن...</p>';
+ const [rq,oq]=await Promise.all([
+  db.from("quote_requests").select("id,phone,details,quantity,governorate,created_at,product_id").eq("status","open").order("created_at",{ascending:false}).limit(100),
+  db.from("quotes").select("request_id,price_iqd,details,created_at").eq("shop_id",shop.id)
+ ]);
+ if(rq.error)throw rq.error;
+ if(oq.error)throw oq.error;
+ requests=rq.data||[];ownQuotes=oq.data||[];
+ renderRequests();
+}
+function renderRequests(){
+ const host=$("#shopRequests");
+ if(!requests.length){host.innerHTML='<div class="shop-note">ماكو طلبات أسعار مفتوحة حالياً. ارجع حدّث القائمة بعدين.</div>';return;}
+ host.innerHTML=requests.map(r=>{
+  const sent=ownQuotes.find(q=>q.request_id===r.id);
+  const phone=String(r.phone||"").trim();
+  const phoneLine=phone?'<a href="tel:'+esc(phone)+'">'+esc(phone)+'</a>':'<span>الزبون ما أضاف رقم هاتف</span>';
+  const offer=sent
+   ? '<div class="shop-note">أرسلت عرضاً لهذا الطلب: <strong>'+esc(money(sent.price_iqd))+'</strong><br>'+esc(sent.details||"بدون تفاصيل إضافية")+'</div>'
+   : '<form class="quoteOfferForm" data-request="'+esc(r.id)+'"><label>السعر المقترح بالدينار العراقي<input name="price_iqd" type="number" min="1" step="250" required placeholder="مثلاً 25000"></label><label>تفاصيل العرض<textarea name="details" rows="2" maxlength="800" placeholder="التوصيل، الضمان، مدة التجهيز..."></textarea></label><button class="btn btn-primary btn-full" type="submit">إرسال عرض السعر</button></form>';
+  return '<article class="shop-product"><strong>طلب سعر · '+esc(r.governorate||"المحافظة غير محددة")+'</strong><p>'+esc(r.details||"طلب سعر")+'</p><p>الكمية: <b>'+esc(r.quantity||1)+'</b></p><p>رقم الزبون: <b>'+phoneLine+'</b></p><small>تاريخ الطلب: '+esc(new Date(r.created_at).toLocaleString("ar-IQ"))+'</small>'+offer+'</article>';
+ }).join("");
+}
+$("#shopRequests").addEventListener("submit",async e=>{
+ const form=e.target.closest(".quoteOfferForm");if(!form)return;
+ e.preventDefault();if(!shop||!user)return;
+ const fd=new FormData(form),requestId=form.dataset.request,price=Number(fd.get("price_iqd")),details=String(fd.get("details")||"").trim();
+ if(!Number.isFinite(price)||price<1){message("اكتب سعر صحيح أكبر من صفر.");return;}
+ const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent="جاري إرسال العرض...";
+ try{
+  const {error}=await db.from("quotes").insert({request_id:requestId,shop_id:shop.id,price_iqd:Math.round(price),details:details||null});
+  if(error)throw error;
+  message("تم إرسال عرض السعر بنجاح.");
+  await loadRequests();
+ }catch(err){message("تعذر إرسال العرض: "+(err.message||"حاول مرة ثانية."));}
+ finally{if(btn.isConnected){btn.disabled=false;btn.textContent="إرسال عرض السعر";}}
+});
+
 $("#productForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!shop||!user)return;
  const form=e.currentTarget,fd=new FormData(form),btn=$("#shopSubmit"),file=fd.get("image");
@@ -54,6 +94,6 @@ $("#productForm").addEventListener("submit",async e=>{
  }catch(err){message("تعذر حفظ المنتج: "+(err.message||"حاول مرة ثانية."));}
  finally{btn.disabled=false;btn.textContent="إرسال للمراجعة";}
 });
-$("#shopReload").addEventListener("click",async()=>{try{await loadProducts();message("تم تحديث قائمة المنتجات.");}catch(e){message("تعذر التحديث: "+e.message);}});
+$("#shopReload").addEventListener("click",async()=>{try{await Promise.all([loadProducts(),loadRequests()]);message("تم تحديث المنتجات وطلبات الزبائن.");}catch(e){message("تعذر التحديث: "+e.message);}});
 $("#shopLogout").addEventListener("click",async()=>{await db.auth.signOut();location.href="./";});
 (async()=>{try{await boot();}catch(e){message("تعذر فتح لوحة المحل: "+(e.message||"خطأ غير معروف"));}})();
