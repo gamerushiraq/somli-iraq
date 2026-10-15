@@ -6,7 +6,15 @@ const demoProducts = [
   {id:"d5",title:"شاحن سريع USB-C",category:"إلكترونيات",price:18000,shop:"موبايل زون",governorate:"البصرة",emoji:"🔌",offers:5,condition:"جديد"},
   {id:"d6",title:"مكنسة كهربائية",category:"أجهزة منزلية",price:125000,shop:"البيت الحديث",governorate:"بغداد",emoji:"🧹",offers:3,condition:"جديد"},
   {id:"d7",title:"مصابيح سيارة LED",category:"سيارات",price:27000,shop:"أوتو بلس",governorate:"ذي قار",emoji:"🚘",offers:2,condition:"جديد"},
-  {id:"d8",title:"حقيبة يومية",category:"أزياء",price:42000,shop:"ستايلك",governorate:"كربلاء",emoji:"🎒",offers:3,condition:"جديد"}
+  {id:"d8",title:"حقيبة يومية",category:"أزياء",price:42000,shop:"ستايلك",governorate:"كربلاء",emoji:"🎒",offers:3,condition:"جديد"},
+  {id:"d9",title:"سلة مواد غذائية",category:"مواد غذائية",price:32000,shop:"سوق البيت",governorate:"البصرة",emoji:"🛒",offers:2,condition:"جديد"},
+  {id:"d10",title:"يد تحكم للألعاب",category:"ألعاب",price:38000,shop:"قيمر زون",governorate:"بغداد",emoji:"🎮",offers:3,condition:"جديد"},
+  {id:"d11",title:"كرة قدم تدريبية",category:"رياضة",price:22000,shop:"الملعب الرياضي",governorate:"النجف",emoji:"⚽",offers:2,condition:"جديد"},
+  {id:"d12",title:"دفتر وأقلام",category:"كتب",price:9000,shop:"مكتبة القلم",governorate:"ذي قار",emoji:"📚",offers:4,condition:"جديد"},
+  {id:"d13",title:"حقيبة مستلزمات طفل",category:"أطفال",price:28000,shop:"عالم الطفل",governorate:"أربيل",emoji:"🧸",offers:2,condition:"جديد"},
+  {id:"d14",title:"عدة صيانة منزلية",category:"أدوات",price:44000,shop:"العدة الحديثة",governorate:"كربلاء",emoji:"🧰",offers:3,condition:"جديد"},
+  {id:"d15",title:"مستلزمات قطط",category:"حيوانات",price:19000,shop:"بيت الحيوانات",governorate:"بغداد",emoji:"🐾",offers:2,condition:"جديد"},
+  {id:"d16",title:"صيانة موبايل",category:"خدمات",price:15000,shop:"مركز الموبايل",governorate:"البصرة",emoji:"🛠️",offers:2,condition:"حسب الخدمة"}
 ];
 let activeCategory = "";
 let toastTimer;
