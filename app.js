@@ -177,11 +177,38 @@ $("#requestForm").addEventListener("submit", async e => {
   closeDialog("requestDialog");
   showToast("تم إرسال طلبك إلى سوملي بنجاح.");
 });
-$("#sellerForm").addEventListener("submit", e => {
+$("#sellerForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+  const form = e.currentTarget;
+  const data = Object.fromEntries(new FormData(form).entries());
+  const { data: sessionData } = await supabaseClient.auth.getSession();
+  const user = sessionData.session?.user;
+  if (!user) {
+    closeDialog("sellerDialog");
+    setAuthMode("login");
+    openDialog("authDialog");
+    showToast("سجّل دخولك أولاً حتى نرسل طلب تسجيل المحل.");
+    return;
+  }
+  const submit = form.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  const { error } = await supabaseClient.from("seller_applications").insert({
+    user_id: user.id,
+    shop_name: String(data.shop || "").trim(),
+    governorate: data.governorate,
+    category: data.category || "أخرى",
+    contact: String(data.contact || "").trim() || null,
+    status: "pending"
+  });
+  submit.disabled = false;
+  if (error) {
+    showToast("تعذر إرسال طلب المحل. تأكد من تسجيل الدخول وحاول مرة ثانية.");
+    console.error("Somli seller application error:", error.message);
+    return;
+  }
   closeDialog("sellerDialog");
-  showToast("تسجيل المحلات الفعلي قيد الإعداد؛ لم يتم حفظ البيانات.");
+  form.reset();
+  showToast("وصل طلب تسجيل المحل، وحالته قيد المراجعة.");
 });
 $("#year").textContent = new Date().getFullYear();
 setAuthMode("login");
