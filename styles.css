@@ -57,3 +57,5 @@ footer{border-top:1px solid #e7edf2;background:#f8fbfd}
 @keyframes stripRun{from{transform:translateX(0)}to{transform:translateX(30%)}}
 @media(max-width:640px){.hero{min-height:auto}.hero-art.hero-showcase{height:315px;margin:10px -10px 0;transform:none}.showcase-image{height:235px;width:min(245px,65%);top:32px;border-width:7px;border-radius:25px}.showcase-caption{bottom:30px;left:0;max-width:94%;padding:11px}.showcase-caption .product-emoji{width:44px;height:44px;font-size:22px}.showcase-caption .price{display:none}.offer-one{top:48px}.offer-two{bottom:60px}.tag-top{top:0}.tag-bottom{bottom:0}.market-strip-track{gap:28px;animation-duration:23s}.section-heading h2{letter-spacing:-.5px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+.pro-shop-badge{display:inline-flex;align-items:center;background:#fff2cf;color:#875b00;border-radius:7px;padding:3px 6px;font-size:10px;font-weight:900;white-space:nowrap}
