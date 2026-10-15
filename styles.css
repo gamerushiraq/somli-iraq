@@ -154,3 +154,100 @@ body{overflow-x:hidden}
 @keyframes cardArrive{from{opacity:.72;translate:0 8px}to{opacity:1;translate:0 0}}
 @media(max-width:760px){.somli-float-pill{font-size:9px;padding:6px 8px}.somli-float-pill b{width:21px;height:21px}.somli-float-pill.pill-a{left:-2%;top:10%}.somli-float-pill.pill-b{right:-1%;bottom:9%}.hero-showcase:after{font-size:22px}.somli-motion-ticker-track{gap:24px;padding:8px 0;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.topbar:after,.brand-mark,.brand-mark:after,.btn-primary:after,.hero-showcase:before,.hero-showcase:after,.showcase-image.active,.somli-gif-card,.somli-gif-card img,.market-strip-track,.market-dual-card:after,.request-banner:before,.somli-motion-ticker-track,.somli-float-pill,.market-hero:before,.market-hero-gif,.market-card,.product-tile,.category,.shop-panel,.admin-panel,.admin-stat{animation:none!important;transition:none!important}}
+
+
+/* SOMLI AURORA THEME — premium animated refresh */
+:root{
+ --navy:#10152f;--navy2:#1a2350;--teal:#00e0bd;--teal-dark:#00a991;
+ --orange:#ffb454;--ink:#f3f5ff;--muted:#aab3d2;--line:rgba(178,194,255,.17);
+ --surface:rgba(25,32,68,.78);--surface2:rgba(34,43,87,.78);--bg:#0a0e20;
+ --aurora-violet:#8c5cff;--aurora-blue:#4b8dff;--glow:rgba(0,224,189,.22);
+}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{
+ color:var(--ink);
+ background:
+  radial-gradient(ellipse at 8% 4%,rgba(140,92,255,.22),transparent 34%),
+  radial-gradient(ellipse at 92% 14%,rgba(0,224,189,.14),transparent 32%),
+  radial-gradient(ellipse at 50% 100%,rgba(75,141,255,.12),transparent 38%),
+  var(--bg)!important;
+ background-attachment:fixed!important;
+}
+body:before,body:after{content:"";position:fixed;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(70px);opacity:.34;animation:auroraFloat 18s ease-in-out infinite alternate}
+body:before{width:260px;height:260px;top:16%;left:-100px;background:#7548ff}
+body:after{width:300px;height:300px;right:-120px;bottom:8%;background:#00bfa6;animation-delay:-7s}
+@keyframes auroraFloat{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(45px,-30px,0) scale(1.12)}100%{transform:translate3d(-25px,35px,0) scale(.92)}}
+::selection{background:rgba(0,224,189,.35);color:#fff}
+a{transition:color .22s ease,opacity .22s ease}
+a:hover{color:var(--teal)}
+header,.site-header,.topbar,.navbar,.nav-wrap,.header-inner{
+ background:rgba(10,14,32,.78)!important;color:#f7f8ff!important;
+ border-color:var(--line)!important;backdrop-filter:blur(18px) saturate(150%);
+}
+header, .site-header,.topbar{box-shadow:0 10px 35px rgba(0,0,0,.18)}
+main,.container,.page-wrap{isolation:isolate}
+h1,h2,h3,h4{color:#f8f8ff;letter-spacing:-.025em}
+p,.muted,.subtitle,.hint,.offers-meta{color:var(--muted)}
+.hero,.hero-section,.hero-card,.banner,.intro-card{
+ position:relative;overflow:hidden;border:1px solid rgba(159,176,255,.23)!important;
+ background:linear-gradient(135deg,rgba(37,44,91,.94),rgba(16,22,49,.88) 58%,rgba(0,126,115,.22))!important;
+ box-shadow:0 24px 70px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.07)!important;
+}
+.hero:after,.hero-section:after,.hero-card:after,.banner:after{
+ content:"";position:absolute;width:280px;height:280px;border-radius:50%;top:-160px;left:-70px;
+ background:radial-gradient(circle,rgba(0,224,189,.22),transparent 70%);pointer-events:none;animation:heroGlow 7s ease-in-out infinite alternate
+}
+@keyframes heroGlow{from{transform:scale(.8);opacity:.45}to{transform:scale(1.25);opacity:1}}
+button,.btn,.button,input[type=submit]{
+ border:1px solid rgba(255,255,255,.14)!important;
+ transition:transform .22s ease,box-shadow .22s ease,filter .22s ease,background .22s ease!important;
+}
+button:hover,.btn:hover,.button:hover,input[type=submit]:hover{
+ transform:translateY(-3px);filter:brightness(1.08);box-shadow:0 12px 28px rgba(0,224,189,.18)
+}
+.btn-primary,button.primary,.button-primary,input[type=submit]{
+ color:#071b25!important;background:linear-gradient(115deg,#00e0bd,#72f5d4 48%,#a3ffe9)!important;
+ box-shadow:0 8px 26px rgba(0,224,189,.18)!important;font-weight:900!important
+}
+.btn-secondary,.btn-outline,.button-secondary{
+ color:#f7f8ff!important;background:rgba(255,255,255,.055)!important;border-color:rgba(172,187,255,.28)!important
+}
+input,select,textarea,.form-control{
+ color:#f8f9ff!important;background:rgba(8,12,29,.72)!important;border:1px solid rgba(159,176,255,.25)!important;
+ border-radius:14px!important;transition:border-color .2s ease,box-shadow .2s ease!important
+}
+input::placeholder,textarea::placeholder{color:#7f8bb3!important}
+input:focus,select:focus,textarea:focus{outline:none!important;border-color:var(--teal)!important;box-shadow:0 0 0 4px rgba(0,224,189,.1)!important}
+.card,.panel,.product-card,.listing-card,.shop-card,.offer-card,.offers-panel,.stat-card,.dashboard-card,.auth-card,.form-card,.empty-state,.category-card,.feature-card,.market-card{
+ color:var(--ink)!important;background:linear-gradient(145deg,rgba(27,34,72,.86),rgba(17,22,49,.88))!important;
+ border:1px solid rgba(166,181,255,.18)!important;border-radius:22px!important;
+ box-shadow:0 15px 42px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035)!important;
+ transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease!important;
+}
+.product-card:hover,.listing-card:hover,.shop-card:hover,.offer-card:hover,.category-card:hover,.feature-card:hover,.market-card:hover{
+ transform:translateY(-6px);border-color:rgba(0,224,189,.5)!important;box-shadow:0 22px 48px rgba(0,0,0,.28),0 0 26px rgba(0,224,189,.07)!important
+}
+.offer-card.lowest{border-color:rgba(0,224,189,.58)!important;box-shadow:0 0 0 1px rgba(0,224,189,.12),0 18px 42px rgba(0,0,0,.2)!important}
+.offer-price,.price,.product-price{color:#65f5d4!important}
+.offer-tag,.badge,.pill,.chip{border:1px solid rgba(0,224,189,.25);background:rgba(0,224,189,.1)!important;color:#85ffe3!important;border-radius:999px}
+img{transition:transform .45s cubic-bezier(.2,.7,.2,1),filter .3s ease}
+.product-card:hover img,.listing-card:hover img,.shop-card:hover img{transform:scale(1.035);filter:saturate(1.12)}
+hr,.divider{border-color:var(--line)!important}
+table{color:var(--ink)!important;border-color:var(--line)!important}
+th{color:#c9d0ff!important;background:rgba(104,120,205,.13)!important}
+td{border-color:var(--line)!important}
+footer,.site-footer{color:var(--muted)!important;border-color:var(--line)!important}
+.loading,.skeleton{background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.09),rgba(255,255,255,.035));background-size:200% 100%;animation:shimmer 1.8s linear infinite}
+@keyframes shimmer{to{background-position:-200% 0}}
+/* Subtle entrance motion for content blocks */
+.hero,.hero-section,.offers-panel,.card,.panel,.product-card,.listing-card,.shop-card,.feature-card,.category-card{animation:riseIn .65s cubic-bezier(.2,.7,.2,1) both}
+@keyframes riseIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+:focus-visible{outline:2px solid var(--teal)!important;outline-offset:3px}
+@media(max-width:700px){
+ body:before{width:170px;height:170px;filter:blur(55px)}body:after{width:180px;height:180px;filter:blur(55px)}
+ .hero,.hero-section,.hero-card{border-radius:22px!important}
+ .card,.panel,.product-card,.listing-card,.shop-card,.offer-card,.offers-panel{border-radius:17px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
