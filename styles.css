@@ -323,3 +323,116 @@ button,.btn,.button,
  color:#000!important;
 }
 ::placeholder{color:#333!important;opacity:1!important}
+
+
+/* SOMLI PRO FINISH — refined white marketplace, readable black typography */
+:root{
+ --ink:#000;--muted:#303744;--line:#e4e8ef;--bg:#fff;
+ --teal:#00b89c;--teal-dark:#008d79;--navy:#101827;
+}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{
+ color:#000!important;background:#fff!important;
+ font-family:Tahoma,"Segoe UI",Arial,sans-serif;
+ line-height:1.65;
+}
+body:before,body:after{opacity:.08;filter:blur(85px)}
+body *{color:#000!important}
+.topbar,header,.site-header,.navbar,.nav-wrap,.header-inner{
+ background:rgba(255,255,255,.96)!important;
+ border:0!important;border-bottom:1px solid #e9edf3!important;
+ box-shadow:0 6px 24px rgba(15,23,42,.045)!important;
+ backdrop-filter:blur(18px);
+}
+.brand{font-weight:950!important;letter-spacing:-.04em;text-decoration:none}
+.brand-mark{
+ background:linear-gradient(135deg,#00d3b2,#b4f7e9)!important;
+ border:1px solid #9be9dc!important;box-shadow:0 5px 15px #00b89c22!important;
+}
+.desktop-nav a{font-weight:750!important;border-radius:11px;padding:9px 12px!important;transition:background .2s ease,transform .2s ease}
+.desktop-nav a:hover,.desktop-nav a.active{background:#e9fbf7!important}
+.top-actions{gap:9px!important}
+.btn,button,.button,input[type=submit]{
+ border-radius:12px!important;font-weight:800!important;min-height:42px;
+}
+.btn-primary,button.primary,.button-primary,input[type=submit]{
+ background:linear-gradient(135deg,#aaf5e7,#45dfc5)!important;
+ border:1px solid #6cddca!important;
+ box-shadow:0 5px 14px #00a9911a!important;
+}
+.btn-primary:hover,button.primary:hover,.button-primary:hover,input[type=submit]:hover{
+ box-shadow:0 9px 22px #00a99128!important;transform:translateY(-2px)
+}
+.btn-ghost,.btn-outline,.btn-secondary,.button-secondary{
+ background:#fff!important;border:1px solid #dfe5ed!important;
+}
+.somli-motion-ticker{
+ background:#f6f8fb!important;border-block:1px solid #e9edf3!important;
+ color:#000!important;overflow:hidden;
+}
+.somli-motion-ticker-track{font-weight:750!important;letter-spacing:.01em}
+.somli-motion-ticker-track i{background:#00b89c!important;box-shadow:0 0 0 4px #00b89c18}
+main{max-width:100%}
+.hero,.hero-section,.hero-card,.banner,.intro-card,.market-hero{
+ background:linear-gradient(135deg,#f5f8ff 0%,#fff 55%,#effcf8 100%)!important;
+ color:#000!important;border:1px solid #e4eaf2!important;
+ border-radius:28px!important;
+ box-shadow:0 18px 50px rgba(18,36,62,.075)!important;
+}
+.hero{margin:28px auto!important}
+.hero h1,.hero h2,.market-hero h1{font-weight:950!important;line-height:1.25!important;letter-spacing:-.045em!important}
+.hero p,.market-hero p{color:#303744!important;line-height:1.95!important}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:#e8faf5!important;border:1px solid #c8f0e7!important;border-radius:999px!important;padding:7px 12px!important;font-size:12px!important;font-weight:850!important}
+.live-dot{background:#00a991!important}
+.trust-row{gap:10px!important}
+.trust-row span{background:#fff!important;border:1px solid #e7ebf1!important;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:750}
+.hero-showcase{filter:drop-shadow(0 16px 24px #14213d0d)}
+.card,.panel,.product-card,.listing-card,.shop-card,.offer-card,.offers-panel,.stat-card,.dashboard-card,.auth-card,.form-card,.empty-state,.category-card,.feature-card,.market-card,.shop-panel,.market-my-panel{
+ background:#fff!important;color:#000!important;border:1px solid #e4e8ef!important;
+ border-radius:20px!important;box-shadow:0 8px 26px rgba(20,34,58,.055)!important;
+}
+.card:hover,.product-card:hover,.listing-card:hover,.shop-card:hover,.offer-card:hover,.category-card:hover,.feature-card:hover,.market-card:hover,.shop-panel:hover{
+ border-color:#bfece3!important;box-shadow:0 16px 34px rgba(20,34,58,.09)!important;
+}
+input,select,textarea,.form-control{
+ color:#000!important;background:#fff!important;border:1px solid #dce3ec!important;
+ border-radius:12px!important;min-height:43px;
+}
+input::placeholder,textarea::placeholder{color:#555!important;opacity:1!important}
+input:focus,select:focus,textarea:focus{border-color:#00b89c!important;box-shadow:0 0 0 4px #00b89c18!important}
+.market-wrap,.shop-wrap,.offers-wrap{padding-bottom:64px!important}
+.market-controls{gap:12px!important}
+.market-card{overflow:hidden!important}
+.market-card-img{background:#f5f7fa!important}
+.market-card-body{padding:16px!important}
+.market-card h3,.shop-panel h2,.offers-panel h2{font-weight:900!important}
+.market-card-actions a,.market-card-actions button{border-radius:10px!important}
+.market-card-actions a{background:#e8faf5!important;border-color:#c8f0e7!important}
+.market-price,.offer-price,.price,.product-price{font-weight:950!important}
+.offer-card{padding:18px!important}
+.offer-facts>div{background:#f6f8fb!important;border:1px solid #edf0f4}
+.offer-facts span{color:#303744!important}
+.offer-tag,.badge,.pill,.chip{border:1px solid #c8f0e7!important;background:#e8faf5!important;border-radius:999px!important;padding:5px 9px!important;font-weight:850!important}
+.shop-note,.market-notice,.offers-message{background:#f0fbf8!important;border:1px solid #d9f3ec!important;border-radius:13px!important}
+footer,.site-footer{
+ background:#fbfcfe!important;border-top:1px solid #e8edf3!important;
+ color:#000!important;padding:26px 18px!important;
+}
+footer p{color:#303744!important}
+hr,.divider{border-color:#e8edf3!important}
+:focus-visible{outline:3px solid #00b89c!important;outline-offset:3px}
+@media(max-width:760px){
+ .hero{margin:16px 12px!important;border-radius:22px!important}
+ .topbar{gap:10px!important}
+ .top-actions{flex-wrap:wrap}
+ .top-actions .btn, .top-actions button{min-height:38px;padding:8px 10px!important;font-size:12px!important}
+ .market-hero{padding:21px!important;border-radius:20px!important}
+ .market-grid{gap:10px!important}
+ .market-card{border-radius:15px!important}
+ .market-card-body{padding:11px!important}
+ .offers-wrap,.shop-wrap{padding-inline:12px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*:before,*:after{animation:none!important;transition:none!important}
+}
