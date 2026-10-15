@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#142a43">
+<title>لوحة المدير | سوملي</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.admin-wrap{max-width:1120px;margin:36px auto;padding:0 18px 60px}
+.admin-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.admin-head h1{margin:5px 0;font-size:clamp(25px,5vw,38px)}
+.admin-sub{color:var(--muted,#64748b);margin:0}
+.admin-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+.admin-stat,.admin-panel,.admin-item{background:var(--card,#fff);border:1px solid var(--line,#e2e8f0);border-radius:18px;padding:18px}
+.admin-stat strong{display:block;font-size:28px;margin-top:8px}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 14px}
+.admin-tab{border:1px solid var(--line,#dbe2ea);border-radius:12px;background:transparent;padding:10px 15px;color:inherit;cursor:pointer}
+.admin-tab.active{background:#142a43;color:white;border-color:#142a43}
+.admin-list{display:grid;gap:12px}
+.admin-item h3{margin:0 0 10px;font-size:18px}
+.admin-item p{margin:6px 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}
+.admin-meta{color:var(--muted,#64748b);font-size:13px}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.admin-actions button{border:0;border-radius:10px;padding:9px 13px;cursor:pointer;font-weight:700}
+.approve{background:#dcfce7;color:#166534}.reject{background:#fee2e2;color:#991b1b}.close-request{background:#e0e7ff;color:#3730a3}
+.admin-alert{padding:14px;border-radius:12px;background:#fff7ed;color:#9a3412;margin:12px 0}
+.admin-empty{padding:28px;text-align:center;border:1px dashed var(--line,#cbd5e1);border-radius:16px;color:var(--muted,#64748b)}
+.hidden{display:none!important}
+@media(max-width:560px){.admin-stats{grid-template-columns:1fr}.admin-stat{padding:14px}.admin-wrap{margin-top:22px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="./"><span class="brand-mark">س</span><span>سوملي</span></a>
+<div class="top-actions"><a class="btn btn-ghost" href="./">الرجوع للموقع</a><button class="btn btn-ghost" id="reloadBtn">تحديث</button><button class="btn btn-primary" id="logoutBtn">خروج</button></div>
+</header>
+<main class="admin-wrap">
+<div class="admin-head"><div><span class="eyebrow">إدارة سوملي</span><h1>لوحة المدير</h1><p class="admin-sub" id="signedInLabel">جاري التحقق من الصلاحيات...</p></div></div>
+<div id="notice" class="admin-alert hidden" role="status"></div>
+<div class="admin-stats">
+<div class="admin-stat"><span>طلبات الأسعار المفتوحة</span><strong id="openCount">—</strong></div>
+<div class="admin-stat"><span>طلبات تسجيل المحلات المعلقة</span><strong id="pendingCount">—</strong></div>
+<div class="admin-stat"><span>إجمالي طلبات الأسعار</span><strong id="allCount">—</strong></div>
+</div>
+<div class="admin-tabs">
+<button class="admin-tab active" data-tab="requests">طلبات الأسعار</button>
+<button class="admin-tab" data-tab="sellers">طلبات المحلات</button>
+</div>
+<section id="requestsPanel" class="admin-panel"><div id="requestsList" class="admin-list"><div class="admin-empty">جاري تحميل الطلبات...</div></div></section>
+<section id="sellersPanel" class="admin-panel hidden"><div id="sellersList" class="admin-list"><div class="admin-empty">جاري تحميل طلبات المحلات...</div></div></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
+</body>
+</html>
