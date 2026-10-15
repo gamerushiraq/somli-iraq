@@ -45,7 +45,7 @@ async function loadProducts() {
   $("#productGrid").innerHTML = "<p>دا نحمل المنتجات...</p>";
   const { data, error } = await supabaseClient
     .from("products")
-    .select("id,name,description,price_iqd,governorate,category_id,shops(name,status),categories(name_ar),product_images(image_url,sort_order)")
+    .select("id,name,description,price_iqd,governorate,category_id,shops(name,status,pro_until),categories(name_ar),product_images(image_url,sort_order)")
     .eq("status", "approved")
     .order("created_at", { ascending: false });
   if (error) {
@@ -62,10 +62,11 @@ async function loadProducts() {
     category: p.categories?.name_ar || "أخرى",
     price: p.price_iqd,
     shop: p.shops?.name || "محل",
+    isPro: !!p.shops?.pro_until && new Date(p.shops.pro_until) > new Date(),
     governorate: p.governorate,
     image: (p.product_images || []).sort((a,b) => a.sort_order - b.sort_order)[0]?.image_url || "",
     description: p.description || ""
-  }));
+  })).sort((a,b)=>(Number(b.isPro)-Number(a.isPro)));
   renderProducts();
 }
 
