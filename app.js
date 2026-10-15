@@ -1,21 +1,8 @@
-const demoProducts = [
-  {id:"d1",title:"سماعات لاسلكية",category:"إلكترونيات",price:49000,shop:"عالم الصوت",governorate:"البصرة",emoji:"🎧",offers:3,condition:"جديد"},
-  {id:"d2",title:"ساعة ذكية",category:"إلكترونيات",price:65000,shop:"تك ستور",governorate:"بغداد",emoji:"⌚",offers:2,condition:"جديد"},
-  {id:"d3",title:"حذاء رياضي",category:"أزياء",price:35000,shop:"خطوة ستايل",governorate:"أربيل",emoji:"👟",offers:4,condition:"جديد"},
-  {id:"d4",title:"كرسي مكتب مريح",category:"منزل",price:89000,shop:"بيت الراحة",governorate:"النجف",emoji:"🪑",offers:2,condition:"جديد"},
-  {id:"d5",title:"شاحن سريع USB-C",category:"إلكترونيات",price:18000,shop:"موبايل زون",governorate:"البصرة",emoji:"🔌",offers:5,condition:"جديد"},
-  {id:"d6",title:"مكنسة كهربائية",category:"أجهزة منزلية",price:125000,shop:"البيت الحديث",governorate:"بغداد",emoji:"🧹",offers:3,condition:"جديد"},
-  {id:"d7",title:"مصابيح سيارة LED",category:"سيارات",price:27000,shop:"أوتو بلس",governorate:"ذي قار",emoji:"🚘",offers:2,condition:"جديد"},
-  {id:"d8",title:"حقيبة يومية",category:"أزياء",price:42000,shop:"ستايلك",governorate:"كربلاء",emoji:"🎒",offers:3,condition:"جديد"},
-  {id:"d9",title:"سلة مواد غذائية",category:"مواد غذائية",price:32000,shop:"سوق البيت",governorate:"البصرة",emoji:"🛒",offers:2,condition:"جديد"},
-  {id:"d10",title:"يد تحكم للألعاب",category:"ألعاب",price:38000,shop:"قيمر زون",governorate:"بغداد",emoji:"🎮",offers:3,condition:"جديد"},
-  {id:"d11",title:"كرة قدم تدريبية",category:"رياضة",price:22000,shop:"الملعب الرياضي",governorate:"النجف",emoji:"⚽",offers:2,condition:"جديد"},
-  {id:"d12",title:"دفتر وأقلام",category:"كتب",price:9000,shop:"مكتبة القلم",governorate:"ذي قار",emoji:"📚",offers:4,condition:"جديد"},
-  {id:"d13",title:"حقيبة مستلزمات طفل",category:"أطفال",price:28000,shop:"عالم الطفل",governorate:"أربيل",emoji:"🧸",offers:2,condition:"جديد"},
-  {id:"d14",title:"عدة صيانة منزلية",category:"أدوات",price:44000,shop:"العدة الحديثة",governorate:"كربلاء",emoji:"🧰",offers:3,condition:"جديد"},
-  {id:"d15",title:"مستلزمات قطط",category:"حيوانات",price:19000,shop:"بيت الحيوانات",governorate:"بغداد",emoji:"🐾",offers:2,condition:"جديد"},
-  {id:"d16",title:"صيانة موبايل",category:"خدمات",price:15000,shop:"مركز الموبايل",governorate:"البصرة",emoji:"🛠️",offers:2,condition:"حسب الخدمة"}
-];
+const SUPABASE_URL = "https://vpducjdkjrbxeosdxvdi.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_K9GLIlPYh55utqPq77pgwA_hp3QQYDf";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let products = [];
+
 let activeCategory = "";
 let toastTimer;
 const $ = (s, root=document) => root.querySelector(s);
@@ -35,7 +22,7 @@ function closeDialog(id) { document.getElementById(id)?.close(); }
 function renderProducts() {
   const query = $("#searchInput").value.trim().toLocaleLowerCase("ar");
   const gov = $("#governorateFilter").value;
-  const filtered = demoProducts.filter(p => {
+  const filtered = products.filter(p => {
     const matchesText = !query || `${p.title} ${p.shop} ${p.category} ${p.governorate}`.toLocaleLowerCase("ar").includes(query);
     const matchesCategory = !activeCategory || p.category === activeCategory;
     const matchesGov = !gov || p.governorate === gov;
@@ -43,16 +30,44 @@ function renderProducts() {
   });
   $("#productGrid").innerHTML = filtered.map(p => `
     <article class="product-tile">
-      <div class="tile-art"><span class="tile-category">${p.category}</span><span aria-hidden="true">${p.emoji}</span></div>
+      <div class="tile-art">${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `<span class="tile-category">${escapeHtml(p.category)}</span><span>الصورة غير متوفرة</span>`}</div>
       <div class="tile-body">
         <h3>${escapeHtml(p.title)}</h3>
-        <div class="tile-shop"><span class="verified">✓</span>${escapeHtml(p.shop)} <span>·</span> ${escapeHtml(p.governorate)}</div>
-        <div class="tile-price-row"><strong class="tile-price">${formatPrice(p.price)}</strong><span class="tile-location">مثال تجريبي</span></div>
-        <div class="tile-footer"><span>${p.offers} عروض نموذجية</span><button data-ask="${p.id}">اطلب سعر مشابه</button></div>
+        <div class="tile-shop">${escapeHtml(p.shop)} <span>·</span> ${escapeHtml(p.governorate)}</div>
+        <div class="tile-price-row"><strong class="tile-price">${p.price == null ? "السعر عند الطلب" : formatPrice(p.price)}</strong><span class="tile-location">منتج معتمد</span></div>
+        <div class="tile-footer"><span>من محل معتمد</span><button data-ask="${p.id}">اطلب سعر مشابه</button></div>
       </div>
     </article>`).join("");
   $("#emptyState").classList.toggle("hidden", filtered.length > 0);
 }
+async function loadProducts() {
+  $("#productGrid").innerHTML = "<p>دا نحمل المنتجات...</p>";
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("id,name,description,price_iqd,governorate,category_id,shops(name,status),categories(name_ar),product_images(image_url,sort_order)")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+  if (error) {
+    $("#productGrid").innerHTML = "";
+    showToast("تعذر تحميل المنتجات. تأكد من إعدادات Supabase والصلاحيات.");
+    console.error("Somli product load error:", error.message);
+    products = [];
+    renderProducts();
+    return;
+  }
+  products = (data || []).filter(p => p.shops && p.shops.status === "approved").map(p => ({
+    id: p.id,
+    title: p.name,
+    category: p.categories?.name_ar || "أخرى",
+    price: p.price_iqd,
+    shop: p.shops?.name || "محل",
+    governorate: p.governorate,
+    image: (p.product_images || []).sort((a,b) => a.sort_order - b.sort_order)[0]?.image_url || "",
+    description: p.description || ""
+  }));
+  renderProducts();
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
@@ -92,26 +107,20 @@ $("#clearSearch").addEventListener("click", () => { $("#searchInput").value = ""
 $("#productGrid").addEventListener("click", e => {
   const btn = e.target.closest("[data-ask]");
   if (!btn) return;
-  const p = demoProducts.find(x => x.id === btn.dataset.ask);
+  const p = products.find(x => x.id === btn.dataset.ask);
   openRequest(p);
 });
 $("#requestForm").addEventListener("submit", e => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-  const requests = JSON.parse(localStorage.getItem("soumli_demo_requests") || "[]");
-  requests.push({...data, id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), createdAt:new Date().toISOString()});
-  localStorage.setItem("soumli_demo_requests", JSON.stringify(requests));
+  showToast("إرسال طلب السعر يحتاج تسجيل دخول؛ ربط الطلبات الفعلي هو الخطوة التالية.");
   closeDialog("requestDialog");
-  showToast("انحفظ طلبك على هذا الجهاز فقط. ربط الإرسال للمحلات راح يجي بالمرحلة التالية.");
 });
 $("#sellerForm").addEventListener("submit", e => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-  const leads = JSON.parse(localStorage.getItem("soumli_demo_sellers") || "[]");
-  leads.push({...data, createdAt:new Date().toISOString()});
-  localStorage.setItem("soumli_demo_sellers", JSON.stringify(leads));
   closeDialog("sellerDialog");
-  showToast("انحفظ اهتمامك محلياً على هذا الجهاز فقط. التسجيل الفعلي غير مفعّل بعد.");
+  showToast("تسجيل المحلات الفعلي قيد الإعداد؛ لم يتم حفظ البيانات.");
 });
 $("#year").textContent = new Date().getFullYear();
-renderProducts();
+loadProducts();
