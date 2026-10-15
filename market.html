@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10253d">
+<meta name="description" content="سوق سوملي المفتوح للبيع والشراء في العراق. انشر منتجك مع الصور والسعر وتواصل مباشرة.">
+<title>سوق سوملي المفتوح | بيع واشتري بالعراق</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.market-wrap{max-width:1200px;margin:28px auto 60px;padding:0 18px}
+.market-hero{background:linear-gradient(125deg,#10253d,#1a4964 65%,#087f75);border-radius:25px;color:#fff;padding:30px;display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:center;overflow:hidden}
+.market-hero h1{font-size:clamp(29px,5vw,46px);margin:8px 0}.market-hero p{color:#e3f4f3;line-height:1.9;max-width:650px}.market-hero-art{font-size:85px;text-align:center;filter:drop-shadow(0 15px 25px #0003)}
+.market-controls{display:grid;grid-template-columns:1fr 190px 170px;gap:10px;margin:20px 0}.market-controls input,.market-controls select{min-width:0;width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.market-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 15px}.market-heading h2{margin:0}.market-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.market-card{border:1px solid var(--line);border-radius:17px;overflow:hidden;background:#fff;box-shadow:0 7px 24px #10253d08;transition:transform .2s,box-shadow .2s;min-width:0}.market-card:hover{transform:translateY(-4px);box-shadow:0 15px 32px #10253d15}
+.market-card-img{height:190px;background:#eef5f6;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}.market-card-img img{width:100%;height:100%;object-fit:cover}.market-no-img{font-size:45px}.market-card-body{padding:14px}.market-card h3{margin:0 0 8px;font-size:16px;line-height:1.5}.market-price{font-weight:900;color:#087f75;font-size:18px}.market-meta{font-size:12px;color:var(--muted);margin:8px 0;line-height:1.8}.market-card-actions{display:flex;gap:7px;margin-top:12px}.market-card-actions a,.market-card-actions button{flex:1;text-align:center;font-size:12px;padding:9px 7px;border-radius:9px;font-weight:800;border:1px solid var(--line);background:#fff;color:var(--navy);text-decoration:none}.market-card-actions a{background:#e7f8f5;color:#087f75;border-color:#c8eee8}
+.market-empty{padding:30px;border:1px dashed #b8c9d2;border-radius:16px;text-align:center;color:var(--muted);grid-column:1/-1}
+.market-modal{width:min(680px,calc(100% - 24px));max-height:92vh;overflow:auto;border:0;border-radius:20px;padding:0;box-shadow:0 25px 90px #061a2c55}.market-modal::backdrop{background:#071c30a8;backdrop-filter:blur(3px)}.market-modal-inner{padding:22px;display:grid;gap:13px}.market-modal h2{margin:0}.market-modal label{display:grid;gap:6px;font-size:13px;font-weight:800}.market-modal input,.market-modal textarea,.market-modal select{width:100%;min-width:0;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff}.market-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.market-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.market-close{border:0;border-radius:50%;width:36px;height:36px;font-size:23px;background:#f0f4f7}.market-preview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.market-preview img{width:100%;height:78px;object-fit:cover;border-radius:8px}.market-detail-images{display:flex;gap:8px;overflow:auto}.market-detail-images img{width:150px;height:150px;object-fit:cover;border-radius:12px;flex:0 0 auto}.market-notice{padding:12px;border-radius:12px;background:#f0fbf9;color:#126e67;font-size:12px;line-height:1.8}.market-my-list{display:grid;gap:10px}.market-my-item{padding:12px;border:1px solid var(--line);border-radius:12px;display:flex;gap:12px;align-items:center}.market-my-item img{width:65px;height:65px;object-fit:cover;border-radius:9px}.market-my-item>div{flex:1;min-width:0}.market-my-item small{display:block;color:var(--muted);margin-top:5px}.market-hidden{display:none!important}.market-status{font-size:11px;color:#087f75;font-weight:800}
+@media(max-width:900px){.market-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.market-card-img{height:165px}}
+@media(max-width:640px){.market-wrap{margin-top:15px;padding:0 12px}.market-hero{grid-template-columns:1fr;padding:22px}.market-hero-art{display:none}.market-controls{grid-template-columns:1fr 1fr}.market-controls input{grid-column:1/-1}.market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.market-card-img{height:145px}.market-card-body{padding:10px}.market-card h3{font-size:14px}.market-price{font-size:15px}.market-card-actions{flex-direction:column}.market-form-row{grid-template-columns:1fr}.market-modal-inner{padding:16px}.market-heading{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="./"><span class="brand-mark">س</span><span>سوملي</span></a>
+<nav class="desktop-nav"><a href="./">الرئيسية</a><a class="active" href="market.html">سوق البيع والشراء</a></nav>
+<div class="top-actions"><button class="btn btn-ghost" id="marketAuthBtn">دخول / حساب جديد</button><button class="btn btn-primary" id="sellOpenTop">+ أضف إعلان</button></div>
+</header>
+<main class="market-wrap">
+<section class="market-hero">
+<div><span class="eyebrow">سوق سوملي المفتوح</span><h1>بيع أغراضك، واشتري اللي تحتاجه.</h1><p>موبايلات، أثاث، سيارات، ملابس، أجهزة وكلشي ثاني. انشر إعلانك بالصور والسعر والمحافظة، وخلي المشتري يشوف التفاصيل ويتواصل وياك مباشرة.</p><div class="hero-actions"><button class="btn btn-light btn-lg" id="sellOpenHero">أنشر منتجك هسه ←</button><a class="btn btn-outline btn-lg" href="#marketListings">تصفّح الإعلانات</a></div></div>
+<div class="market-hero-art" aria-hidden="true">🛍️📦</div>
+</section>
+<section class="market-controls" aria-label="البحث في الإعلانات">
+<input id="marketSearch" type="search" placeholder="دوّر على موبايل، أثاث، سيارة..." autocomplete="off">
+<select id="marketGov"><option value="">كل المحافظات</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select>
+<select id="marketCategory"><option value="">كل الفئات</option><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select>
+</section>
+<section id="marketListings">
+<div class="market-heading"><div><span class="eyebrow">إعلانات الناس</span><h2>تصفّح المنتجات المعروضة</h2></div><button class="btn btn-primary" id="sellOpenList">+ بيع منتج</button></div>
+<div class="market-grid" id="marketGrid"><div class="market-empty">دا نحمل الإعلانات...</div></div>
+</section>
+<section class="shop-panel" style="margin-top:25px">
+<div class="market-heading"><div><span class="eyebrow">إعلاناتك</span><h2>إدارة إعلاناتي</h2></div><button class="btn btn-outline" id="myListingsReload">تحديث</button></div>
+<p class="shop-muted" id="myListingsNote">سجّل دخولك حتى تشوف إعلاناتك.</p><div id="myListings" class="market-my-list"></div>
+</section>
+</main>
+<footer><a class="brand" href="./"><span class="brand-mark">س</span><span>سوملي</span></a><p>سوق سوملي المفتوح — تواصل مباشرة مع البائع وتأكد من المنتج قبل الدفع.</p><a class="footer-admin" href="./">العودة للموقع الرئيسي</a><span>© <span id="marketYear"></span> سوملي</span></footer>
+
+<dialog class="market-modal" id="sellDialog"><form id="sellForm" class="market-modal-inner">
+<div class="market-modal-head"><div><span class="eyebrow">بيع منتجك</span><h2>أضف إعلان جديد</h2></div><button type="button" class="market-close" data-close-market="sellDialog" aria-label="إغلاق">×</button></div>
+<p class="market-notice">اكتب معلومات صحيحة وصوّر المنتج نفسه. إعلانك راح يظهر للناس بعد الإرسال. الصور JPG أو PNG أو WEBP، بحد أقصى 5 صور، وحجم كل صورة 5 ميگابايت.</p>
+<label>اسم المنتج<input name="title" required maxlength="140" placeholder="مثلاً: iPhone 14 Pro مستعمل"></label>
+<div class="market-form-row"><label>الفئة<select name="category" required><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select></label><label>الحالة<select name="condition" required><option>مستعمل</option><option>جديد</option><option>مثل الجديد</option></select></label></div>
+<div class="market-form-row"><label>السعر بالدينار العراقي<input name="price_iqd" type="number" min="0" step="500" placeholder="اكتب 0 إذا مجاني أو اتركه فارغ للتفاوض"></label><label>المحافظة<select name="governorate" required><option value="">اختار المحافظة</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label></div>
+<label>تفاصيل المنتج<textarea name="description" rows="4" maxlength="2000" placeholder="المواصفات، سبب البيع، العيوب إن وجدت، السعر قابل للتفاوض؟"></textarea></label>
+<label>اسم البائع<input name="seller_name" required maxlength="100" placeholder="اسمك أو الاسم اللي تريد يظهر للمشترين"></label>
+<label>رقم الهاتف للتواصل<input name="phone" type="tel" required inputmode="tel" maxlength="20" pattern="[0-9+() -]{7,20}" placeholder="07XXXXXXXXX"></label>
+<label>صور المنتج (اختار لحد 5 صور)<input name="images" id="marketImages" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+<div id="marketPreview" class="market-preview"></div><div id="sellMessage" class="market-notice" role="status"></div>
+<button class="btn btn-primary btn-full" type="submit" id="sellSubmit">نشر الإعلان</button>
+</form></dialog>
+
+<dialog class="market-modal" id="authMarketDialog"><form id="marketAuthForm" class="market-modal-inner">
+<div class="market-modal-head"><div><span class="eyebrow">حساب سوملي</span><h2 id="marketAuthTitle">دخول للحساب</h2></div><button type="button" class="market-close" data-close-market="authMarketDialog" aria-label="إغلاق">×</button></div>
+<label id="marketNameWrap" class="market-hidden">الاسم الكامل<input name="full_name" maxlength="100" placeholder="اسمك"></label>
+<label>البريد الإلكتروني<input name="email" type="email" required autocomplete="email" placeholder="name@example.com"></label>
+<label>كلمة المرور<input name="password" type="password" required minlength="6" autocomplete="current-password"></label>
+<button class="btn btn-primary btn-full" type="submit" id="marketAuthSubmit">دخول</button><button class="text-link" type="button" id="marketAuthToggle">ما عندك حساب؟ أنشئ حساب جديد</button><p id="marketAuthMessage" class="market-notice"></p>
+</form></dialog>
+<dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
+<div class="toast" id="marketToast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261015-market1"></script>
+</body></html>
