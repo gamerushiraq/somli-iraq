@@ -241,6 +241,9 @@ $("#year").textContent = new Date().getFullYear();
 setAuthMode("login");
 refreshAuthUI();
 loadProducts();
+const initialAction = new URLSearchParams(window.location.search);
+if (initialAction.get("request") === "1") openRequest();
+if (initialAction.get("login") === "1") refreshAuthUI().then(auth => { if (!auth.user) { setAuthMode("login"); openDialog("authDialog"); } });
 
 
 /* Image showcase: auto-rotating, swipe-friendly and accessible */
