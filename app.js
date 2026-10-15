@@ -171,7 +171,7 @@ $("#requestForm").addEventListener("submit", async e => {
   const { data: sessionData } = await supabaseClient.auth.getSession();
   const user = sessionData.session?.user;
   if (!user) { closeDialog("requestDialog"); setAuthMode("login"); openDialog("authDialog"); showToast("سجّل دخولك أولاً حتى نحفظ طلبك."); return; }
-  const details = ["المنتج: " + data.title, data.budget ? "الميزانية: " + data.budget + " د.ع" : "", data.condition ? "الحالة: " + data.condition : "", data.details ? "تفاصيل: " + data.details : ""].filter(Boolean).join("\n");
+  const details = ["المنتج: " + data.title, "رقم التواصل: " + String(data.phone || "").trim(), data.budget ? "الميزانية: " + data.budget + " د.ع" : "", data.condition ? "الحالة: " + data.condition : "", data.details ? "تفاصيل: " + data.details : ""].filter(Boolean).join("\n");
   const { error } = await supabaseClient.from("quote_requests").insert({ customer_id: user.id, details, governorate: data.governorate, status: "open", quantity: 1 });
   if (error) { showToast("ما انحفظ الطلب. تأكد من الحساب وحاول مرة ثانية."); console.error("Somli quote request error:", error.message); return; }
   closeDialog("requestDialog");
