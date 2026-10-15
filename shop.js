@@ -18,8 +18,30 @@ async function boot(){
  if(!shop||shop.status!=="approved"){ $("#shopGate").textContent="طلب المحل قيد المراجعة أو يحتاج مراجعة الإدارة.";return;}
  $("#shopIdentity").textContent=shop.name+" · "+shop.governorate+" · محل معتمد";
  $("#shopGate").classList.add("shop-hidden");$("#shopWorkspace").classList.remove("shop-hidden");
- await Promise.all([loadCategories(),loadProducts(),loadRequests()]);
+ await Promise.all([loadCategories(),loadProducts(),loadRequests(),loadSubscription()]);
 }
+
+async function loadSubscription(){
+ const {data:sub,error}=await db.from("shop_subscriptions").select("starts_at,ends_at,status").eq("shop_id",shop.id).maybeSingle();
+ if(error)throw error;
+ const active=sub&&sub.status==="active"&&new Date(sub.ends_at)>new Date();
+ $("#shopPlanStatus").textContent=active?"اشتراكك الاحترافي فعّال لغاية "+new Date(sub.ends_at).toLocaleDateString("ar-IQ"):"حسابك حالياً على الباقة المجانية.";
+ const {data:payments,error:pError}=await db.from("market_payments").select("id,amount_iqd,status,transaction_reference,created_at").eq("user_id",user.id).eq("kind","shop_subscription").order("created_at",{ascending:false}).limit(10);
+ const host=$("#shopPaymentHistory");
+ if(pError){host.textContent="تعذر تحميل طلبات الاشتراك.";return;}
+ if(!payments?.length){host.innerHTML='<p class="shop-muted">ماكو طلبات اشتراك سابقة.</p>';return;}
+ host.innerHTML=payments.map(p=>'<div class="shop-payment-row"><span><b>'+new Intl.NumberFormat("ar-IQ").format(p.amount_iqd)+' د.ع</b><br><small>مرجع: '+esc(p.transaction_reference)+'</small></span><span><b>'+(p.status==="approved"?"تم التأكيد":p.status==="rejected"?"مرفوض":"بانتظار التحقق")+'</b><br><small>'+new Date(p.created_at).toLocaleDateString("ar-IQ")+'</small></span></div>').join("");
+}
+$("#shopSubscriptionForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!user||!shop)return;
+ const fd=new FormData(e.currentTarget),reference=String(fd.get("transaction_reference")||"").trim(),method=String(fd.get("payment_method")),note=String(fd.get("note")||"").trim();
+ if(reference.length<3){message("اكتب رقم العملية حتى نرسل الطلب.");return;}
+ const btn=$("#shopSubscriptionSubmit");btn.disabled=true;btn.textContent="جاري إرسال طلب الاشتراك...";
+ try{const {error}=await db.from("market_payments").insert({user_id:user.id,kind:"shop_subscription",shop_id:shop.id,package_code:"shop_pro_30d",amount_iqd:15000,duration_days:30,payment_method:method,transaction_reference:reference,note,status:"pending"});if(error)throw error;message("وصل طلب الاشتراك للإدارة. يتفعّل بعد التحقق من التحويل.");await loadSubscription();}
+ catch(err){message("تعذر إرسال طلب الاشتراك: "+(err.message||"حاول مرة ثانية."));}
+ finally{btn.disabled=false;btn.textContent="طلب اشتراك 30 يوم — 15,000 د.ع";}
+});
+
 async function loadCategories(){
  const {data,error}=await db.from("categories").select("id,name_ar").order("name_ar");if(error)throw error;categories=data||[];
  $("#shopCategory").innerHTML='<option value="">اختار الفئة</option>'+categories.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name_ar)+'</option>').join("");
