@@ -33,17 +33,18 @@
         </div>
         <div class="trust-row"><span>✓ مجاني للزبائن</span><span>✓ عروض من محلات عراقية</span><span>✓ قارن براحتك</span></div>
       </div>
-      <div class="hero-art" aria-label="ملخص بصري للعروض">
+      <div class="hero-art hero-showcase" aria-label="صور منتجات متحركة">
         <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
-        <div class="floating-tag tag-top">أفضل عرض؟ صار أسهل ✨</div>
-        <div class="product-card main-product">
-          <div class="product-emoji">🎧</div>
-          <div><strong>سماعات لاسلكية</strong><small>3 عروض وصلن</small></div>
-          <b class="price">٤٩٬٠٠٠ د.ع</b>
-        </div>
-        <div class="mini-offer offer-one"><span class="mini-icon">📱</span><span><b>موبايل جديد</b><small>عرض محل موثّق</small></span><strong>السعر؟</strong></div>
-        <div class="mini-offer offer-two"><span class="mini-icon">🚚</span><span><b>توصيل للمحافظة</b><small>تفاصيل واضحة</small></span><strong>قارن</strong></div>
-        <div class="floating-tag tag-bottom">سعر + توصيل + ضمان</div>
+        <div class="showcase-glow"></div>
+        <div class="showcase-image active" data-slide="0"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=85" alt="هاتف ذكي" fetchpriority="high"><span>إلكترونيات</span></div>
+        <div class="showcase-image" data-slide="1"><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=85" alt="سماعات لاسلكية" loading="lazy"><span>صوتيات</span></div>
+        <div class="showcase-image" data-slide="2"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85" alt="حذاء رياضي" loading="lazy"><span>أزياء ورياضة</span></div>
+        <div class="floating-tag tag-top"><span class="pulse-mini"></span> سوق العراق بمكان واحد</div>
+        <div class="product-card main-product showcase-caption"><div class="product-emoji">✦</div><div><strong id="showcaseTitle">اختيارات أكثر، مقارنة أسهل</strong><small>اطلب السعر من المحلات</small></div><b class="price">سوملي</b></div>
+        <div class="mini-offer offer-one"><span class="mini-icon">📱</span><span><b>منتجات متنوعة</b><small>من محلات العراق</small></span></div>
+        <div class="mini-offer offer-two"><span class="mini-icon">⚖️</span><span><b>قارن قبل الشراء</b><small>السعر والتفاصيل</small></span></div>
+        <div class="floating-tag tag-bottom">طلب واحد • خيارات أكثر</div>
+        <div class="showcase-dots" aria-label="التنقل بين الصور"><button class="active" data-slide-to="0" aria-label="الصورة الأولى"></button><button data-slide-to="1" aria-label="الصورة الثانية"></button><button data-slide-to="2" aria-label="الصورة الثالثة"></button></div>
       </div>
     </section>
 
@@ -53,7 +54,7 @@
       <button class="btn btn-primary search-submit" id="searchBtn">ابحث</button>
     </section>
 
-    <section class="section categories-section">
+    <div class="market-strip" aria-label="مميزات سوملي"><div class="market-strip-track"><span>✦ سوق عراقي واحد</span><span>⌕ بحث حسب المحافظة</span><span>⚖️ قارن قبل الشراء</span><span>🏪 طلب تسجيل للمحلات</span><span>✦ سوق عراقي واحد</span><span>⌕ بحث حسب المحافظة</span><span>⚖️ قارن قبل الشراء</span><span>🏪 طلب تسجيل للمحلات</span></div></div>\n\n    <section class="section categories-section">
       <div class="section-heading"><div><span class="eyebrow">اختار مجالك</span><h2>تسوّق حسب الفئة</h2></div><button class="text-link" id="allCategories">كل الفئات ←</button></div>
       <div class="categories" id="categories">
         <button class="category selected" data-category=""><span>✨</span><b>الكل</b></button>
@@ -76,7 +77,7 @@
     </section>
 
     <section class="section" id="offers">
-      <div class="section-heading"><div><span class="eyebrow">من السوق العراقي</span><h2>عروض تستحق المقارنة</h2><p class="section-subtitle">أمثلة تجريبية للعرض — مو أسعار سوق حقيقية.</p></div><button class="btn btn-outline" id="openRequestSection">ما لكيت طلبك؟ اطلب سعر</button></div>
+      <div class="section-heading"><div><span class="eyebrow">من السوق العراقي</span><h2>عروض تستحق المقارنة</h2><p class="section-subtitle">المنتجات المعروضة تُحمّل من قاعدة البيانات بعد اعتمادها من الإدارة.</p></div><button class="btn btn-outline" id="openRequestSection">ما لكيت طلبك؟ اطلب سعر</button></div>
       <div class="product-grid" id="productGrid"></div>
       <div class="empty-state hidden" id="emptyState"><span>🔎</span><h3>ما لقينا نتائج</h3><p>جرّب كلمة ثانية أو اطلب السعر وخلي المحلات تجاوبك.</p><button class="btn btn-primary" id="emptyRequest">اطلب سعر هسه</button></div>
     </section>
@@ -97,7 +98,7 @@
     </section>
   </main>
 
-  <footer><a class="brand" href="#"><span class="brand-mark">س</span><span>سوملي</span></a><p>نسخة تجريبية قيد التطوير. تحقق من تفاصيل المنتج والبائع قبل الشراء.</p><span>© <span id="year"></span> سوملي</span></footer>
+  <footer><a class="brand" href="#home"><span class="brand-mark">س</span><span>سوملي</span></a><p>سوملي يسهّل عليك طلب الأسعار ومقارنة الخيارات. تحقّق من تفاصيل البائع والمنتج قبل الشراء.</p><a class="footer-admin" href="admin.html">إدارة الموقع</a><span>© <span id="year"></span> سوملي</span></footer>
 
   <dialog id="requestDialog" class="modal">
     <form id="requestForm">
