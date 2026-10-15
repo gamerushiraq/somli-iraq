@@ -87,11 +87,37 @@ async function syncProfile(user) {
   if (error) console.warn("Somli profile sync:", error.message);
 }
 async function refreshAuthUI() {
-  const { data } = await supabaseClient.auth.getSession();
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) console.warn("Somli session check:", error.message);
   const user = data.session?.user;
-  $("#authBtn").textContent = user ? "حسابي" : "دخول / حساب جديد";
+  let role = "customer";
+  if (user) {
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles").select("role,full_name").eq("id", user.id).maybeSingle();
+    if (profileError) console.warn("Somli role check:", profileError.message);
+    role = profile?.role || "customer";
+    $("#authBtn").textContent = role === "admin" ? "لوحة المدير" : "حسابي";
+    $("#authBtn").setAttribute("aria-label", role === "admin" ? "فتح لوحة المدير" : "فتح حسابي");
+    let shortcut = document.getElementById("adminShortcut");
+    if (role === "admin" && !shortcut) {
+      shortcut = document.createElement("a");
+      shortcut.id = "adminShortcut";
+      shortcut.className = "btn btn-ghost";
+      shortcut.href = "admin.html";
+      shortcut.textContent = "إدارة الموقع";
+      $("#authBtn").parentElement.insertBefore(shortcut, $("#authBtn"));
+    }
+    if (shortcut) shortcut.classList.toggle("hidden", role !== "admin");
+    $("#authNote").textContent = "مسجل الدخول: " + (profile?.full_name || user.email || "حساب سوملي") +
+      (role === "admin" ? " — صلاحية مدير مفعّلة" : "");
+  } else {
+    $("#authBtn").textContent = "دخول / حساب جديد";
+    $("#authBtn").setAttribute("aria-label", "تسجيل الدخول أو إنشاء حساب");
+    const shortcut = document.getElementById("adminShortcut");
+    if (shortcut) shortcut.classList.add("hidden");
+  }
   $("#authLogout").classList.toggle("hidden", !user);
-  if (user) $("#authNote").textContent = "مسجل الدخول: " + (user.email || "حساب سوملي");
+  return { user, role };
 }
 
 function escapeHtml(value) {
@@ -109,7 +135,7 @@ function openRequest(prefill) {
 }
 ["openRequestTop","openRequestHero","openRequestSection","openRequestBanner","emptyRequest"].forEach(id => document.getElementById(id).addEventListener("click", () => openRequest()));
 $("#sellerBtn").addEventListener("click", () => openDialog("sellerDialog"));
-$("#authBtn").addEventListener("click", async () => { await refreshAuthUI(); setAuthMode("login"); openDialog("authDialog"); });
+$("#authBtn").addEventListener("click", async () => { const auth = await refreshAuthUI(); if (auth.user && auth.role === "admin") { location.href = "admin.html"; return; } if (auth.user) { showToast("أنت مسجل دخولك. صلاحية المدير غير مفعّلة لهذا الحساب."); return; } setAuthMode("login"); openDialog("authDialog"); });
 $("#authToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "signup" : "login"));
 $("#authLogout").addEventListener("click", async () => { const { error } = await supabaseClient.auth.signOut(); if (error) showToast("تعذر تسجيل الخروج."); else { showToast("تم تسجيل الخروج."); await refreshAuthUI(); closeDialog("authDialog"); } });
 $("#authForm").addEventListener("submit", async e => {
