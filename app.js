@@ -214,3 +214,31 @@ $("#year").textContent = new Date().getFullYear();
 setAuthMode("login");
 refreshAuthUI();
 loadProducts();
+
+
+/* Image showcase: auto-rotating, swipe-friendly and accessible */
+(function initShowcase(){
+  const slides=[...document.querySelectorAll(".showcase-image")];
+  const dots=[...document.querySelectorAll("[data-slide-to]")];
+  if(!slides.length)return;
+  const titles=["اختيارات أكثر، مقارنة أسهل","قارن السماعات قبل الشراء","كل احتياجاتك بمكان واحد"];
+  let index=0, timer;
+  function show(next){
+    index=(next+slides.length)%slides.length;
+    slides.forEach((s,i)=>s.classList.toggle("active",i===index));
+    dots.forEach((d,i)=>d.classList.toggle("active",i===index));
+    const title=document.querySelector("#showcaseTitle");
+    if(title)title.textContent=titles[index];
+  }
+  function start(){clearInterval(timer);timer=setInterval(()=>show(index+1),4800);}
+  dots.forEach(d=>d.addEventListener("click",()=>{show(Number(d.dataset.slideTo));start();}));
+  const hero=document.querySelector(".hero-showcase");
+  if(hero){
+    let startX=0;
+    hero.addEventListener("touchstart",e=>{startX=e.changedTouches[0].clientX;},{passive:true});
+    hero.addEventListener("touchend",e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45){show(index+(dx<0?1:-1));start();}},{passive:true});
+    hero.addEventListener("mouseenter",()=>clearInterval(timer));
+    hero.addEventListener("mouseleave",start);
+  }
+  show(0);start();
+})();
