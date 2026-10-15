@@ -2,7 +2,7 @@ const SUPABASE_URL="https://vpducjdkjrbxeosdxvdi.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_K9GLIlPYh55utqPq77pgwA_hp3QQYDf";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const $=s=>document.querySelector(s);
-let user=null,shop=null,categories=[],requests=[],ownQuotes=[];
+let user=null,shop=null,categories=[],requests=[],ownQuotes=[],paymentSettings=null;
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function message(t){$("#shopMessage").textContent=t;}
 function money(v){return v==null?"السعر عند الطلب":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";}
@@ -21,10 +21,19 @@ async function boot(){
  await Promise.all([loadCategories(),loadProducts(),loadRequests(),loadSubscription()]);
 }
 
+async function loadShopPaymentInstructions(method){
+ const host=$("#shopPaymentInstructions");if(!host)return;
+ if(!paymentSettings){const {data,error}=await db.from("market_payment_settings").select("zain_cash_account,super_qi_account,other_instructions,support_phone").eq("id",true).maybeSingle();if(error){host.textContent="تعذر تحميل بيانات الاستلام.";return;}paymentSettings=data||{};}
+ const key=method==="zain_cash"?"zain_cash_account":method==="super_qi"?"super_qi_account":"other_instructions";
+ const label=method==="zain_cash"?"زين كاش":method==="super_qi"?"سوبر كي":"طريقة أخرى";
+ const value=String(paymentSettings[key]||"").trim();
+ host.textContent=(value?"بيانات الاستلام عبر "+label+": "+value:"الإدارة ما ضافت بيانات الاستلام عبر "+label+" بعد. لا تحوّل فلوس قبل ما تظهر البيانات الرسمية.")+(paymentSettings.support_phone?" — للاستفسار: "+paymentSettings.support_phone:"");
+}
 async function loadSubscription(){
  const {data:sub,error}=await db.from("shop_subscriptions").select("starts_at,ends_at,status").eq("shop_id",shop.id).maybeSingle();
  if(error)throw error;
  const active=sub&&sub.status==="active"&&new Date(sub.ends_at)>new Date();
+ await loadShopPaymentInstructions($("#shopSubscriptionForm").elements.payment_method.value);
  $("#shopPlanStatus").textContent=active?"اشتراكك الاحترافي فعّال لغاية "+new Date(sub.ends_at).toLocaleDateString("ar-IQ"):"حسابك حالياً على الباقة المجانية.";
  const {data:payments,error:pError}=await db.from("market_payments").select("id,amount_iqd,status,transaction_reference,created_at").eq("user_id",user.id).eq("kind","shop_subscription").order("created_at",{ascending:false}).limit(10);
  const host=$("#shopPaymentHistory");
@@ -32,6 +41,7 @@ async function loadSubscription(){
  if(!payments?.length){host.innerHTML='<p class="shop-muted">ماكو طلبات اشتراك سابقة.</p>';return;}
  host.innerHTML=payments.map(p=>'<div class="shop-payment-row"><span><b>'+new Intl.NumberFormat("ar-IQ").format(p.amount_iqd)+' د.ع</b><br><small>مرجع: '+esc(p.transaction_reference)+'</small></span><span><b>'+(p.status==="approved"?"تم التأكيد":p.status==="rejected"?"مرفوض":"بانتظار التحقق")+'</b><br><small>'+new Date(p.created_at).toLocaleDateString("ar-IQ")+'</small></span></div>').join("");
 }
+$("#shopSubscriptionForm").elements.payment_method.addEventListener("change",e=>loadShopPaymentInstructions(e.target.value));
 $("#shopSubscriptionForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!user||!shop)return;
  const fd=new FormData(e.currentTarget),reference=String(fd.get("transaction_reference")||"").trim(),method=String(fd.get("payment_method")),note=String(fd.get("note")||"").trim();
