@@ -6,7 +6,7 @@ let currentTab = "requests";
 let requests = [];
 let sellers = [];
 let products = [];
-function esc(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;',"'" :"&#39;"}[c])); }
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function showNotice(message) { const el=$("#notice"); el.textContent=message; el.classList.remove("hidden"); }
 function hideNotice(){ $("#notice").classList.add("hidden"); }
 function dateLabel(v){ return v ? new Date(v).toLocaleString("ar-IQ") : "—"; }
