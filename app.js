@@ -2,6 +2,7 @@ const SUPABASE_URL = "https://vpducjdkjrbxeosdxvdi.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_K9GLIlPYh55utqPq77pgwA_hp3QQYDf";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 let products = [];
+let authMode = "login";
 
 let activeCategory = "";
 let toastTimer;
@@ -68,6 +69,31 @@ async function loadProducts() {
   renderProducts();
 }
 
+function setAuthMode(mode) {
+  authMode = mode;
+  const signup = mode === "signup";
+  $("#authTitle").textContent = signup ? "إنشاء حساب" : "دخول للحساب";
+  $("#authSubmit").textContent = signup ? "إنشاء حساب" : "دخول";
+  $("#authNameWrap").classList.toggle("hidden", !signup);
+  $("#authForm").elements.full_name.required = signup;
+  $("#authForm").elements.password.autocomplete = signup ? "new-password" : "current-password";
+  $("#authToggle").textContent = signup ? "عندك حساب؟ سجّل دخولك" : "ما عندك حساب؟ أنشئ حساب جديد";
+  $("#authNote").textContent = signup ? "أنشئ حساب زبون بالبريد الإلكتروني." : "سجّل دخولك حتى نكمل تفعيل طلبات الأسعار.";
+}
+async function syncProfile(user) {
+  if (!user) return;
+  const fullName = user.user_metadata?.full_name || user.email?.split("@")[0] || "مستخدم سوملي";
+  const { error } = await supabaseClient.from("profiles").upsert({ id: user.id, full_name: fullName }, { onConflict: "id" });
+  if (error) console.warn("Somli profile sync:", error.message);
+}
+async function refreshAuthUI() {
+  const { data } = await supabaseClient.auth.getSession();
+  const user = data.session?.user;
+  $("#authBtn").textContent = user ? "حسابي" : "دخول / حساب جديد";
+  $("#authLogout").classList.toggle("hidden", !user);
+  if (user) $("#authNote").textContent = "مسجل الدخول: " + (user.email || "حساب سوملي");
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
@@ -83,8 +109,37 @@ function openRequest(prefill) {
 }
 ["openRequestTop","openRequestHero","openRequestSection","openRequestBanner","emptyRequest"].forEach(id => document.getElementById(id).addEventListener("click", () => openRequest()));
 $("#sellerBtn").addEventListener("click", () => openDialog("sellerDialog"));
+$("#authBtn").addEventListener("click", async () => { await refreshAuthUI(); setAuthMode("login"); openDialog("authDialog"); });
+$("#authToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "signup" : "login"));
+$("#authLogout").addEventListener("click", async () => { const { error } = await supabaseClient.auth.signOut(); if (error) showToast("تعذر تسجيل الخروج."); else { showToast("تم تسجيل الخروج."); await refreshAuthUI(); closeDialog("authDialog"); } });
+$("#authForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const form = e.currentTarget;
+  const email = form.elements.email.value.trim();
+  const password = form.elements.password.value;
+  $("#authSubmit").disabled = true;
+  try {
+    if (authMode === "signup") {
+      const full_name = form.elements.full_name.value.trim();
+      const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name } } });
+      if (error) throw error;
+      if (data.session && data.user) { await syncProfile(data.user); showToast("تم إنشاء الحساب."); }
+      else { showToast("تم التسجيل. افتح بريدك الإلكتروني لتأكيد الحساب ثم سجّل دخولك."); }
+      closeDialog("authDialog");
+    } else {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      await syncProfile(data.user);
+      showToast("هلا بيك بسوملي، تم تسجيل الدخول.");
+      closeDialog("authDialog");
+    }
+    await refreshAuthUI();
+  } catch (err) { showToast(err.message || "تعذر إكمال العملية. تأكد من البريد وكلمة المرور."); }
+  finally { $("#authSubmit").disabled = false; }
+});
+supabaseClient.auth.onAuthStateChange(() => { refreshAuthUI(); });
 $$("[data-close]").forEach(btn => btn.addEventListener("click", () => closeDialog(btn.dataset.close)));
-["requestDialog","sellerDialog"].forEach(id => document.getElementById(id).addEventListener("click", e => {
+["requestDialog","sellerDialog","authDialog"].forEach(id => document.getElementById(id).addEventListener("click", e => {
   if (e.target === e.currentTarget) e.currentTarget.close();
 }));
 $("#categories").addEventListener("click", e => {
@@ -110,11 +165,17 @@ $("#productGrid").addEventListener("click", e => {
   const p = products.find(x => x.id === btn.dataset.ask);
   openRequest(p);
 });
-$("#requestForm").addEventListener("submit", e => {
+$("#requestForm").addEventListener("submit", async e => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-  showToast("إرسال طلب السعر يحتاج تسجيل دخول؛ ربط الطلبات الفعلي هو الخطوة التالية.");
+  const { data: sessionData } = await supabaseClient.auth.getSession();
+  const user = sessionData.session?.user;
+  if (!user) { closeDialog("requestDialog"); setAuthMode("login"); openDialog("authDialog"); showToast("سجّل دخولك أولاً حتى نحفظ طلبك."); return; }
+  const details = ["المنتج: " + data.title, data.budget ? "الميزانية: " + data.budget + " د.ع" : "", data.condition ? "الحالة: " + data.condition : "", data.details ? "تفاصيل: " + data.details : ""].filter(Boolean).join("\n");
+  const { error } = await supabaseClient.from("quote_requests").insert({ customer_id: user.id, details, governorate: data.governorate, status: "open", quantity: 1 });
+  if (error) { showToast("ما انحفظ الطلب. تأكد من الحساب وحاول مرة ثانية."); console.error("Somli quote request error:", error.message); return; }
   closeDialog("requestDialog");
+  showToast("تم إرسال طلبك إلى سوملي بنجاح.");
 });
 $("#sellerForm").addEventListener("submit", e => {
   e.preventDefault();
@@ -123,4 +184,6 @@ $("#sellerForm").addEventListener("submit", e => {
   showToast("تسجيل المحلات الفعلي قيد الإعداد؛ لم يتم حفظ البيانات.");
 });
 $("#year").textContent = new Date().getFullYear();
+setAuthMode("login");
+refreshAuthUI();
 loadProducts();
