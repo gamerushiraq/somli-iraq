@@ -26,7 +26,7 @@ async function loadData(){
   $("#sellersList").innerHTML=empty("جاري تحميل طلبات المحلات...");
   $("#productsList").innerHTML=empty("جاري تحميل المنتجات...");
   const [rq,sa,pr]=await Promise.all([
-    db.from("quote_requests").select("id,details,governorate,status,quantity,created_at").order("created_at",{ascending:false}).limit(200),
+    db.from("quote_requests").select("id,phone,details,governorate,status,quantity,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("seller_applications").select("id,shop_name,governorate,category,contact,status,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("products").select("id,name,description,price_iqd,governorate,status,created_at,shops(name),categories(name_ar)").order("created_at",{ascending:false}).limit(300)
   ]);
@@ -42,7 +42,7 @@ async function loadData(){
 function renderRequests(){
   const list=$("#requestsList");
   if(!requests.length){list.innerHTML=empty("لحد الآن ماكو طلبات أسعار.");return;}
-  list.innerHTML=requests.map(r=>'<article class="admin-item"><h3>'+esc((r.details||"طلب سعر").split("\n")[0].replace(/^المنتج:\s*/,""))+'</h3><p>'+esc(r.details||"ماكو تفاصيل")+'</p><p>المحافظة: <b>'+esc(r.governorate)+'</b> · الحالة: <b>'+esc(r.status)+'</b> · الكمية: '+esc(r.quantity)+'</p><p class="admin-meta">تاريخ الطلب: '+esc(dateLabel(r.created_at))+'</p>'+(r.status==="open"?'<div class="admin-actions"><button class="close-request" data-close-request="'+esc(r.id)+'">إغلاق الطلب</button></div>':"")+'</article>').join("");
+  list.innerHTML=requests.map(r=>'<article class="admin-item"><h3>'+esc((r.details||"طلب سعر").split("\n")[0].replace(/^المنتج:\s*/,""))+'</h3><p>'+esc(r.details||"ماكو تفاصيل")+'</p><p>المحافظة: <b>'+esc(r.governorate)+'</b> · الحالة: <b>'+esc(r.status)+'</b> · الكمية: '+esc(r.quantity)+'</p><p>رقم الزبون: <b>'+(r.phone?'<a href="tel:'+esc(r.phone)+'">'+esc(r.phone)+'</a>':'غير مضاف')+'</b></p><p class="admin-meta">تاريخ الطلب: '+esc(dateLabel(r.created_at))+'</p>'+(r.status==="open"?'<div class="admin-actions"><button class="close-request" data-close-request="'+esc(r.id)+'">إغلاق الطلب</button></div>':"")+'</article>').join("");
 }
 function renderSellers(){
   const list=$("#sellersList");
