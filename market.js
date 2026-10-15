@@ -4,7 +4,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=v=>v===null||v===undefined||v===""?"السعر قابل للتفاوض":Number(v)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";
-let currentUser=null, listings=[], authMode="login", toastTimer, resumeSellAfterAuth=false;
+let currentUser=null, listings=[], authMode="login", toastTimer, resumeSellAfterAuth=false, paymentSettings=null;
 function toast(t){const el=$("#marketToast");el.textContent=t;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),3500);}
 function open(id){const d=document.getElementById(id);if(d&&!d.open)d.showModal();}
 function close(id){document.getElementById(id)?.close();}
@@ -38,11 +38,19 @@ async function loadPaymentHistory(){
  if(!data?.length){host.innerHTML='<p class="market-muted">ما عندك طلبات دفع لحد الآن.</p>';return;}
  host.innerHTML=data.map(p=>'<article class="market-payment-item"><div><b>'+(p.kind==="promotion"?"ترويج إعلان":"اشتراك محل")+'</b><br><small>'+esc(p.amount_iqd.toLocaleString("ar-IQ"))+' د.ع · '+esc(p.duration_days)+' يوم · مرجع '+esc(p.transaction_reference)+'</small><br><span class="market-payment-state '+esc(p.status)+'">'+(p.status==="approved"?"تم التأكيد":p.status==="rejected"?"مرفوض":"بانتظار التحقق")+'</span></div><small>'+esc(new Date(p.created_at).toLocaleDateString("ar-IQ"))+'</small></article>').join("");
 }
+async function loadPaymentInstructions(method){
+ const host=$("#marketPayInstructions");if(!host)return;
+ if(!paymentSettings){const {data,error}=await db.from("market_payment_settings").select("zain_cash_account,super_qi_account,other_instructions,support_phone").eq("id",true).maybeSingle();if(error){host.textContent="تعذر تحميل بيانات الاستلام. حاول تحديث الصفحة.";return;}paymentSettings=data||{};}
+ const key=method==="zain_cash"?"zain_cash_account":method==="super_qi"?"super_qi_account":"other_instructions";
+ const label=method==="zain_cash"?"زين كاش":method==="super_qi"?"سوبر كي":"طريقة أخرى";
+ const value=String(paymentSettings[key]||"").trim();
+ host.textContent=(value?"بيانات الاستلام عبر "+label+": "+value:"إدارة سوملي ما ضافت بيانات الاستلام عبر "+label+" بعد. لا تحوّل فلوس قبل ما تظهر البيانات الرسمية.")+(paymentSettings.support_phone?" — للاستفسار: "+paymentSettings.support_phone:"");
+}
 function startPromotion(listingId){
  if(!currentUser){resumeSellAfterAuth=false;authModeSet("login");open("authMarketDialog");$("#marketAuthMessage").textContent="سجّل دخولك حتى تطلب ترويج الإعلان.";return;}
  const p=listings.find(x=>x.id===listingId);
  if(!p){toast("حدّث الصفحة وحاول مرة ثانية.");return;}
- $("#marketPayForm").reset();$("#marketPayForm").elements.listing_id.value=listingId;$("#marketPayMessage").textContent="الترويج يتفعّل بعد مراجعة الإدارة والتحقق من رقم العملية.";open("marketPayDialog");
+ $("#marketPayForm").reset();$("#marketPayForm").elements.listing_id.value=listingId;$("#marketPayMessage").textContent="الترويج يتفعّل بعد مراجعة الإدارة والتحقق من رقم العملية.";open("marketPayDialog");loadPaymentInstructions($("#marketPayForm").elements.payment_method.value);
 }
 function startSell(){if(!currentUser){resumeSellAfterAuth=true;authModeSet("login");open("authMarketDialog");$("#marketAuthMessage").textContent="سجّل دخولك أو أنشئ حساب حتى تنشر منتجك.";return;}$("#sellForm").reset();$("#marketPreview").innerHTML="";$("#sellMessage").textContent="";open("sellDialog");}
 $("#marketImages").addEventListener("change",()=>{const files=[...$("#marketImages").files];$("#marketPreview").innerHTML="";if(files.length>5){$("#sellMessage").textContent="اختار 5 صور أو أقل.";$("#marketImages").value="";return;}for(const file of files){if(file.size>5*1024*1024||!["image/jpeg","image/png","image/webp"].includes(file.type)){ $("#sellMessage").textContent="كل صورة لازم تكون JPG أو PNG أو WEBP وحجمها أقل من 5 ميگابايت.";$("#marketImages").value="";$("#marketPreview").innerHTML="";return;}const img=document.createElement("img");img.alt="معاينة الصورة";img.src=URL.createObjectURL(file);$("#marketPreview").append(img);}$("#sellMessage").textContent=files.length?("تم اختيار "+files.length+" صورة."): "اختار صورة واضحة للمنتج.";});
@@ -54,6 +62,7 @@ $("#marketAuthBtn").addEventListener("click",async()=>{if(currentUser){if(confir
 $("#marketAuthToggle").addEventListener("click",()=>authModeSet(authMode==="login"?"signup":"login"));
 $("#marketAuthForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,fd=new FormData(f),btn=$("#marketAuthSubmit");btn.disabled=true;try{if(authMode==="signup"){const {data,error}=await db.auth.signUp({email:String(fd.get("email")).trim(),password:String(fd.get("password")),options:{data:{full_name:String(fd.get("full_name")||"").trim()}}});if(error)throw error;if(!data.session){$("#marketAuthMessage").textContent="تم التسجيل. افتح بريدك الإلكتروني لتأكيد الحساب، وبعدها سجّل دخولك.";return;}currentUser=data.user;}else{const {data,error}=await db.auth.signInWithPassword({email:String(fd.get("email")).trim(),password:String(fd.get("password"))});if(error)throw error;currentUser=data.user;}const fullName=currentUser.user_metadata?.full_name||currentUser.email?.split("@")[0]||"مستخدم سوملي";await db.from("profiles").upsert({id:currentUser.id,full_name:fullName},{onConflict:"id"});close("authMarketDialog");await getSession();toast("تم تسجيل الدخول.");if(resumeSellAfterAuth){resumeSellAfterAuth=false;startSell();}}catch(err){$("#marketAuthMessage").textContent=err.message||"تعذر تسجيل الدخول."; }finally{btn.disabled=false;}});
 
+$("#marketPayForm").elements.payment_method.addEventListener("change",e=>loadPaymentInstructions(e.target.value));
 $("#marketPayForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!currentUser)return;
  const fd=new FormData(e.currentTarget),code=String(fd.get("package_code")),listingId=String(fd.get("listing_id")),method=String(fd.get("payment_method")),reference=String(fd.get("transaction_reference")||"").trim(),note=String(fd.get("note")||"").trim();
