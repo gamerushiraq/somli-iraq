@@ -6,6 +6,7 @@ let currentTab = "requests";
 let requests = [];
 let sellers = [];
 let products = [];
+let payments = [];
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function showNotice(message) { const el=$("#notice"); el.textContent=message; el.classList.remove("hidden"); }
 function hideNotice(){ $("#notice").classList.add("hidden"); }
@@ -25,19 +26,22 @@ async function loadData(){
   $("#requestsList").innerHTML=empty("جاري تحميل الطلبات...");
   $("#sellersList").innerHTML=empty("جاري تحميل طلبات المحلات...");
   $("#productsList").innerHTML=empty("جاري تحميل المنتجات...");
-  const [rq,sa,pr]=await Promise.all([
+  $("#paymentsList").innerHTML=empty("جاري تحميل طلبات الدفع...");
+  const [rq,sa,pr,pa]=await Promise.all([
     db.from("quote_requests").select("id,phone,details,governorate,status,quantity,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("seller_applications").select("id,shop_name,governorate,category,contact,status,created_at").order("created_at",{ascending:false}).limit(200),
-    db.from("products").select("id,name,description,price_iqd,governorate,status,created_at,shops(name),categories(name_ar)").order("created_at",{ascending:false}).limit(300)
+    db.from("products").select("id,name,description,price_iqd,governorate,status,created_at,shops(name),categories(name_ar)").order("created_at",{ascending:false}).limit(300),
+    db.from("market_payments").select("id,user_id,kind,listing_id,shop_id,package_code,amount_iqd,duration_days,payment_method,transaction_reference,note,status,created_at").order("created_at",{ascending:false}).limit(300)
   ]);
   if(rq.error) throw rq.error;
   if(sa.error) throw sa.error;
   if(pr.error) throw pr.error;
-  requests=rq.data||[]; sellers=sa.data||[]; products=pr.data||[];
+  if(pa.error) throw pa.error;
+  requests=rq.data||[]; sellers=sa.data||[]; products=pr.data||[]; payments=pa.data||[];
   $("#openCount").textContent=requests.filter(x=>x.status==="open").length;
   $("#pendingCount").textContent=sellers.filter(x=>x.status==="pending").length;
   $("#allCount").textContent=requests.length;
-  renderRequests(); renderSellers(); renderProducts();
+  renderRequests(); renderSellers(); renderProducts(); renderPayments();
 }
 function renderRequests(){
   const list=$("#requestsList");
@@ -48,6 +52,25 @@ function renderSellers(){
   const list=$("#sellersList");
   if(!sellers.length){list.innerHTML=empty("ماكو طلبات تسجيل محلات لحد الآن.");return;}
   list.innerHTML=sellers.map(s=>'<article class="admin-item"><h3>'+esc(s.shop_name)+'</h3><p>الفئة: '+esc(s.category)+' · المحافظة: '+esc(s.governorate)+'</p><p>رقم التواصل: <b>'+esc(s.contact||"ما مضاف")+'</b></p><p>الحالة: <b>'+esc(s.status)+'</b></p><p class="admin-meta">تاريخ الطلب: '+esc(dateLabel(s.created_at))+'</p>'+(s.status==="pending"?'<div class="admin-actions"><button class="approve" data-seller="'+esc(s.id)+'" data-status="approved">موافقة</button><button class="reject" data-seller="'+esc(s.id)+'" data-status="rejected">رفض</button></div>':"")+'</article>').join("");
+}
+
+function renderPayments(){
+ const list=$("#paymentsList");
+ if(!payments.length){list.innerHTML=empty("ماكو طلبات دفع حالياً.");return;}
+ list.innerHTML=payments.map(p=>{
+  const kind=p.kind==="promotion"?"ترويج إعلان":"اشتراك محل";
+  const pack=p.package_code==="boost_3d"?"ترويج 3 أيام":p.package_code==="boost_7d"?"ترويج 7 أيام":"اشتراك احترافي 30 يوم";
+  const method=p.payment_method==="zain_cash"?"زين كاش":p.payment_method==="super_qi"?"سوبر كي":"طريقة أخرى";
+  const status=p.status==="approved"?"تم التأكيد":p.status==="rejected"?"مرفوض":"بانتظار التحقق";
+  return '<article class="admin-item"><h3>'+esc(kind)+' — '+esc(pack)+'</h3><p><b>المبلغ:</b> '+esc(new Intl.NumberFormat("ar-IQ").format(p.amount_iqd))+' د.ع · <b>المدة:</b> '+esc(p.duration_days)+' يوم</p><p><b>طريقة الدفع:</b> '+esc(method)+' · <b>رقم العملية:</b> '+esc(p.transaction_reference)+'</p><p><b>معرّف المستخدم:</b> '+esc(p.user_id)+'</p><p><b>معرّف الإعلان/المحل:</b> '+esc(p.listing_id||p.shop_id||"—")+'</p><p>'+esc(p.note||"بدون ملاحظات")+'</p><p class="admin-meta">الحالة: '+esc(status)+' · '+esc(dateLabel(p.created_at))+'</p>'+(p.status==="pending"?'<div class="admin-actions"><button class="approve" data-payment="'+esc(p.id)+'" data-status="approved">تأكيد الدفع وتفعيل</button><button class="reject" data-payment="'+esc(p.id)+'" data-status="rejected">رفض الطلب</button></div>':"")+'</article>';
+ }).join("");
+}
+async function reviewPayment(id,status){
+ const {data,error}=await db.from("market_payments").update({status}).eq("id",id).eq("status","pending").select("id");
+ if(error){showNotice("فشل تحديث طلب الدفع: "+error.message);return;}
+ if(!data?.length){showNotice("الطلب لم يتغير؛ حدّث القائمة وتأكد من حالته.");return;}
+ try{await loadData();showNotice(status==="approved"?"تم تأكيد الدفع وتفعيل الباقة بنجاح.":"تم رفض طلب الدفع.");}
+ catch(e){showNotice("تم تحديث حالة الدفع لكن تعذر تحديث القائمة: "+(e.message||"خطأ"));}
 }
 
 function renderProducts(){
@@ -86,10 +109,12 @@ document.querySelectorAll("[data-tab]").forEach(btn=>btn.addEventListener("click
   $("#requestsPanel").classList.toggle("hidden",currentTab!=="requests");
   $("#sellersPanel").classList.toggle("hidden",currentTab!=="sellers");
   $("#productsPanel").classList.toggle("hidden",currentTab!=="products");
+  $("#paymentsPanel").classList.toggle("hidden",currentTab!=="payments");
 }));
 $("#requestsList").addEventListener("click",e=>{const b=e.target.closest("[data-close-request]");if(b)closeRequest(b.dataset.closeRequest);});
 $("#sellersList").addEventListener("click",e=>{const b=e.target.closest("[data-seller]");if(b)changeSeller(b.dataset.seller,b.dataset.status);});
 $("#productsList").addEventListener("click",e=>{const b=e.target.closest("[data-product]");if(b)changeProduct(b.dataset.product,b.dataset.status);});
+$("#paymentsList").addEventListener("click",e=>{const b=e.target.closest("[data-payment]");if(b)reviewPayment(b.dataset.payment,b.dataset.status);});
 $("#reloadBtn").addEventListener("click",async()=>{try{if(await verifyAdmin())await loadData();}catch(e){showNotice("صار خطأ بالتحميل: "+(e.message||"حاول مرة ثانية"));}});
 $("#logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.href="./";});
 (async()=>{try{if(await verifyAdmin())await loadData();}catch(e){showNotice("تعذر تحميل اللوحة: "+(e.message||"خطأ غير معروف"));}})();
