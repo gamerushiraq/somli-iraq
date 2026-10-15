@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#10253d"><title>لوحة المحل | سوملي</title><link rel="stylesheet" href="styles.css">
+<style>
+.shop-wrap{max-width:1080px;margin:35px auto;padding:0 18px 60px}.shop-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}.shop-head h1{margin:4px 0;font-size:clamp(25px,5vw,38px)}.shop-muted{color:var(--muted);font-size:13px}.shop-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.shop-panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 10px 35px #10253d08}.shop-panel h2{margin:0 0 14px;color:var(--navy)}.shop-panel form{display:grid;gap:13px}.shop-panel label{display:grid;gap:6px;font-size:12px;font-weight:800}.shop-panel input,.shop-panel textarea,.shop-panel select{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;min-width:0;background:#fff}.shop-panel textarea{resize:vertical}.shop-note{padding:12px;border-radius:12px;background:#f0fbf9;color:#126e67;font-size:12px;margin:12px 0}.shop-products{display:grid;gap:10px}.shop-product{border:1px solid var(--line);border-radius:13px;padding:13px}.shop-product strong{display:block}.shop-product small{color:var(--muted)}.shop-message{padding:13px;border-radius:12px;background:#fff7ed;color:#9a3412;margin-bottom:14px}.shop-message:empty{display:none}.shop-hidden{display:none!important}
+@media(max-width:760px){.shop-grid{grid-template-columns:1fr}.shop-wrap{margin-top:20px}.shop-panel{padding:17px}}
+</style></head>
+<body>
+<header class="topbar"><a class="brand" href="./"><span class="brand-mark">س</span><span>سوملي</span></a><div class="top-actions"><a class="btn btn-ghost" href="./">الموقع الرئيسي</a><button class="btn btn-primary" id="shopLogout">خروج</button></div></header>
+<main class="shop-wrap">
+<div class="shop-head"><div><span class="eyebrow">مساحة أصحاب المحلات</span><h1>لوحة المحل</h1><p class="shop-muted" id="shopIdentity">نتحقق من حسابك...</p></div><button class="btn btn-outline" id="shopReload">تحديث المنتجات</button></div>
+<div id="shopMessage" class="shop-message" role="status"></div>
+<div id="shopGate" class="shop-panel">سجّل دخولك بحسابك. لازم الإدارة توافق على طلب المحل حتى تگدر تنشر المنتجات.</div>
+<div id="shopWorkspace" class="shop-grid shop-hidden">
+<section class="shop-panel"><h2>أضف منتج جديد</h2><p class="shop-muted">كل منتج جديد يروح للإدارة للمراجعة قبل ما يظهر للناس.</p>
+<form id="productForm">
+<label>اسم المنتج<input name="name" required maxlength="140" placeholder="مثلاً: iPhone 16 Pro"></label>
+<label>الفئة<select name="category_id" id="shopCategory" required><option value="">جاري تحميل الفئات...</option></select></label>
+<label>السعر بالدينار العراقي<input name="price_iqd" type="number" min="0" step="500" placeholder="اتركه فارغ إذا السعر عند الطلب"></label>
+<label>المحافظة<select name="governorate" required><option value="">اختار المحافظة</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label>
+<label>وصف المنتج<textarea name="description" rows="3" maxlength="1200" placeholder="المواصفات، الضمان، التوصيل..."></textarea></label>
+<label>صورة المنتج (اختياري)<input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+<div class="shop-note">الصور المدعومة JPG وPNG وWEBP وAVIF، بحد أقصى 5 ميگابايت. لا تنشر صوراً مو ملكك أو معلومات زبائن.</div>
+<button class="btn btn-primary btn-full" type="submit" id="shopSubmit">إرسال للمراجعة</button>
+</form></section>
+<section class="shop-panel"><h2>منتجات محلك</h2><div id="shopProducts" class="shop-products"><p class="shop-muted">جاري تحميل المنتجات...</p></div></section>
+</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="shop.js"></script>
+</body></html>
