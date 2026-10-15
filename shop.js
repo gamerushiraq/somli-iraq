@@ -84,14 +84,15 @@ function renderRequests(){
   const phoneLine=phone?'<a href="tel:'+esc(phone)+'">'+esc(phone)+'</a>':'<span>الزبون ما أضاف رقم هاتف</span>';
   const offer=sent
    ? '<div class="shop-note">أرسلت عرضاً لهذا الطلب: <strong>'+esc(money(sent.price_iqd))+'</strong><br>'+esc(sent.details||"بدون تفاصيل إضافية")+'</div>'
-   : '<form class="quoteOfferForm" data-request="'+esc(r.id)+'"><label>السعر المقترح بالدينار العراقي<input name="price_iqd" type="number" min="1" step="250" required placeholder="مثلاً 25000"></label><label>تفاصيل العرض<textarea name="details" rows="2" maxlength="800" placeholder="التوصيل، الضمان، مدة التجهيز..."></textarea></label><button class="btn btn-primary btn-full" type="submit">إرسال عرض السعر</button></form>';
+   : '<form class="quoteOfferForm" data-request="'+esc(r.id)+'"><label>السعر المقترح بالدينار العراقي<input name="price_iqd" type="number" min="1" step="250" required placeholder="مثلاً 25000"></label><label>كلفة التوصيل (د.ع)<input name="delivery_cost" type="number" min="0" step="500" placeholder="0 إذا التوصيل مجاني أو اتركه غير محدد"></label><label>الضمان<input name="warranty" maxlength="160" placeholder="مثلاً: ضمان محل 3 أشهر أو بدون ضمان"></label><label>مدة التجهيز والتوصيل<input name="delivery_time" maxlength="120" placeholder="مثلاً: تجهيز بنفس اليوم، توصيل خلال 24 ساعة"></label><label>تفاصيل إضافية<textarea name="details" rows="2" maxlength="500" placeholder="المواصفات، اللون، شروط العرض..."></textarea></label><button class="btn btn-primary btn-full" type="submit">إرسال عرض السعر</button></form>';
   return '<article class="shop-product"><strong>طلب سعر · '+esc(r.governorate||"المحافظة غير محددة")+'</strong><p>'+esc(r.details||"طلب سعر")+'</p><p>الكمية: <b>'+esc(r.quantity||1)+'</b></p><p>رقم الزبون: <b>'+phoneLine+'</b></p><small>تاريخ الطلب: '+esc(new Date(r.created_at).toLocaleString("ar-IQ"))+'</small>'+offer+'</article>';
  }).join("");
 }
 $("#shopRequests").addEventListener("submit",async e=>{
  const form=e.target.closest(".quoteOfferForm");if(!form)return;
  e.preventDefault();if(!shop||!user)return;
- const fd=new FormData(form),requestId=form.dataset.request,price=Number(fd.get("price_iqd")),details=String(fd.get("details")||"").trim();
+ const fd=new FormData(form),requestId=form.dataset.request,price=Number(fd.get("price_iqd")),extra=String(fd.get("details")||"").trim(),deliveryRaw=String(fd.get("delivery_cost")||"").trim(),warranty=String(fd.get("warranty")||"").trim(),deliveryTime=String(fd.get("delivery_time")||"").trim();
+ const details=[deliveryRaw!==""?"كلفة التوصيل: "+(Number(deliveryRaw)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(Number(deliveryRaw))+" د.ع"):"كلفة التوصيل: غير محددة", "الضمان: "+(warranty||"غير محدد"),"مدة التجهيز والتوصيل: "+(deliveryTime||"غير محددة"),extra?"تفاصيل إضافية: "+extra:""].filter(Boolean).join("\n");
  if(!Number.isFinite(price)||price<1){message("اكتب سعر صحيح أكبر من صفر.");return;}
  const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent="جاري إرسال العرض...";
  try{
