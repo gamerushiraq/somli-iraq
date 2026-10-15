@@ -102,12 +102,13 @@
   <dialog id="requestDialog" class="modal">
     <form id="requestForm">
       <div class="modal-head"><div><span class="eyebrow">خلّي العروض تجيك</span><h2>اطلب سعر</h2></div><button type="button" class="close-modal" data-close="requestDialog" aria-label="إغلاق">×</button></div>
-      <p class="modal-note">هذا نموذج تجريبي: الطلبات تبقى على جهازك حالياً، وما تنرسل للمحلات إلا بعد ربط قاعدة البيانات.</p>
+      <p class="modal-note">اكتب رقم هاتف صحيح حتى تگدر المحلات تتواصل وياك بخصوص طلبك. راح ينحفظ الرقم ويا تفاصيل الطلب.</p>
       <label>شنو المنتج اللي تريده؟<input name="title" required maxlength="100" placeholder="مثلاً: موبايل ذاكرة 256GB"></label>
       <div class="form-row"><label>الفئة<select name="category" required><option value="إلكترونيات">إلكترونيات</option><option>أزياء</option><option>منزل</option><option>سيارات</option><option>أجهزة منزلية</option><option>جمال</option><option>أخرى</option></select></label><label>المحافظة<select name="governorate" required><option value="">اختار المحافظة</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label></div>
       <div class="form-row"><label>ميزانيتك (د.ع)<input name="budget" type="number" min="0" step="1000" placeholder="اختياري"></label><label>الحالة<select name="condition"><option>جديد</option><option>مستعمل</option><option>ما يفرق</option></select></label></div>
+      <label>رقم الهاتف للتواصل<input name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" pattern="[0-9+() -]{7,20}" placeholder="مثلاً: 07XXXXXXXXX" title="اكتب رقم هاتف صحيح باستخدام الأرقام أو + أو المسافات"></label>
       <label>تفاصيل إضافية<textarea name="details" rows="3" maxlength="500" placeholder="الموديل، اللون، الضمان أو مواصفات ثانية..."></textarea></label>
-      <button class="btn btn-primary btn-full" type="submit">حفظ الطلب التجريبي</button>
+      <button class="btn btn-primary btn-full" type="submit">إرسال طلب السعر</button>
     </form>
   </dialog>
 
