@@ -33,4 +33,4 @@ $("#myListingsReload").addEventListener("click",async()=>{await getSession();toa
 document.querySelectorAll("[data-close-market]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeMarket)));
 document.querySelectorAll(".market-modal").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close();}));
 $("#marketYear").textContent=new Date().getFullYear();
-(async()=>{try{await getSession();await loadListings();}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
+(async()=>{try{await getSession();await loadListings();if(new URLSearchParams(location.search).get("sell")==="1")startSell();}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
