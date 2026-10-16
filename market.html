@@ -74,6 +74,25 @@
 @media(max-width:1000px){.market-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.market-controls input[type="search"]{grid-column:span 2}.market-controls input[type="number"]{grid-column:span 1}}
 @media(max-width:640px){.market-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.market-controls input[type="search"]{grid-column:1/-1}.market-controls input[type="number"]{min-height:42px;font-size:10px}.market-clear-filters{grid-column:1/-1}}
 
+
+/* One-button expandable all-categories menu */
+.market-all-categories{margin:18px 0 8px}
+.market-categories-toggle{width:100%;display:flex;align-items:center;gap:13px;text-align:right;padding:15px 18px;border:1px solid #dce7ed;border-radius:16px;background:linear-gradient(110deg,#f4fbfa,#fff);color:#10253d;cursor:pointer;box-shadow:0 5px 18px #10253d08;transition:border-color .2s,box-shadow .2s}
+.market-categories-toggle:hover,.market-categories-toggle[aria-expanded="true"]{border-color:#8bd8cb;box-shadow:0 8px 24px #087f7514}
+.market-category-toggle-icon{width:43px;height:43px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;background:#087f75;color:#fff;font-size:27px;line-height:1}
+.market-categories-toggle strong{display:block;font-size:16px;font-weight:950}
+.market-categories-toggle small{display:block;margin-top:3px;color:#687789;font-size:11px}
+.market-category-chevron{margin-right:auto;font-size:24px;color:#087f75;transition:transform .2s}
+.market-categories-toggle[aria-expanded="true"] .market-category-chevron{transform:rotate(180deg)}
+.market-category-panel{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:14px 0 4px}
+.market-category-panel[hidden]{display:none}
+.market-category-tile{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:104px;padding:12px 7px;border:1px solid #e1e8ef;border-radius:15px;background:#fff;color:#17283a;cursor:pointer;transition:transform .18s,border-color .18s,background .18s}
+.market-category-tile:hover,.market-category-tile:focus-visible{transform:translateY(-2px);border-color:#7ed4c5;background:#f2fbf9;outline:none}
+.market-category-tile span{font-size:27px;line-height:1.2}
+.market-category-tile strong{font-size:12px;text-align:center;line-height:1.5}
+@media(max-width:850px){.market-category-panel{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:520px){.market-categories-toggle{padding:12px}.market-category-toggle-icon{width:39px;height:39px}.market-categories-toggle strong{font-size:14px}.market-category-panel{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.market-category-tile{min-height:88px;padding:10px 4px}.market-category-tile span{font-size:24px}.market-category-tile strong{font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -87,6 +106,23 @@
 <section class="market-hero">
 <div><span class="eyebrow">سوق سوملي المفتوح</span><h1>بيع أغراضك، واشتري اللي تحتاجه.</h1><p>موبايلات، أثاث، سيارات، ملابس، أجهزة وكلشي ثاني. انشر إعلانك بالصور والسعر والمحافظة، وخلي المشتري يشوف التفاصيل ويتواصل وياك مباشرة.</p><div class="hero-actions"><button class="btn btn-light btn-lg" id="sellOpenHero">أنشر منتجك هسه ←</button><a class="btn btn-outline btn-lg" href="#marketListings">تصفّح الإعلانات</a></div></div>
 <div class="market-hero-art"><img class="market-hero-gif" src="https://i.pinimg.com/originals/df/1f/72/df1f72a8b434e4a4b3a42d5b4f2adf2f.gif" alt="عربة تسوق متحركة" loading="lazy"></div>
+</section>
+<section class="market-all-categories" aria-label="أقسام السوق">
+<button type="button" id="marketCategoriesToggle" class="market-categories-toggle" aria-expanded="false" aria-controls="marketCategoryPanel"><span class="market-category-toggle-icon">☷</span><span><strong>كل الأقسام</strong><small>اضغط حتى تظهر جميع أقسام السوق</small></span><span class="market-category-chevron">⌄</span></button>
+<div id="marketCategoryPanel" class="market-category-panel" hidden>
+<button type="button" class="market-category-tile" data-market-category="إلكترونيات"><span>📱</span><strong>إلكترونيات</strong></button>
+<button type="button" class="market-category-tile" data-market-category="أزياء"><span>👕</span><strong>أزياء</strong></button>
+<button type="button" class="market-category-tile" data-market-category="منزل وأثاث"><span>🛋️</span><strong>منزل وأثاث</strong></button>
+<button type="button" class="market-category-tile" data-market-category="سيارات وقطع"><span>🚗</span><strong>سيارات وقطع</strong></button>
+<button type="button" class="market-category-tile" data-market-category="أجهزة منزلية"><span>🧺</span><strong>أجهزة منزلية</strong></button>
+<button type="button" class="market-category-tile" data-market-category="جمال وعناية"><span>✨</span><strong>جمال وعناية</strong></button>
+<button type="button" class="market-category-tile" data-market-category="ألعاب"><span>🎮</span><strong>ألعاب</strong></button>
+<button type="button" class="market-category-tile" data-market-category="رياضة"><span>⚽</span><strong>رياضة</strong></button>
+<button type="button" class="market-category-tile" data-market-category="أطفال"><span>🧸</span><strong>أطفال</strong></button>
+<button type="button" class="market-category-tile" data-market-category="أدوات"><span>🧰</span><strong>أدوات</strong></button>
+<button type="button" class="market-category-tile" data-market-category="حيوانات"><span>🐾</span><strong>حيوانات</strong></button>
+<button type="button" class="market-category-tile" data-market-category="أخرى"><span>📦</span><strong>أخرى</strong></button>
+</div>
 </section>
 <section class="market-controls" aria-label="البحث وتصفية الإعلانات">
 <input id="marketSearch" type="search" placeholder="دوّر على موبايل، أثاث، سيارة..." autocomplete="off" aria-label="ابحث عن منتج">
@@ -140,5 +176,5 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-editdeleteprice2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-categoriesbutton1"></script>
 </body></html>
