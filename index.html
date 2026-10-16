@@ -165,6 +165,18 @@
       <button class="text-link hidden" id="authLogout" type="button">تسجيل الخروج</button>
     </form>
   </dialog>
+  <dialog id="productDetailDialog" class="modal product-detail-modal">
+    <div class="product-detail-shell">
+      <div class="modal-head"><div><span class="eyebrow">تفاصيل المنتج</span><h2 id="productDetailTitle">المنتج</h2></div><button type="button" class="close-modal" data-close="productDetailDialog" aria-label="إغلاق">×</button></div>
+      <div id="productDetailImage" class="product-detail-image"></div>
+      <div class="product-detail-tags"><span id="productDetailCategory"></span><span>📍 <b id="productDetailGovernorate"></b></span></div>
+      <div class="product-detail-price" id="productDetailPrice"></div>
+      <div class="product-detail-shop"><span class="product-detail-shop-icon">🏪</span><div><small>متوفر لدى</small><strong id="productDetailShop"></strong></div></div>
+      <div class="product-detail-description"><strong>وصف المنتج</strong><p id="productDetailDescription"></p></div>
+      <button type="button" class="btn btn-primary btn-full" id="productDetailAsk">اطلب سعر مشابه</button>
+      <p class="product-detail-note">تأكد من السعر والتوفر والتفاصيل مع المحل قبل الشراء.</p>
+    </div>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=20261016-quickstart1"></script>
