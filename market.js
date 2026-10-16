@@ -43,7 +43,25 @@ function card(p){
   ${wa?'<a class="market-call-link" href="tel:'+esc(phone)+'">📞 اتصال مباشر بالبائع</a>':""}
  </div></article>`;
 }
-function renderListings(){const q=$("#marketSearch").value.trim().toLocaleLowerCase("ar");const gov=$("#marketGov").value;const cat=$("#marketCategory").value;const shown=listings.filter(p=>(!q||[p.title,p.description,p.category,p.governorate,p.seller_name].join(" ").toLocaleLowerCase("ar").includes(q))&&(!gov||p.governorate===gov)&&(!cat||p.category===cat));$("#marketGrid").innerHTML=shown.length?shown.map(card).join(""):'<div class="market-empty"><div style="font-size:35px">🔎</div><b>ماكو إعلانات مطابقة</b><p>غيّر البحث أو كن أول شخص ينشر منتج بهالفئة.</p><button class="btn btn-primary" id="emptySell">أضف إعلان</button></div>';$("#emptySell")?.addEventListener("click",startSell);}
+function renderListings(){
+ const q=$("#marketSearch").value.trim().toLocaleLowerCase("ar");
+ const gov=$("#marketGov").value,cat=$("#marketCategory").value,sort=$("#marketSort")?.value||"newest";
+ const shown=listings.filter(p=>(!q||[p.title,p.description,p.category,p.governorate,p.seller_name,p.condition].join(" ").toLocaleLowerCase("ar").includes(q))&&(!gov||p.governorate===gov)&&(!cat||p.category===cat));
+ shown.sort((a,b)=>{
+  if(sort==="price-low"||sort==="price-high"){
+   const ap=a.price_iqd===null||a.price_iqd===undefined?Infinity:Number(a.price_iqd);
+   const bp=b.price_iqd===null||b.price_iqd===undefined?Infinity:Number(b.price_iqd);
+   return (sort==="price-low"?ap-bp:bp-ap)||new Date(b.created_at)-new Date(a.created_at);
+  }
+  if(sort==="oldest")return new Date(a.created_at)-new Date(b.created_at);
+  return new Date(b.created_at)-new Date(a.created_at);
+ });
+ const count=$("#marketResultsCount");if(count)count.textContent="عدد الإعلانات: "+shown.length;
+ const active=[];if(q)active.push("بحث: "+q);if(gov)active.push(gov);if(cat)active.push(cat);
+ const activeEl=$("#marketActiveFilters");if(activeEl)activeEl.textContent=active.length?"الفلاتر: "+active.join(" · "):"كل الإعلانات";
+ $("#marketGrid").innerHTML=shown.length?shown.map(card).join(""):'<div class="market-empty"><div style="font-size:35px">🔎</div><b>ماكو إعلانات مطابقة</b><p>غيّر البحث أو امسح الفلاتر حتى تشوف كل المنتجات.</p><button class="btn btn-primary" id="emptySell">أضف إعلان</button></div>';
+ $("#emptySell")?.addEventListener("click",startSell);
+}
 async function loadListings(){ $("#marketGrid").innerHTML='<div class="market-empty">دا نحمل الإعلانات...</div>';const {data,error}=await db.from("market_listings").select("id,seller_id,seller_name,phone,title,description,category,governorate,condition,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("status","approved").order("created_at",{ascending:false}).limit(200);if(error){$("#marketGrid").innerHTML='<div class="market-empty">تعذر تحميل الإعلانات. جرّب تحديث الصفحة بعد قليل.</div>';console.error("market listings",error.message);return;}listings=(data||[]).sort((a,b)=>{const ap=a.is_promoted&&a.promoted_until&&new Date(a.promoted_until)>new Date()?1:0;const bp=b.is_promoted&&b.promoted_until&&new Date(b.promoted_until)>new Date()?1:0;return bp-ap||new Date(b.created_at)-new Date(a.created_at);});renderListings();}
 async function loadMyListings(){
  if(!currentUser){$("#myListings").innerHTML="";return;}
@@ -100,7 +118,7 @@ $("#marketPayForm").addEventListener("submit",async e=>{
  try{const {error}=await db.from("market_payments").insert({user_id:currentUser.id,kind:"promotion",listing_id:listingId,package_code:code,amount_iqd:pack.amount,duration_days:pack.days,payment_method:method,transaction_reference:reference,note,status:"pending"});if(error)throw error;close("marketPayDialog");toast("وصل طلب الترويج للإدارة. راح يتفعّل بعد التحقق من التحويل.");await loadPaymentHistory();}catch(err){$("#marketPayMessage").textContent="تعذر إرسال الطلب: "+(err.message||"حاول مرة ثانية.");}finally{btn.disabled=false;btn.textContent="إرسال طلب الترويج";}
 });
 
-$("#marketSearch").addEventListener("input",renderListings);$("#marketGov").addEventListener("change",renderListings);$("#marketCategory").addEventListener("change",renderListings);
+$("#marketSearch").addEventListener("input",renderListings);$("#marketGov").addEventListener("change",renderListings);$("#marketCategory").addEventListener("change",renderListings);$("#marketSort").addEventListener("change",renderListings);$("#marketClearFilters").addEventListener("click",()=>{$("#marketSearch").value="";$("#marketGov").value="";$("#marketCategory").value="";$("#marketSort").value="newest";renderListings();});
 ["sellOpenTop","sellOpenHero","sellOpenList"].forEach(id=>$("#"+id).addEventListener("click",startSell));
 $("#myListingsReload").addEventListener("click",async()=>{await getSession();toast("تم تحديث إعلاناتك.");});
 document.querySelectorAll("[data-close-market]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeMarket)));
