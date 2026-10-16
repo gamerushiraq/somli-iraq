@@ -187,9 +187,11 @@ $("#categories").addEventListener("click", e => {
   $("#offers").scrollIntoView({behavior:"smooth",block:"start"});
 });
 $("#allCategories").addEventListener("click", () => {
-  activeCategory = "";
-  $$(".category").forEach(el => el.classList.toggle("selected", el.dataset.category === ""));
-  renderProducts();
+  const btn = $("#allCategories"), panel = $("#categories");
+  const expanded = btn.getAttribute("aria-expanded") === "true";
+  btn.setAttribute("aria-expanded", String(!expanded));
+  panel.hidden = expanded;
+  if (!expanded) panel.scrollIntoView({behavior:"smooth", block:"nearest"});
 });
 $("#searchBtn").addEventListener("click", renderProducts);
 $("#searchInput").addEventListener("input", renderProducts);
