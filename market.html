@@ -18,6 +18,38 @@
 .market-modal{width:min(680px,calc(100% - 24px));max-height:92vh;overflow:auto;border:0;border-radius:20px;padding:0;box-shadow:0 25px 90px #061a2c55}.market-modal::backdrop{background:#071c30a8;backdrop-filter:blur(3px)}.market-modal-inner{padding:22px;display:grid;gap:13px}.market-modal h2{margin:0}.market-modal label{display:grid;gap:6px;font-size:13px;font-weight:800}.market-modal input,.market-modal textarea,.market-modal select{width:100%;min-width:0;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff}.market-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.market-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.market-close{border:0;border-radius:50%;width:36px;height:36px;font-size:23px;background:#f0f4f7}.market-preview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.market-preview img{width:100%;height:78px;object-fit:cover;border-radius:8px}.market-detail-images{display:flex;gap:8px;overflow:auto}.market-detail-images img{width:150px;height:150px;object-fit:cover;border-radius:12px;flex:0 0 auto}.market-notice{padding:12px;border-radius:12px;background:#f0fbf9;color:#126e67;font-size:12px;line-height:1.8}.market-my-list{display:grid;gap:10px}.market-my-item{padding:12px;border:1px solid var(--line);border-radius:12px;display:flex;gap:12px;align-items:center}.market-my-item img{width:65px;height:65px;object-fit:cover;border-radius:9px}.market-my-item>div{flex:1;min-width:0}.market-my-item small{display:block;color:var(--muted);margin-top:5px}.market-hidden{display:none!important}.market-status{font-size:11px;color:#087f75;font-weight:800}.market-my-panel{margin-top:25px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 10px 35px #10253d08}.market-muted{color:var(--muted);font-size:13px;line-height:1.8}
 @media(max-width:900px){.market-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.market-card-img{height:165px}}
 @media(max-width:640px){.market-my-panel{padding:15px}.market-wrap{margin-top:15px;padding:0 12px}.market-hero{grid-template-columns:1fr;padding:22px}.market-hero-art{display:none}.market-controls{grid-template-columns:1fr 1fr}.market-controls input{grid-column:1/-1}.market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.market-card-img{height:145px}.market-card-body{padding:10px}.market-card h3{font-size:14px}.market-price{font-size:15px}.market-card-actions{flex-direction:column}.market-form-row{grid-template-columns:1fr}.market-modal-inner{padding:16px}.market-heading{align-items:flex-start;flex-direction:column}}
+
+/* Market cards v2: clearer listing information and direct contact */
+.market-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;align-items:stretch}
+.market-card{display:flex;flex-direction:column;border:1px solid #e4e8ef;border-radius:20px;box-shadow:0 7px 22px rgba(20,34,58,.045);transition:transform .22s,border-color .22s,box-shadow .22s}
+.market-card:hover{transform:translateY(-4px);border-color:#bce9e0;box-shadow:0 17px 35px rgba(20,34,58,.10)}
+.market-card-featured{border-color:#e8c66e;box-shadow:0 8px 25px #d4a72c12}
+.market-card-img{height:205px;position:relative;flex-shrink:0;background:linear-gradient(135deg,#f2f7fb,#eefbf7);outline-offset:-3px}
+.market-card-img img{transition:transform .4s}
+.market-card:hover .market-card-img img{transform:scale(1.04)}
+.market-no-img-wrap{display:grid;justify-items:center;gap:5px;color:#5b6677}
+.market-no-img-wrap .market-no-img{font-size:50px}
+.market-no-img-wrap small{font-size:11px}
+.market-featured-badge,.market-image-count{position:absolute;top:10px;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:900;box-shadow:0 3px 12px #10253d12}
+.market-featured-badge{right:10px;background:#fff3d6;color:#795400}
+.market-image-count{left:10px;background:#fff;color:#1f2937}
+.market-card-body{display:flex;flex:1;flex-direction:column;padding:14px}
+.market-card-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.market-card h3{font-size:15px;line-height:1.55;font-weight:900;margin:0 0 8px;min-width:0;overflow-wrap:anywhere}
+.market-condition-chip{font-size:10px;white-space:nowrap;padding:4px 7px;border-radius:999px;background:#f1f5f9;color:#374151;font-weight:800}
+.market-price{font-size:18px;font-weight:950;color:#000;margin:3px 0 7px}
+.market-meta{display:grid;gap:4px;font-size:11px;line-height:1.65;margin:5px 0 7px}
+.market-card-description{font-size:11px;line-height:1.8;color:#4b5563;margin:3px 0 13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:40px;overflow-wrap:anywhere}
+.market-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:auto}
+.market-card-actions a,.market-card-actions button{display:flex;align-items:center;justify-content:center;min-width:0;border-radius:10px;padding:10px 6px;font-size:11px;font-weight:900;line-height:1.4;text-decoration:none}
+.market-card-actions .market-details-action{background:#fff;border:1px solid #dfe5ed;color:#17283a}
+.market-card-actions .market-whatsapp-action{background:#e4f8e9;border:1px solid #bfe9cb;color:#176b35}
+.market-card-actions .market-call-action{background:#e7f8f5;border:1px solid #c8eee8;color:#087f75}
+.market-call-link{display:block;text-align:center;font-size:10px;font-weight:800;color:#4b5563;margin-top:9px}
+.market-call-link:hover{text-decoration:underline}
+@media(max-width:900px){.market-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.market-card-img{height:180px}}
+@media(max-width:640px){.market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.market-card-img{height:132px}.market-card-body{padding:10px}.market-card h3{font-size:13px}.market-price{font-size:15px}.market-meta{font-size:10px}.market-card-description{font-size:10px;min-height:36px}.market-card-actions{grid-template-columns:1fr;gap:6px}.market-card-actions a,.market-card-actions button{padding:9px 5px;font-size:10px}.market-featured-badge,.market-image-count{font-size:9px;padding:4px 6px}}
+
 </style>
 </head>
 <body>
@@ -81,5 +113,5 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261015-monetization4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-marketcards2"></script>
 </body></html>
