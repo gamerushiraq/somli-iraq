@@ -50,6 +50,18 @@
 @media(max-width:900px){.market-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.market-card-img{height:180px}}
 @media(max-width:640px){.market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.market-card-img{height:132px}.market-card-body{padding:10px}.market-card h3{font-size:13px}.market-price{font-size:15px}.market-meta{font-size:10px}.market-card-description{font-size:10px;min-height:36px}.market-card-actions{grid-template-columns:1fr;gap:6px}.market-card-actions a,.market-card-actions button{padding:9px 5px;font-size:10px}.market-featured-badge,.market-image-count{font-size:9px;padding:4px 6px}}
 
+
+/* Search, filter and sorting controls */
+.market-controls{grid-template-columns:minmax(200px,1.7fr) minmax(145px,.8fr) minmax(145px,.8fr) minmax(145px,.8fr) auto;align-items:center;gap:9px;margin:20px auto 24px;max-width:1200px;padding:0 18px}
+.market-controls input,.market-controls select{min-height:46px;padding:11px 12px;font-size:12px;font-weight:700;color:#17283a;outline:none;transition:border-color .2s,box-shadow .2s}
+.market-controls input:focus,.market-controls select:focus{border-color:#19b8a5;box-shadow:0 0 0 3px #19b8a51c}
+.market-clear-filters{min-height:46px;padding:9px 12px;font-size:11px}
+.market-results-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-7px 0 16px;font-size:12px;color:#4b5563}
+.market-results-line strong{font-weight:900;color:#087f75}
+.market-active-filters{font-size:11px;color:#6b7280}
+@media(max-width:1000px){.market-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.market-controls input{grid-column:span 2}.market-clear-filters{grid-column:span 1}}
+@media(max-width:640px){.market-controls{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 12px;gap:8px}.market-controls input{grid-column:1/-1}.market-controls select{font-size:11px;min-height:43px}.market-clear-filters{grid-column:1/-1;min-height:40px}.market-results-line{align-items:flex-start;flex-direction:column;gap:3px;margin:0 0 12px}}
+
 </style>
 </head>
 <body>
@@ -64,13 +76,16 @@
 <div><span class="eyebrow">سوق سوملي المفتوح</span><h1>بيع أغراضك، واشتري اللي تحتاجه.</h1><p>موبايلات، أثاث، سيارات، ملابس، أجهزة وكلشي ثاني. انشر إعلانك بالصور والسعر والمحافظة، وخلي المشتري يشوف التفاصيل ويتواصل وياك مباشرة.</p><div class="hero-actions"><button class="btn btn-light btn-lg" id="sellOpenHero">أنشر منتجك هسه ←</button><a class="btn btn-outline btn-lg" href="#marketListings">تصفّح الإعلانات</a></div></div>
 <div class="market-hero-art"><img class="market-hero-gif" src="https://i.pinimg.com/originals/df/1f/72/df1f72a8b434e4a4b3a42d5b4f2adf2f.gif" alt="عربة تسوق متحركة" loading="lazy"></div>
 </section>
-<section class="market-controls" aria-label="البحث في الإعلانات">
-<input id="marketSearch" type="search" placeholder="دوّر على موبايل، أثاث، سيارة..." autocomplete="off">
-<select id="marketGov"><option value="">كل المحافظات</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select>
-<select id="marketCategory"><option value="">كل الفئات</option><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select>
+<section class="market-controls" aria-label="البحث وتصفية الإعلانات">
+<input id="marketSearch" type="search" placeholder="دوّر على موبايل، أثاث، سيارة..." autocomplete="off" aria-label="ابحث عن منتج">
+<select id="marketGov" aria-label="اختيار المحافظة"><option value="">كل المحافظات</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select>
+<select id="marketCategory" aria-label="اختيار الفئة"><option value="">كل الفئات</option><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select>
+<select id="marketSort" aria-label="ترتيب الإعلانات"><option value="newest">الأحدث أولاً</option><option value="price-low">السعر: الأقل أولاً</option><option value="price-high">السعر: الأعلى أولاً</option><option value="oldest">الأقدم أولاً</option></select>
+<button id="marketClearFilters" class="btn btn-outline market-clear-filters" type="button">مسح الفلاتر</button>
 </section>
 <section id="marketListings">
 <div class="market-heading"><div><span class="eyebrow">إعلانات الناس</span><h2>تصفّح المنتجات المعروضة</h2></div><button class="btn btn-primary" id="sellOpenList">+ بيع منتج</button></div>
+<div class="market-results-line"><strong id="marketResultsCount">عدد الإعلانات: 0</strong><span id="marketActiveFilters" class="market-active-filters">كل الإعلانات</span></div>
 <div class="market-grid" id="marketGrid"><div class="market-empty">دا نحمل الإعلانات...</div></div>
 </section>
 <section class="market-my-panel">
@@ -113,5 +128,5 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-marketcards3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-sortfilters1"></script>
 </body></html>
