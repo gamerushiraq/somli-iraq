@@ -504,3 +504,85 @@ hr,.divider{border-color:#e8edf3!important}
 .product-detail-note{text-align:center;font-size:11px;color:#5b6472!important;margin:0}
 @media(max-width:950px){.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.tile-art{height:185px}}
 @media(max-width:640px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tile-art{height:135px}.tile-body{padding:10px}.tile-body h3{font-size:13px;min-height:40px}.tile-price{font-size:14px}.tile-description{font-size:10px;min-height:36px}.tile-footer{grid-template-columns:1fr;gap:6px}.tile-footer button{font-size:10px;padding:8px 4px}.product-detail-shell{padding:15px}.product-detail-image{height:200px}}
+
+
+/* Somli unified layout polish: tighter spacing, consistent cards, fewer dead zones */
+:root{--somli-gap:clamp(12px,2vw,22px)}
+html{scroll-padding-top:82px}
+body{min-width:320px;overflow-x:hidden;background:#fff}
+main{width:100%;min-width:0}
+.section{padding:clamp(30px,4vw,48px) max(4vw,16px)!important}
+.section-heading{margin-bottom:18px!important;align-items:center}
+.section-heading h2,.request-banner h2{font-size:clamp(21px,2.5vw,28px)!important}
+.hero{width:min(1240px,calc(100% - 32px))!important;margin:18px auto 0!important;padding:clamp(24px,4vw,48px) clamp(18px,4vw,44px)!important;min-height:0!important;gap:clamp(18px,3vw,38px)!important;border-radius:24px!important}
+.hero-copy{min-width:0}
+.hero h1{font-size:clamp(36px,4.5vw,60px)!important}
+.hero-art{min-width:0}
+.search-panel{margin:14px auto 0!important;width:min(1100px,calc(100% - 32px))!important}
+.market-strip{margin-top:20px}
+.categories-section{padding-top:28px!important}
+.request-banner{margin:10px max(4vw,16px)!important;padding:clamp(20px,3vw,30px)!important;gap:16px!important}
+.steps-grid{gap:var(--somli-gap)!important}
+.steps-grid article{padding:18px!important}
+.product-grid,.market-grid{gap:var(--somli-gap)!important;align-items:stretch}
+.product-tile,.market-card{height:100%;min-width:0}
+.tile-art{height:clamp(125px,16vw,195px)!important}
+.tile-body{gap:0}
+.tile-body h3{min-height:0!important}
+.tile-description{min-height:0!important}
+.empty-state,.market-empty,.offers-empty,.admin-empty{margin:12px 0;padding:22px 16px!important;background:#fbfdff}
+.market-wrap,.offers-wrap,.shop-wrap,.admin-wrap{width:min(1200px,100%);margin-top:20px!important;margin-bottom:34px!important;padding-bottom:30px!important}
+.market-hero{padding:clamp(20px,3vw,30px)!important}
+.market-controls{margin:14px 0!important}
+.market-heading{margin:20px 0 12px!important}
+.market-my-panel,.shop-panel,.offers-panel,.admin-panel,.admin-stat,.admin-item{padding:clamp(14px,2vw,20px)!important;border-radius:17px!important}
+.shop-grid{gap:14px!important}
+.shop-head,.admin-head{margin-bottom:16px!important}
+.admin-stats{margin:14px 0!important}
+.admin-tabs{margin:16px 0 12px!important}
+footer,.site-footer{margin-top:28px!important;padding:22px max(4vw,16px)!important;display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap}
+footer p{max-width:650px;margin:0;line-height:1.8}
+button,a,input,select,textarea{max-width:100%}
+img{max-width:100%}
+@media(max-width:900px){
+ .product-grid,.market-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .hero{grid-template-columns:1fr 1fr!important}
+ .desktop-nav{gap:14px!important}
+}
+@media(max-width:760px){
+ .hero{grid-template-columns:1fr!important;width:calc(100% - 24px)!important;margin-top:12px!important;padding:24px 18px!important;gap:6px!important}
+ .hero-copy{max-width:none}
+ .hero h1{font-size:clamp(35px,9vw,48px)!important}
+ .hero-art{height:245px!important;max-width:100%;margin:0!important;transform:scale(.9)!important}
+ .search-panel{grid-template-columns:1fr 1fr!important;width:calc(100% - 24px)!important;padding:10px!important}
+ .search-box{grid-column:1/-1;min-height:46px}
+ .search-submit{min-height:44px}
+ .section{padding:28px 12px!important}
+ .section-heading{gap:10px!important;align-items:flex-start!important;flex-wrap:wrap}
+ .section-heading h2{font-size:22px!important}
+ .request-banner{margin:8px 12px!important;display:grid!important;grid-template-columns:auto 1fr!important;padding:18px!important}
+ .request-banner>.btn{grid-column:1/-1;width:100%}
+ .steps-grid{grid-template-columns:1fr!important}
+ .market-wrap,.offers-wrap,.shop-wrap,.admin-wrap{padding-inline:12px!important;margin-top:14px!important}
+ .market-hero{padding:19px!important}
+ .market-controls{grid-template-columns:1fr 1fr!important}
+ .market-grid,.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ .market-card-img{height:clamp(112px,34vw,155px)!important}
+ .tile-art{height:clamp(112px,34vw,145px)!important}
+ .market-card-body,.tile-body{padding:10px!important}
+ .market-card-actions{flex-direction:column}
+ .offers-list{grid-template-columns:1fr!important}
+ .shop-grid{grid-template-columns:1fr!important}
+ .shop-plan form{grid-template-columns:1fr!important}
+ .admin-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+ .admin-stat{padding:10px!important;min-width:0}
+ .admin-stat strong{font-size:22px!important}
+ footer,.site-footer{margin-top:20px!important;padding:18px 14px!important}
+}
+@media(max-width:420px){
+ .admin-stats{grid-template-columns:1fr!important}
+ .market-controls{grid-template-columns:1fr!important}
+ .market-controls input{grid-column:auto}
+ .product-grid,.market-grid{gap:8px!important}
+ .tile-footer button{overflow-wrap:anywhere}
+}
