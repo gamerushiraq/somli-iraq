@@ -3,6 +3,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_K9GLIlPYh55utqPq77pgwA_hp3QQYDf
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 let products = [];
 let authMode = "login";
+let resumeRequestAfterAuth = false;
 
 let activeCategory = "";
 let toastTimer;
@@ -207,6 +208,12 @@ $("#authForm").addEventListener("submit", async e => {
       closeDialog("authDialog");
     }
     await refreshAuthUI();
+    const { data: authState } = await supabaseClient.auth.getSession();
+    if (resumeRequestAfterAuth && authState.session) {
+      resumeRequestAfterAuth = false;
+      openDialog("requestDialog");
+      showToast("تم تسجيل الدخول. بيانات طلبك محفوظة؛ اضغط إرسال طلب السعر لإكماله.");
+    }
   } catch (err) { showToast(err.message || "تعذر إكمال العملية. تأكد من البريد وكلمة المرور."); }
   finally { $("#authSubmit").disabled = false; }
 });
@@ -270,10 +277,11 @@ $("#requestForm").addEventListener("submit", async e => {
     if (sessionError) throw sessionError;
     const user = sessionData.session?.user;
     if (!user) {
+      resumeRequestAfterAuth = true;
       closeDialog("requestDialog");
       setAuthMode("login");
       openDialog("authDialog");
-      showToast("سجّل دخولك أولاً حتى نحفظ طلبك.");
+      showToast("سجّل دخولك أولاً حتى نحفظ طلبك. احتفظنا ببيانات النموذج.");
       return;
     }
     const details = [
