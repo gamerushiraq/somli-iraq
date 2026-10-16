@@ -62,6 +62,18 @@
 @media(max-width:1000px){.market-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.market-controls input{grid-column:span 2}.market-clear-filters{grid-column:span 1}}
 @media(max-width:640px){.market-controls{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 12px;gap:8px}.market-controls input{grid-column:1/-1}.market-controls select{font-size:11px;min-height:43px}.market-clear-filters{grid-column:1/-1;min-height:40px}.market-results-line{align-items:flex-start;flex-direction:column;gap:3px;margin:0 0 12px}}
 
+
+/* Price range filters and seller listing actions */
+.market-controls{grid-template-columns:minmax(180px,1.5fr) repeat(4,minmax(125px,.8fr)) auto}
+.market-controls input[type="number"]{min-width:0;width:100%;min-height:46px;padding:10px 11px;font-size:11px;font-weight:750;border:1px solid #e0e6ed;border-radius:12px;background:#fff}
+.market-controls input[type="number"]:focus{outline:none;border-color:#19b8a5;box-shadow:0 0 0 3px #19b8a51c}
+.market-my-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.market-my-actions button{font-size:11px;padding:8px 10px;border-radius:9px}
+.market-my-actions .market-delete-btn{color:#b42318;border-color:#f1c8c5;background:#fff8f7}
+.market-my-actions .market-edit-btn{color:#075f8f;border-color:#c7e6f6;background:#f3faff}
+@media(max-width:1000px){.market-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.market-controls input[type="search"]{grid-column:span 2}.market-controls input[type="number"]{grid-column:span 1}}
+@media(max-width:640px){.market-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.market-controls input[type="search"]{grid-column:1/-1}.market-controls input[type="number"]{min-height:42px;font-size:10px}.market-clear-filters{grid-column:1/-1}}
+
 </style>
 </head>
 <body>
@@ -80,7 +92,7 @@
 <input id="marketSearch" type="search" placeholder="دوّر على موبايل، أثاث، سيارة..." autocomplete="off" aria-label="ابحث عن منتج">
 <select id="marketGov" aria-label="اختيار المحافظة"><option value="">كل المحافظات</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select>
 <select id="marketCategory" aria-label="اختيار الفئة"><option value="">كل الفئات</option><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select>
-<select id="marketSort" aria-label="ترتيب الإعلانات"><option value="newest">الأحدث أولاً</option><option value="price-low">السعر: الأقل أولاً</option><option value="price-high">السعر: الأعلى أولاً</option><option value="oldest">الأقدم أولاً</option></select>
+<input id="marketMinPrice" type="number" min="0" step="500" placeholder="أقل سعر (د.ع)" aria-label="أقل سعر بالدينار"><input id="marketMaxPrice" type="number" min="0" step="500" placeholder="أعلى سعر (د.ع)" aria-label="أعلى سعر بالدينار"><select id="marketSort" aria-label="ترتيب الإعلانات"><option value="newest">الأحدث أولاً</option><option value="price-low">السعر: الأقل أولاً</option><option value="price-high">السعر: الأعلى أولاً</option><option value="oldest">الأقدم أولاً</option></select>
 <button id="marketClearFilters" class="btn btn-outline market-clear-filters" type="button">مسح الفلاتر</button>
 </section>
 <section id="marketListings">
@@ -96,7 +108,7 @@
 <footer><a class="brand" href="./"><span class="brand-mark">س</span><span>سوملي</span></a><p>سوق سوملي المفتوح — تواصل مباشرة مع البائع وتأكد من المنتج قبل الدفع.</p><a class="footer-admin" href="./">العودة للموقع الرئيسي</a><span>© <span id="marketYear"></span> سوملي</span></footer>
 
 <dialog class="market-modal" id="sellDialog"><form id="sellForm" class="market-modal-inner">
-<div class="market-modal-head"><div><span class="eyebrow">بيع منتجك</span><h2>أضف إعلان جديد</h2></div><button type="button" class="market-close" data-close-market="sellDialog" aria-label="إغلاق">×</button></div>
+<input type="hidden" name="listing_id" value=""><div class="market-modal-head"><div><span class="eyebrow">بيع منتجك</span><h2 id="sellDialogTitle">أضف إعلان جديد</h2></div><button type="button" class="market-close" data-close-market="sellDialog" aria-label="إغلاق">×</button></div>
 <p class="market-notice">اكتب معلومات صحيحة وصوّر المنتج نفسه. إعلانك راح يظهر للناس بعد الإرسال، ورقم هاتفك راح يكون ظاهراً للمشترين حتى يتواصلون وياك. الصور JPG أو PNG أو WEBP، بحد أقصى 5 صور، وحجم كل صورة 5 ميگابايت.</p>
 <label>اسم المنتج<input name="title" required maxlength="140" placeholder="مثلاً: iPhone 14 Pro مستعمل"></label>
 <div class="market-form-row"><label>الفئة<select name="category" required><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select></label><label>الحالة<select name="condition" required><option>مستعمل</option><option>جديد</option><option>مثل الجديد</option></select></label></div>
@@ -104,7 +116,7 @@
 <label>تفاصيل المنتج<textarea name="description" rows="4" maxlength="2000" placeholder="المواصفات، سبب البيع، العيوب إن وجدت، السعر قابل للتفاوض؟"></textarea></label>
 <label>اسم البائع<input name="seller_name" required maxlength="100" placeholder="اسمك أو الاسم اللي تريد يظهر للمشترين"></label>
 <label>رقم الهاتف للتواصل<input name="phone" type="tel" required inputmode="tel" maxlength="20" pattern="[0-9+() -]{7,20}" placeholder="07XXXXXXXXX"></label>
-<label>صور المنتج (اختار لحد 5 صور)<input name="images" id="marketImages" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+<label>صور المنتج (اختار لحد 5 صور، واتركها فارغة بالتعديل حتى تبقى الصور الحالية)<input name="images" id="marketImages" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
 <div id="marketPreview" class="market-preview"></div><div id="sellMessage" class="market-notice" role="status"></div>
 <button class="btn btn-primary btn-full" type="submit" id="sellSubmit">نشر الإعلان</button>
 </form></dialog>
@@ -128,5 +140,5 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-sortfilters1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-editdeleteprice1"></script>
 </body></html>
