@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="سوملي — اطلبها، قارنها، واختار. اكتشف المنتجات والعروض من المحلات العراقية.">
   <title>سوملي | اطلبها، قارنها، واختار</title>
-  <link rel="stylesheet" href="styles.css?v=20261016-productcards2">
+  <link rel="stylesheet" href="styles.css?v=20261016-singlemenutoggle1">
 
 <style>
 .market-dual-cta{max-width:1180px;margin:24px auto 8px;padding:0 18px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -25,18 +25,41 @@
 @keyframes mainCategoriesReveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:640px){.main-categories-toggle{padding:10px 12px;font-size:12px}}
 
+
+/* Single all-in-one navigation menu */
+.somli-main-menu{position:relative;margin-right:auto;display:flex;align-items:center}
+.somli-menu-toggle{gap:10px;min-height:44px;box-shadow:0 7px 18px #19b8a526}
+.somli-menu-toggle span{font-size:18px;transition:transform .2s}
+.somli-menu-toggle[aria-expanded="true"] span{transform:rotate(180deg)}
+.somli-menu-panel{position:absolute;top:calc(100% + 12px);right:0;width:min(92vw,370px);padding:10px;background:#fff;border:1px solid #e2ecef;border-radius:18px;box-shadow:0 20px 55px #10253d24;display:grid;grid-template-columns:1fr;gap:5px;z-index:20;max-height:min(75vh,620px);overflow:auto;animation:somliMenuIn .18s ease-out}
+.somli-menu-panel[hidden]{display:none!important}
+.somli-menu-item{width:100%;display:flex;align-items:center;gap:12px;text-align:right;padding:11px 12px;border:0;border-radius:12px;background:#fff;color:#10253d;cursor:pointer;font:inherit;text-decoration:none;transition:background .18s,transform .18s}
+.somli-menu-item:hover,.somli-menu-item:focus-visible{background:#effaf7;transform:translateX(-2px);outline:none}
+.somli-menu-item>span:first-child{width:39px;height:39px;flex:0 0 39px;border-radius:12px;background:#e7f8f5;display:grid;place-items:center;font-size:20px}
+.somli-menu-item strong,.somli-menu-item small{display:block}
+.somli-menu-item strong{font-size:13px;font-weight:900}
+.somli-menu-item small{font-size:11px;color:#6b7d8e;margin-top:2px;line-height:1.6}
+.somli-menu-item.somli-menu-request{background:#eaf9f5}
+@keyframes somliMenuIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:760px){.topbar{height:70px;padding:0 13px;gap:12px}.somli-menu-toggle{padding:10px 12px;font-size:12px}.somli-menu-panel{right:auto;left:0;width:min(92vw,370px)}}
+
 </style>
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="#" aria-label="سوملي الرئيسية"><span class="brand-mark">س</span><span>سوملي</span></a>
-    <nav class="desktop-nav" aria-label="التنقل الرئيسي">
-      <a class="active" href="#home">الرئيسية</a><a href="market.html">سوق البيع والشراء</a><a href="offers.html">مقارنة عروضي</a><a href="#offers">العروض</a><a href="#how">شلون يشتغل؟</a>
-    </nav>
-    <div class="top-actions">
-      <button class="btn btn-ghost" id="authBtn">دخول / حساب جديد</button>
-      <a class="btn btn-ghost" href="market.html">بيع / شراء</a><a class="btn btn-ghost" href="offers.html">مقارنة عروضي</a><button class="btn btn-ghost" id="sellerBtn">أنا صاحب محل</button>
-      <button class="btn btn-primary" id="openRequestTop">اطلب سعر</button>
+    <div class="top-actions somli-main-menu">
+      <button class="btn btn-primary somli-menu-toggle" id="somliMenuToggle" type="button" aria-expanded="false" aria-controls="somliMenuPanel">☰ كل خدمات سوملي <span aria-hidden="true">⌄</span></button>
+      <nav class="somli-menu-panel" id="somliMenuPanel" aria-label="كل خدمات سوملي" hidden>
+        <a class="somli-menu-item" href="#offers"><span>🏷️</span><span><strong>العروض</strong><small>شوف المنتجات المعروضة</small></span></a>
+        <a class="somli-menu-item" href="offers.html"><span>⚖️</span><span><strong>مقارنة العروض</strong><small>قارن السعر والتوصيل والضمان</small></span></a>
+        <a class="somli-menu-item" href="#how"><span>💡</span><span><strong>شلون يشتغل سوملي؟</strong><small>شرح الخطوات بطريقة سهلة</small></span></a>
+        <a class="somli-menu-item" href="market.html"><span>🛍️</span><span><strong>بيع وشراء</strong><small>تصفّح السوق أو أضف إعلانك</small></span></a>
+        <a class="somli-menu-item" href="offers.html"><span>📊</span><span><strong>مقارنة عروضي</strong><small>افتح صفحة متابعة العروض</small></span></a>
+        <button class="somli-menu-item" id="authBtn" type="button"><span>👤</span><span><strong>دخول / حساب جديد</strong><small>سجّل دخولك أو أنشئ حساب</small></span></button>
+        <button class="somli-menu-item" id="sellerBtn" type="button"><span>🏪</span><span><strong>أنا صاحب محل</strong><small>قدّم طلب تسجيل محلك</small></span></button>
+        <button class="somli-menu-item somli-menu-request" id="openRequestTop" type="button"><span>💬</span><span><strong>اطلب هسه</strong><small>خلّي المحلات ترسلك الأسعار</small></span></button>
+      </nav>
     </div>
   </header>
   <div class="somli-motion-ticker" aria-label="مميزات سوملي"><div class="somli-motion-ticker-track"><span><i></i> قارن الأسعار قبل الشراء</span><span><i></i> سوق عراقي يجمع الخيارات</span><span><i></i> إعلانات من مختلف المحافظات</span><span><i></i> حسابات للمحلات وأصحاب المشاريع</span><span><i></i> سوملي — اختار الأذكى</span><span><i></i> قارن الأسعار قبل الشراء</span><span><i></i> سوق عراقي يجمع الخيارات</span><span><i></i> إعلانات من مختلف المحافظات</span><span><i></i> حسابات للمحلات وأصحاب المشاريع</span><span><i></i> سوملي — اختار الأذكى</span></div></div>
@@ -189,6 +212,6 @@
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20261016-maincategoriesbutton1"></script>
+  <script src="app.js?v=20261016-singlemenutoggle1"></script>
 </body>
 </html>
