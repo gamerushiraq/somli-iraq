@@ -31,12 +31,21 @@ function renderProducts() {
   });
   $("#productGrid").innerHTML = filtered.map(p => `
     <article class="product-tile">
-      <div class="tile-art">${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : `<span class="tile-category">${escapeHtml(p.category)}</span><span>الصورة غير متوفرة</span>`}</div>
+      <div class="tile-art">
+        ${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy">` : `<div class="tile-placeholder"><span>🛍️</span><small>الصورة غير متوفرة</small></div>`}
+        <span class="tile-category">${escapeHtml(p.category)}</span>
+        ${p.isPro ? '<span class="tile-featured">⭐ محل مميز</span>' : ""}
+      </div>
       <div class="tile-body">
         <h3>${escapeHtml(p.title)}</h3>
-        <div class="tile-shop">${escapeHtml(p.shop)} ${p.isPro?'<span class="pro-shop-badge">⭐ محل احترافي</span>':""} <span>·</span> ${escapeHtml(p.governorate)}</div>
-        <div class="tile-price-row"><strong class="tile-price">${p.price == null ? "السعر عند الطلب" : formatPrice(p.price)}</strong><span class="tile-location">منتج معتمد</span></div>
-        <div class="tile-footer"><span>من محل معتمد</span><button data-ask="${p.id}">اطلب سعر مشابه</button></div>
+        <div class="tile-shop"><span class="tile-shop-dot">✓</span><strong>${escapeHtml(p.shop)}</strong></div>
+        <div class="tile-location-line"><span>📍 ${escapeHtml(p.governorate || "العراق")}</span><span>منتج معتمد</span></div>
+        <div class="tile-price-row"><strong class="tile-price">${p.price == null ? "السعر عند الطلب" : formatPrice(p.price)}</strong></div>
+        <p class="tile-description">${escapeHtml(p.description || "تواصل ويانا حتى تعرف تفاصيل أكثر عن هذا المنتج.")}</p>
+        <div class="tile-footer">
+          <button type="button" class="tile-details-btn" data-product-detail="${escapeHtml(p.id)}">تفاصيل المنتج</button>
+          <button type="button" class="tile-ask-btn" data-ask="${escapeHtml(p.id)}">اطلب سعر مشابه</button>
+        </div>
       </div>
     </article>`).join("");
   $("#emptyState").classList.toggle("hidden", filtered.length > 0);
@@ -187,10 +196,27 @@ $("#searchInput").addEventListener("input", renderProducts);
 $("#governorateFilter").addEventListener("change", renderProducts);
 $("#clearSearch").addEventListener("click", () => { $("#searchInput").value = ""; renderProducts(); });
 $("#productGrid").addEventListener("click", e => {
-  const btn = e.target.closest("[data-ask]");
-  if (!btn) return;
-  const p = products.find(x => x.id === btn.dataset.ask);
-  openRequest(p);
+  const ask = e.target.closest("[data-ask]");
+  if (ask) {
+    const p = products.find(x => x.id === ask.dataset.ask);
+    if (p) openRequest(p);
+    return;
+  }
+  const details = e.target.closest("[data-product-detail]");
+  if (!details) return;
+  const p = products.find(x => x.id === details.dataset.productDetail);
+  if (!p) return;
+  $("#productDetailTitle").textContent = p.title;
+  $("#productDetailImage").innerHTML = p.image
+    ? '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.title) + '">'
+    : '<div class="product-detail-placeholder">🛍️<span>الصورة غير متوفرة</span></div>';
+  $("#productDetailCategory").textContent = p.category;
+  $("#productDetailPrice").textContent = p.price == null ? "السعر عند الطلب" : formatPrice(p.price);
+  $("#productDetailShop").textContent = p.shop;
+  $("#productDetailGovernorate").textContent = p.governorate || "العراق";
+  $("#productDetailDescription").textContent = p.description || "ماكو تفاصيل إضافية لهذا المنتج حالياً.";
+  $("#productDetailAsk").onclick = () => { closeDialog("productDetailDialog"); openRequest(p); };
+  openDialog("productDetailDialog");
 });
 $("#requestForm").addEventListener("submit", async e => {
   e.preventDefault();
