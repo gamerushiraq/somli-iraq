@@ -336,7 +336,9 @@ $("#sellerForm").addEventListener("submit", async e => {
     showToast("وصل طلب تسجيل المحل، وحالته قيد المراجعة.");
   } catch (err) {
     console.error("Somli seller application error:", err.message);
-    showToast("تعذر إرسال طلب المحل حالياً. تأكد من الاتصال والحساب وحاول مرة ثانية.");
+    showToast(err.code === "23505"
+      ? "عندك طلب تسجيل محل قيد المراجعة بالفعل. انتظر رد الإدارة قبل إرسال طلب جديد."
+      : "تعذر إرسال طلب المحل حالياً. تأكد من الاتصال والحساب وحاول مرة ثانية.");
   } finally {
     submit.disabled = false;
     submit.textContent = originalLabel;
