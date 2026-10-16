@@ -119,12 +119,12 @@ $("#sellForm").addEventListener("submit",async e=>{
   if(editingId){existing=listings.find(p=>p.id===editingId);if(!existing){const {data,error}=await db.from("market_listings").select("id,seller_id,image_urls,status").eq("id",editingId).eq("seller_id",currentUser.id).maybeSingle();if(error)throw error;if(!data)throw new Error("الإعلان غير موجود أو ما عندك صلاحية تعديله.");existing=data;}if(existing.seller_id&&existing.seller_id!==currentUser.id)throw new Error("ما عندك صلاحية تعديل هذا الإعلان.");}
   else listingId=crypto.randomUUID();
   if(files.length){for(let i=0;i<files.length;i++){const f=files[i],ext=f.type==="image/jpeg"?"jpg":f.type==="image/png"?"png":"webp";const path=currentUser.id+"/"+listingId+"/"+(i+1)+"-"+Date.now()+"."+ext;const {error:upErr}=await db.storage.from("somli-market-images").upload(path,f,{contentType:f.type,upsert:false});if(upErr)throw upErr;uploaded.push(db.storage.from("somli-market-images").getPublicUrl(path).data.publicUrl);}}
-  const payload={seller_id:currentUser.id,seller_name:sellerName,phone,title,description:String(fd.get("description")||"").trim(),category:fd.get("category"),governorate:fd.get("governorate"),condition:fd.get("condition"),price_iqd:priceText===""?null:Number(priceText),image_urls:uploaded.length?uploaded:(existing?.image_urls||[]),status:editingId?(existing?.status||"approved"):"approved"};
+  const payload={seller_id:currentUser.id,seller_name:sellerName,phone,title,description:String(fd.get("description")||"").trim(),category:fd.get("category"),governorate:fd.get("governorate"),condition:fd.get("condition"),price_iqd:priceText===""?null:Number(priceText),image_urls:uploaded.length?uploaded:(existing?.image_urls||[]),status:editingId?(existing?.status||"pending"):"pending"};
   let result;
   if(editingId)result=await db.from("market_listings").update(payload).eq("id",editingId).eq("seller_id",currentUser.id);
   else result=await db.from("market_listings").insert({id:listingId,...payload});
   if(result.error)throw result.error;
-  close("sellDialog");toast(editingId?"تم حفظ تعديلات الإعلان.":"تم نشر إعلانك بنجاح.");await loadListings();await loadMyListings();
+  close("sellDialog");toast(editingId?"تم حفظ تعديلات الإعلان.":"تم إرسال إعلانك للمراجعة. راح يظهر بعد موافقة الإدارة.");await loadListings();await loadMyListings();
  }catch(err){console.error("market save error",err.message);$("#sellMessage").textContent="تعذر حفظ الإعلان: "+(err.message||"حاول مرة ثانية.");}
  finally{btn.disabled=false;btn.textContent=editingId?"حفظ التعديلات":"نشر الإعلان";}
 });
