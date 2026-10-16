@@ -15,6 +15,16 @@
 .market-dual-icon{grid-row:span 2;width:54px;height:54px;border-radius:15px;display:grid;place-items:center;background:#e7f8f5;font-size:27px}
 .market-dual-card strong{display:block;font-size:18px}.market-dual-card small{display:block;color:#66788a;line-height:1.7;margin-top:4px}.market-dual-card>b{grid-column:2;color:#087f75;font-size:12px}.market-dual-card.sell .market-dual-icon{background:#fff2df}
 @media(max-width:640px){.market-dual-cta{padding:0 13px;grid-template-columns:1fr;gap:10px}.market-dual-card{padding:14px}}
+
+/* Main homepage: one button expands all categories */
+.main-categories-toggle{display:inline-flex;align-items:center;gap:9px;justify-content:center;padding:11px 16px;border:1px solid #cfe8e3;border-radius:12px;background:#f0fbf8;color:#087f75;font-weight:900;cursor:pointer;white-space:nowrap}
+.main-categories-toggle span{font-size:19px;line-height:1;transition:transform .2s}
+.main-categories-toggle[aria-expanded="true"] span{transform:rotate(180deg)}
+#categories[hidden]{display:none!important}
+#categories:not([hidden]){animation:mainCategoriesReveal .22s ease-out}
+@keyframes mainCategoriesReveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:640px){.main-categories-toggle{padding:10px 12px;font-size:12px}}
+
 </style>
 </head>
 <body>
@@ -84,8 +94,8 @@
 </section>
 
 <div class="market-strip" aria-label="مميزات سوملي"><div class="market-strip-track"><span>✦ سوق عراقي واحد</span><span>⌕ بحث حسب المحافظة</span><span>⚖️ قارن قبل الشراء</span><span>🏪 طلب تسجيل للمحلات</span><span>✦ سوق عراقي واحد</span><span>⌕ بحث حسب المحافظة</span><span>⚖️ قارن قبل الشراء</span><span>🏪 طلب تسجيل للمحلات</span></div></div>\n\n    <section class="section categories-section">
-      <div class="section-heading"><div><span class="eyebrow">اختار مجالك</span><h2>تسوّق حسب الفئة</h2></div><button class="text-link" id="allCategories">كل الفئات ←</button></div>
-      <div class="categories" id="categories">
+      <div class="section-heading"><div><span class="eyebrow">اختار مجالك</span><h2>تسوّق حسب الفئة</h2></div><button class="text-link main-categories-toggle" id="allCategories" type="button" aria-expanded="false" aria-controls="categories">☷ كل الأقسام <span aria-hidden="true">⌄</span></button></div>
+      <div class="categories" id="categories" hidden>
         <button class="category selected" data-category=""><span>✨</span><b>الكل</b></button>
         <button class="category" data-category="إلكترونيات"><span>📱</span><b>إلكترونيات</b></button>
         <button class="category" data-category="أزياء"><span>👟</span><b>أزياء وملابس</b></button>
@@ -179,6 +189,6 @@
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20261016-productcards2"></script>
+  <script src="app.js?v=20261016-maincategoriesbutton1"></script>
 </body>
 </html>
