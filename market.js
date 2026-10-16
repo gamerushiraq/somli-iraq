@@ -4,7 +4,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=v=>v===null||v===undefined||v===""?"السعر قابل للتفاوض":Number(v)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";
-let currentUser=null, listings=[], authMode="login", toastTimer, resumeSellAfterAuth=false, paymentSettings=null;
+let currentUser=null, listings=[], myListings=[], authMode="login", toastTimer, resumeSellAfterAuth=false, paymentSettings=null;
 function toast(t){const el=$("#marketToast");el.textContent=t;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),3500);}
 function open(id){const d=document.getElementById(id);if(d&&!d.open)d.showModal();}
 function close(id){document.getElementById(id)?.close();}
@@ -65,8 +65,9 @@ function renderListings(){
 async function loadListings(){ $("#marketGrid").innerHTML='<div class="market-empty">دا نحمل الإعلانات...</div>';const {data,error}=await db.from("market_listings").select("id,seller_id,seller_name,phone,title,description,category,governorate,condition,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("status","approved").order("created_at",{ascending:false}).limit(200);if(error){$("#marketGrid").innerHTML='<div class="market-empty">تعذر تحميل الإعلانات. جرّب تحديث الصفحة بعد قليل.</div>';console.error("market listings",error.message);return;}listings=(data||[]).sort((a,b)=>{const ap=a.is_promoted&&a.promoted_until&&new Date(a.promoted_until)>new Date()?1:0;const bp=b.is_promoted&&b.promoted_until&&new Date(b.promoted_until)>new Date()?1:0;return bp-ap||new Date(b.created_at)-new Date(a.created_at);});renderListings();}
 async function loadMyListings(){
  if(!currentUser){$("#myListings").innerHTML="";return;}
- const {data,error}=await db.from("market_listings").select("id,title,description,category,governorate,condition,phone,seller_name,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("seller_id",currentUser.id).order("created_at",{ascending:false}).limit(100);
+ const {data,error}=await db.from("market_listings").select("id,seller_id,title,description,category,governorate,condition,phone,seller_name,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("seller_id",currentUser.id).order("created_at",{ascending:false}).limit(100);
  if(error){$("#myListings").innerHTML='<div class="market-empty">تعذر تحميل إعلاناتك.</div>';return;}
+ myListings=data||[];
  if(!data?.length){$("#myListings").innerHTML='<div class="market-empty">بعدك ما ناشر أي إعلان. اضغط «أضف إعلان» وابدأ.</div>';return;}
  $("#myListings").innerHTML=data.map(p=>{
   const active=!!p.is_promoted&&p.promoted_until&&new Date(p.promoted_until)>new Date();
@@ -132,7 +133,7 @@ $("#marketGrid").addEventListener("click",e=>{const el=e.target.closest("[data-d
 $("#marketGrid").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".market-card-img[data-detail]")){e.preventDefault();showDetail(e.target.dataset.detail);}});
 $("#myListings").addEventListener("click",async e=>{
  const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]"),sold=e.target.closest("[data-sold]"),relist=e.target.closest("[data-relist]"),promote=e.target.closest("[data-promote]");
- if(edit){const p=listings.find(x=>x.id===edit.dataset.edit);if(!p){toast("حدّث الصفحة وحاول مرة ثانية.");return;}startEditListing(p);return;}
+ if(edit){const p=myListings.find(x=>x.id===edit.dataset.edit);if(!p){toast("حدّث الصفحة وحاول مرة ثانية.");return;}startEditListing(p);return;}
  if(del){const id=del.dataset.delete;if(!confirm("متأكد تريد تحذف الإعلان نهائياً؟ هذا الإجراء ما يتراجع."))return;del.disabled=true;const {data,error}=await db.from("market_listings").delete().eq("id",id).eq("seller_id",currentUser.id).select("id,image_urls").maybeSingle();if(error){toast("تعذر حذف الإعلان: "+error.message);del.disabled=false;return;}if(!data){toast("ما تم حذف الإعلان. تأكد من تسجيل الدخول وصلاحية الحساب.");del.disabled=false;return;}const paths=(data.image_urls||[]).map(url=>{try{const u=new URL(url),marker="/storage/v1/object/public/somli-market-images/";const i=u.pathname.indexOf(marker);return i>=0?decodeURIComponent(u.pathname.slice(i+marker.length)):null;}catch{return null;}}).filter(Boolean).filter(path=>path.startsWith(currentUser.id+"/"));if(paths.length)await db.storage.from("somli-market-images").remove(paths);toast("تم حذف الإعلان.");await loadMyListings();await loadListings();return;}
  if(promote){startPromotion(promote.dataset.promote);return;}
  const btn=sold||relist;if(!btn)return;const status=sold?"sold":"approved";btn.disabled=true;const {error}=await db.from("market_listings").update({status}).eq("id",btn.dataset.sold||btn.dataset.relist).eq("seller_id",currentUser.id);if(error)toast("تعذر تحديث الإعلان: "+error.message);else{toast(status==="sold"?"تم تعليم الإعلان كمباع.":"تمت إعادة عرض الإعلان.");await loadMyListings();await loadListings();}
