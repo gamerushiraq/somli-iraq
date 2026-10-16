@@ -436,3 +436,21 @@ hr,.divider{border-color:#e8edf3!important}
  html{scroll-behavior:auto}
  *,*:before,*:after{animation:none!important;transition:none!important}
 }
+
+
+/* Homepage quick-start cards */
+.somli-start{max-width:1180px;margin:30px auto 34px;padding:0 18px}
+.somli-start-head{margin:0 0 15px}
+.somli-start-head h2{margin:8px 0 4px;font-size:clamp(23px,3vw,30px);font-weight:950;letter-spacing:-.035em}
+.somli-start-head p{margin:0;color:#303744!important}
+.somli-start-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.somli-start-card{position:relative;display:flex;align-items:center;gap:13px;min-width:0;padding:18px;border:1px solid #e2e8f0;border-radius:19px;background:linear-gradient(145deg,#fff,#fbfdff);box-shadow:0 8px 24px rgba(20,34,58,.045);text-decoration:none!important;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.somli-start-card:hover{transform:translateY(-4px);border-color:#b8e9df;box-shadow:0 15px 32px rgba(20,34,58,.09)}
+.somli-start-icon{display:grid;place-items:center;flex:0 0 49px;width:49px;height:49px;border-radius:15px;background:#e8faf5;font-size:24px}
+.somli-start-card:nth-child(2) .somli-start-icon{background:#edf4ff}
+.somli-start-card:nth-child(3) .somli-start-icon{background:#fff4e5}
+.somli-start-copy{display:grid;gap:3px;min-width:0}
+.somli-start-copy strong{font-size:16px;font-weight:950}
+.somli-start-copy small{font-size:12px;line-height:1.75;color:#4b5563!important}
+.somli-start-arrow{margin-right:auto;flex:0 0 auto;font-size:18px;color:#008d79!important}
+@media(max-width:760px){.somli-start{padding:0 12px;margin:22px auto}.somli-start-grid{grid-template-columns:1fr;gap:10px}.somli-start-card{padding:14px;border-radius:16px}.somli-start-icon{width:44px;height:44px;flex-basis:44px;border-radius:13px}.somli-start-copy small{font-size:12px}}
