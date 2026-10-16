@@ -242,48 +242,88 @@ $("#productGrid").addEventListener("click", e => {
 });
 $("#requestForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-  const { data: sessionData } = await supabaseClient.auth.getSession();
-  const user = sessionData.session?.user;
-  if (!user) { closeDialog("requestDialog"); setAuthMode("login"); openDialog("authDialog"); showToast("سجّل دخولك أولاً حتى نحفظ طلبك."); return; }
-  const details = ["المنتج: " + data.title, "رقم التواصل: " + String(data.phone || "").trim(), data.budget ? "الميزانية: " + data.budget + " د.ع" : "", data.condition ? "الحالة: " + data.condition : "", data.details ? "تفاصيل: " + data.details : ""].filter(Boolean).join("\n");
-  const { error } = await supabaseClient.from("quote_requests").insert({ customer_id: user.id, phone: String(data.phone || "").trim(), details, governorate: data.governorate, status: "open", quantity: 1 });
-  if (error) { showToast("ما انحفظ الطلب. تأكد من الحساب وحاول مرة ثانية."); console.error("Somli quote request error:", error.message); return; }
-  closeDialog("requestDialog");
-  showToast("تم إرسال طلبك إلى سوملي بنجاح.");
+  const form = e.currentTarget;
+  const submit = form.querySelector('button[type="submit"]');
+  const originalLabel = submit.textContent;
+  submit.disabled = true;
+  submit.textContent = "جاري إرسال الطلب...";
+  try {
+    const data = Object.fromEntries(new FormData(form).entries());
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    const user = sessionData.session?.user;
+    if (!user) {
+      closeDialog("requestDialog");
+      setAuthMode("login");
+      openDialog("authDialog");
+      showToast("سجّل دخولك أولاً حتى نحفظ طلبك.");
+      return;
+    }
+    const details = [
+      "المنتج: " + String(data.title || "").trim(),
+      "رقم التواصل: " + String(data.phone || "").trim(),
+      data.budget ? "الميزانية: " + data.budget + " د.ع" : "",
+      data.condition ? "الحالة: " + data.condition : "",
+      data.details ? "تفاصيل: " + String(data.details).trim() : ""
+    ].filter(Boolean).join("\n");
+    const { error } = await supabaseClient.from("quote_requests").insert({
+      customer_id: user.id,
+      phone: String(data.phone || "").trim(),
+      details,
+      governorate: data.governorate,
+      status: "open",
+      quantity: 1
+    });
+    if (error) throw error;
+    closeDialog("requestDialog");
+    form.reset();
+    showToast("تم إرسال طلبك إلى سوملي بنجاح.");
+  } catch (err) {
+    console.error("Somli quote request error:", err.message);
+    showToast("تعذر إرسال الطلب حالياً. تأكد من الاتصال والحساب ثم حاول مرة ثانية.");
+  } finally {
+    submit.disabled = false;
+    submit.textContent = originalLabel;
+  }
 });
 $("#sellerForm").addEventListener("submit", async e => {
   e.preventDefault();
   const form = e.currentTarget;
-  const data = Object.fromEntries(new FormData(form).entries());
-  const { data: sessionData } = await supabaseClient.auth.getSession();
-  const user = sessionData.session?.user;
-  if (!user) {
-    closeDialog("sellerDialog");
-    setAuthMode("login");
-    openDialog("authDialog");
-    showToast("سجّل دخولك أولاً حتى نرسل طلب تسجيل المحل.");
-    return;
-  }
   const submit = form.querySelector('button[type="submit"]');
+  const originalLabel = submit.textContent;
   submit.disabled = true;
-  const { error } = await supabaseClient.from("seller_applications").insert({
-    user_id: user.id,
-    shop_name: String(data.shop || "").trim(),
-    governorate: data.governorate,
-    category: data.category || "أخرى",
-    contact: String(data.contact || "").trim() || null,
-    status: "pending"
-  });
-  submit.disabled = false;
-  if (error) {
-    showToast("تعذر إرسال طلب المحل. تأكد من تسجيل الدخول وحاول مرة ثانية.");
-    console.error("Somli seller application error:", error.message);
-    return;
+  submit.textContent = "جاري إرسال الطلب...";
+  try {
+    const data = Object.fromEntries(new FormData(form).entries());
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    const user = sessionData.session?.user;
+    if (!user) {
+      closeDialog("sellerDialog");
+      setAuthMode("login");
+      openDialog("authDialog");
+      showToast("سجّل دخولك أولاً حتى نرسل طلب تسجيل المحل.");
+      return;
+    }
+    const { error } = await supabaseClient.from("seller_applications").insert({
+      user_id: user.id,
+      shop_name: String(data.shop || "").trim(),
+      governorate: data.governorate,
+      category: data.category || "أخرى",
+      contact: String(data.contact || "").trim() || null,
+      status: "pending"
+    });
+    if (error) throw error;
+    closeDialog("sellerDialog");
+    form.reset();
+    showToast("وصل طلب تسجيل المحل، وحالته قيد المراجعة.");
+  } catch (err) {
+    console.error("Somli seller application error:", err.message);
+    showToast("تعذر إرسال طلب المحل حالياً. تأكد من الاتصال والحساب وحاول مرة ثانية.");
+  } finally {
+    submit.disabled = false;
+    submit.textContent = originalLabel;
   }
-  closeDialog("sellerDialog");
-  form.reset();
-  showToast("وصل طلب تسجيل المحل، وحالته قيد المراجعة.");
 });
 $("#year").textContent = new Date().getFullYear();
 setAuthMode("login");
