@@ -106,8 +106,12 @@ async function refreshAuthUI() {
       .from("profiles").select("role,full_name").eq("id", user.id).maybeSingle();
     if (profileError) console.warn("Somli role check:", profileError.message);
     role = profile?.role || "customer";
-    $("#authBtn").textContent = role === "admin" ? "لوحة المدير" : "حسابي";
-    $("#authBtn").setAttribute("aria-label", role === "admin" ? "فتح لوحة المدير" : "فتح حسابي");
+    const authTitle = $("#authBtn").querySelector("strong");
+    const authSubtitle = $("#authBtn").querySelector("small");
+    if (authTitle) authTitle.textContent = role === "admin" ? "لوحة المدير" : role === "shop_owner" ? "حساب المحل" : "حسابي ومقارنة العروض";
+    else $("#authBtn").textContent = role === "admin" ? "لوحة المدير" : role === "shop_owner" ? "حساب المحل" : "حسابي ومقارنة العروض";
+    if (authSubtitle) authSubtitle.textContent = role === "admin" ? "إدارة الموقع والطلبات والمحلات" : role === "shop_owner" ? "إدارة منتجات المحل وطلبات الأسعار" : "تابع طلباتك وعروض المحلات";
+    $("#authBtn").setAttribute("aria-label", role === "admin" ? "فتح لوحة المدير" : role === "shop_owner" ? "فتح لوحة المحل" : "فتح مقارنة العروض");
     let shortcut = document.getElementById("adminShortcut");
     if (role === "admin" && !shortcut) {
       shortcut = document.createElement("a");
@@ -121,7 +125,11 @@ async function refreshAuthUI() {
     $("#authNote").textContent = "مسجل الدخول: " + (profile?.full_name || user.email || "حساب سوملي") +
       (role === "admin" ? " — صلاحية مدير مفعّلة" : "");
   } else {
-    $("#authBtn").textContent = "دخول / حساب جديد";
+    const authTitle = $("#authBtn").querySelector("strong");
+    const authSubtitle = $("#authBtn").querySelector("small");
+    if (authTitle) authTitle.textContent = "دخول / حساب جديد";
+    else $("#authBtn").textContent = "دخول / حساب جديد";
+    if (authSubtitle) authSubtitle.textContent = "سجّل دخولك أو أنشئ حساب";
     $("#authBtn").setAttribute("aria-label", "تسجيل الدخول أو إنشاء حساب");
     const shortcut = document.getElementById("adminShortcut");
     if (shortcut) shortcut.classList.add("hidden");
@@ -165,7 +173,16 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeSomliMenu();
 });
 $("#sellerBtn").addEventListener("click", () => { closeSomliMenu(); openDialog("sellerDialog"); });
-$("#authBtn").addEventListener("click", async () => { closeSomliMenu(); const auth = await refreshAuthUI(); if (auth.user && auth.role === "admin") { location.href = "admin.html"; return; } if (auth.user) { showToast("أنت مسجل دخولك. صلاحية المدير غير مفعّلة لهذا الحساب."); return; } setAuthMode("login"); openDialog("authDialog"); });
+$("#authBtn").addEventListener("click", async () => {
+  closeSomliMenu();
+  const auth = await refreshAuthUI();
+  if (auth.user) {
+    location.href = auth.role === "admin" ? "admin.html" : auth.role === "shop_owner" ? "shop.html" : "offers.html";
+    return;
+  }
+  setAuthMode("login");
+  openDialog("authDialog");
+});
 $("#authToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "signup" : "login"));
 $("#authLogout").addEventListener("click", async () => { const { error } = await supabaseClient.auth.signOut(); if (error) showToast("تعذر تسجيل الخروج."); else { showToast("تم تسجيل الخروج."); await refreshAuthUI(); closeDialog("authDialog"); } });
 $("#authForm").addEventListener("submit", async e => {
