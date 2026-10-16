@@ -143,9 +143,29 @@ function openRequest(prefill) {
   }
   openDialog("requestDialog");
 }
-["openRequestTop","openRequestHero","openRequestSection","openRequestBanner","emptyRequest","somliQuickRequest"].forEach(id => document.getElementById(id)?.addEventListener("click", e => { if (id === "somliQuickRequest") e.preventDefault(); openRequest(); }));
-$("#sellerBtn").addEventListener("click", () => openDialog("sellerDialog"));
-$("#authBtn").addEventListener("click", async () => { const auth = await refreshAuthUI(); if (auth.user && auth.role === "admin") { location.href = "admin.html"; return; } if (auth.user) { showToast("أنت مسجل دخولك. صلاحية المدير غير مفعّلة لهذا الحساب."); return; } setAuthMode("login"); openDialog("authDialog"); });
+["openRequestTop","openRequestHero","openRequestSection","openRequestBanner","emptyRequest","somliQuickRequest"].forEach(id => document.getElementById(id)?.addEventListener("click", e => { if (id === "somliQuickRequest") e.preventDefault(); if (id === "openRequestTop") closeSomliMenu(); openRequest(); }));
+const somliMenuToggle = $("#somliMenuToggle");
+const somliMenuPanel = $("#somliMenuPanel");
+function closeSomliMenu() {
+  somliMenuPanel.hidden = true;
+  somliMenuToggle.setAttribute("aria-expanded", "false");
+}
+somliMenuToggle.addEventListener("click", () => {
+  const isOpen = somliMenuToggle.getAttribute("aria-expanded") === "true";
+  somliMenuToggle.setAttribute("aria-expanded", String(!isOpen));
+  somliMenuPanel.hidden = isOpen;
+});
+somliMenuPanel.addEventListener("click", e => {
+  if (e.target.closest("a")) closeSomliMenu();
+});
+document.addEventListener("click", e => {
+  if (!e.target.closest(".somli-main-menu")) closeSomliMenu();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeSomliMenu();
+});
+$("#sellerBtn").addEventListener("click", () => { closeSomliMenu(); openDialog("sellerDialog"); });
+$("#authBtn").addEventListener("click", async () => { closeSomliMenu(); const auth = await refreshAuthUI(); if (auth.user && auth.role === "admin") { location.href = "admin.html"; return; } if (auth.user) { showToast("أنت مسجل دخولك. صلاحية المدير غير مفعّلة لهذا الحساب."); return; } setAuthMode("login"); openDialog("authDialog"); });
 $("#authToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "signup" : "login"));
 $("#authLogout").addEventListener("click", async () => { const { error } = await supabaseClient.auth.signOut(); if (error) showToast("تعذر تسجيل الخروج."); else { showToast("تم تسجيل الخروج."); await refreshAuthUI(); closeDialog("authDialog"); } });
 $("#authForm").addEventListener("submit", async e => {
