@@ -38,7 +38,7 @@ function card(p){
   <p class="market-card-description">${esc(p.description||"تواصل مع البائع لمعرفة المزيد من التفاصيل.")}</p>
   <div class="market-card-actions">
    <button type="button" class="market-details-action" data-detail="${esc(p.id)}">تفاصيل المنتج</button>
-   ${wa?'<a class="market-whatsapp-action" href="https://wa.me/'+wa+'?text='+encodeURIComponent("مرحبا، شفت إعلانك على سوملي: "+p.title)+'" target="_blank" rel="noopener noreferrer">واتساب</a>':'<a class="market-call-action" href="tel:'+esc(phone)+'">اتصال</a>'}
+   ${wa?'<a class="market-whatsapp-action" href="https://wa.me/'+wa+'?text='+esc(encodeURIComponent("مرحبا، شفت إعلانك على سوملي: "+p.title))+'" target="_blank" rel="noopener noreferrer">واتساب</a>':'<a class="market-call-action" href="tel:'+esc(phone)+'">اتصال</a>'}
   </div>
   ${wa?'<a class="market-call-link" href="tel:'+esc(phone)+'">📞 اتصال مباشر بالبائع</a>':""}
  </div></article>`;
