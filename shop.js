@@ -93,7 +93,9 @@ $("#shopRequests").addEventListener("submit",async e=>{
  e.preventDefault();if(!shop||!user)return;
  const fd=new FormData(form),requestId=form.dataset.request,price=Number(fd.get("price_iqd")),extra=String(fd.get("details")||"").trim(),deliveryRaw=String(fd.get("delivery_cost")||"").trim(),warranty=String(fd.get("warranty")||"").trim(),deliveryTime=String(fd.get("delivery_time")||"").trim();
  const details=[deliveryRaw!==""?"كلفة التوصيل: "+(Number(deliveryRaw)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(Number(deliveryRaw))+" د.ع"):"كلفة التوصيل: غير محددة", "الضمان: "+(warranty||"غير محدد"),"مدة التجهيز والتوصيل: "+(deliveryTime||"غير محددة"),extra?"تفاصيل إضافية: "+extra:""].filter(Boolean).join("\n");
- if(!Number.isFinite(price)||price<1){message("اكتب سعر صحيح أكبر من صفر.");return;}
+ if(!Number.isFinite(price)||price<1||price>1000000000){message("اكتب سعر صحيح بين 1 و1,000,000,000 دينار.");return;}
+ if(deliveryRaw!==""&&(!Number.isFinite(Number(deliveryRaw))||Number(deliveryRaw)<0||Number(deliveryRaw)>1000000000)){message("كلفة التوصيل لازم تكون صفر أو أكثر، وبحد أقصى مليار دينار.");return;}
+ if(extra.length>1000||warranty.length>200||deliveryTime.length>200){message("اختصر التفاصيل الإضافية والضمان ومدة التوصيل.");return;}
  const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent="جاري إرسال العرض...";
  try{
   const {error}=await db.from("quotes").insert({request_id:requestId,shop_id:shop.id,price_iqd:Math.round(price),details:details||null});
