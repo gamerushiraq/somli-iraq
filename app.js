@@ -134,7 +134,7 @@ function openRequest(prefill) {
   }
   openDialog("requestDialog");
 }
-["openRequestTop","openRequestHero","openRequestSection","openRequestBanner","emptyRequest"].forEach(id => document.getElementById(id).addEventListener("click", () => openRequest()));
+["openRequestTop","openRequestHero","openRequestSection","openRequestBanner","emptyRequest","somliQuickRequest"].forEach(id => document.getElementById(id)?.addEventListener("click", e => { if (id === "somliQuickRequest") e.preventDefault(); openRequest(); }));
 $("#sellerBtn").addEventListener("click", () => openDialog("sellerDialog"));
 $("#authBtn").addEventListener("click", async () => { const auth = await refreshAuthUI(); if (auth.user && auth.role === "admin") { location.href = "admin.html"; return; } if (auth.user) { showToast("أنت مسجل دخولك. صلاحية المدير غير مفعّلة لهذا الحساب."); return; } setAuthMode("login"); openDialog("authDialog"); });
 $("#authToggle").addEventListener("click", () => setAuthMode(authMode === "login" ? "signup" : "login"));
