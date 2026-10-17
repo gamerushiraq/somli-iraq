@@ -49,7 +49,17 @@ function renderProducts() {
         </div>
       </div>
     </article>`).join("");
-  $("#emptyState").classList.toggle("hidden", filtered.length > 0);
+  const emptyState = $("#emptyState");
+  emptyState.classList.toggle("hidden", filtered.length > 0);
+  const emptyTitle = emptyState.querySelector("h3");
+  const emptyMessage = emptyState.querySelector("p");
+  if (!products.length && !query && !gov && !activeCategory) {
+    emptyTitle.textContent = "ماكو منتجات معتمدة حالياً";
+    emptyMessage.textContent = "راح تظهر العروض هنا بعد ما تضيف المحلات منتجات وتعتمدها الإدارة. وتگدر هسه تطلب سعر لمنتجك.";
+  } else {
+    emptyTitle.textContent = "ما لقينا نتائج";
+    emptyMessage.textContent = "جرّب كلمة ثانية أو اطلب السعر وخلي المحلات تجاوبك.";
+  }
 }
 async function loadProducts() {
   $("#productGrid").innerHTML = "<p>دا نحمل المنتجات...</p>";
@@ -286,6 +296,7 @@ $("#requestForm").addEventListener("submit", async e => {
     }
     const details = [
       "المنتج: " + String(data.title || "").trim(),
+      "الفئة: " + String(data.category || "").trim(),
       "رقم التواصل: " + String(data.phone || "").trim(),
       data.budget ? "الميزانية: " + data.budget + " د.ع" : "",
       data.condition ? "الحالة: " + data.condition : "",
