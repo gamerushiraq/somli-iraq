@@ -66,7 +66,7 @@ function renderListings(){
  const count=$("#marketResultsCount");if(count)count.textContent="عدد الإعلانات: "+shown.length;
  const active=[];if(q)active.push("بحث: "+q);if(gov)active.push(gov);if(cat)active.push(cat);if(condition)active.push(condition);if(hasImages)active.push("صور فقط");if(minPrice!==null)active.push("من "+minPrice.toLocaleString("ar-IQ"));if(maxPrice!==null)active.push("إلى "+maxPrice.toLocaleString("ar-IQ"));
  const activeEl=$("#marketActiveFilters");if(activeEl)activeEl.textContent=active.length?"الفلاتر: "+active.join(" · "):"كل الإعلانات";
- $("#marketGrid").innerHTML=shown.length?shown.map(card).join(""):'<div class="market-empty"><div style="font-size:35px">🔎</div><b>ماكو إعلانات مطابقة</b><p>غيّر البحث أو امسح الفلاتر حتى تشوف كل المنتجات.</p><button class="btn btn-primary" id="emptySell">أضف إعلان</button></div>';
+ $("#marketGrid").innerHTML=shown.length?shown.map(card).join(""):listings.length===0?'<div class="market-empty market-no-inventory"><div style="font-size:35px">🛍️</div><b>السوق ينتظر إعلاناته الأولى</b><p>حالياً ماكو إعلانات معتمدة للعرض. أي إعلان جديد يمر بمراجعة الإدارة قبل ما يظهر للناس.</p><div class="market-empty-actions"><button class="btn btn-primary" id="emptySell">انشر إعلانك</button><a class="btn btn-outline" href="offers.html">اطلب سعر من المحلات</a></div></div>':'<div class="market-empty"><div style="font-size:35px">🔎</div><b>ماكو إعلانات مطابقة</b><p>غيّر البحث أو امسح الفلاتر حتى تشوف كل المنتجات.</p><button class="btn btn-primary" id="emptySell">أضف إعلان</button></div>';
  $("#emptySell")?.addEventListener("click",startSell);
 }
 function syncFiltersToUrl(){
