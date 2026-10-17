@@ -1,4 +1,6 @@
--- Soumli MVP schema. Review and run in Supabase SQL Editor only after creating a separate Soumli project.
+-- ARCHIVED PROTOTYPE ONLY — DO NOT RUN THIS FILE AGAINST THE LIVE SOMLI IRAQ PROJECT.
+-- This legacy draft uses a different schema and is NOT the current production schema.
+-- It is retained for historical reference only. Use reviewed, versioned changes for the live project.
 -- No credentials or API keys belong in this file.
 
 create extension if not exists pgcrypto;
