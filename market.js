@@ -6,7 +6,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const money=v=>v===null||v===undefined||v===""?"السعر قابل للتفاوض":Number(v)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";
 let currentUser=null, listings=[], myListings=[], authMode="login", toastTimer, resumeSellAfterAuth=false, paymentSettings=null;
 const FAVORITES_KEY="somli-market-favorites-v1";
-let favoriteIds=new Set(),showSavedOnly=false;
+let favoriteIds=new Set(),showSavedOnly=false,compareIds=new Set();
 try{favoriteIds=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]").filter(x=>typeof x==="string"));}catch{favoriteIds=new Set();}
 function saveFavorites(){try{localStorage.setItem(FAVORITES_KEY,JSON.stringify([...favoriteIds]));}catch{toast("تعذر حفظ المحفوظات على هذا الجهاز.");}}
 function syncFavoriteControls(){const btn=$("#marketSavedToggle"),count=$("#marketSavedCount");if(btn){btn.setAttribute("aria-pressed",String(showSavedOnly));btn.classList.toggle("is-active",showSavedOnly);btn.innerHTML=(showSavedOnly?"♥":"♡")+" المحفوظات <span id=\"marketSavedCount\">"+favoriteIds.size+"</span>";}if(count)count.textContent=String(favoriteIds.size);}
@@ -27,7 +27,7 @@ function whatsappNumber(phone){
 function card(p){
  const image=p.image_urls?.[0], promoted=!!p.is_promoted&&p.promoted_until&&new Date(p.promoted_until)>new Date();
  const phone=String(p.phone||"").trim(), wa=whatsappNumber(phone), condition=esc(p.condition||"مستعمل");
- const imageCount=(p.image_urls||[]).filter(Boolean).length;
+ const imageCount=(p.image_urls||[]).filter(Boolean).length,saved=favoriteIds.has(p.id),compared=compareIds.has(p.id);
  return `<article class="market-card ${promoted?"market-card-featured":""}">
  <div class="market-card-img" data-detail="${esc(p.id)}" role="button" tabindex="0" aria-label="عرض تفاصيل ${esc(p.title)}">
   ${image?'<img src="'+esc(image)+'" alt="'+esc(p.title)+'" loading="lazy">':'<div class="market-no-img-wrap"><span class="market-no-img">📦</span><small>الصورة غير متوفرة</small></div>'}
@@ -36,7 +36,7 @@ function card(p){
  </div>
  <div class="market-card-body"><button type="button" class="market-favorite-btn ${saved?"is-saved":""}" data-favorite="${esc(p.id)}" aria-pressed="${saved}" aria-label="${saved?"إزالة من المحفوظات":"حفظ الإعلان"}">${saved?"♥":"♡"}</button>
   <div class="market-card-title-row"><h3>${esc(p.title)}</h3><span class="market-condition-chip">${condition}</span></div>
-  <div class="market-price">${esc(money(p.price_iqd))}</div>
+  <div class="market-price">${esc(money(p.price_iqd))}</div><button type="button" class="market-compare-pick ${compared?"is-picked":""}" data-compare="${esc(p.id)}" aria-pressed="${compared}">${compared?"✓ ضمن المقارنة":"＋ قارن المنتج"}</button>
   <div class="market-meta">
    <span>📍 ${esc(p.governorate||"العراق")}</span><span>👤 ${esc(p.seller_name||"بائع سوملي")}</span>
    <span>🗓️ ${esc(new Date(p.created_at).toLocaleDateString("ar-IQ"))}</span>
@@ -68,6 +68,34 @@ function renderListings(){
  const activeEl=$("#marketActiveFilters");if(activeEl)activeEl.textContent=active.length?"الفلاتر: "+active.join(" · "):"كل الإعلانات";
  $("#marketGrid").innerHTML=shown.length?shown.map(card).join(""):'<div class="market-empty"><div style="font-size:35px">🔎</div><b>ماكو إعلانات مطابقة</b><p>غيّر البحث أو امسح الفلاتر حتى تشوف كل المنتجات.</p><button class="btn btn-primary" id="emptySell">أضف إعلان</button></div>';
  $("#emptySell")?.addEventListener("click",startSell);
+}
+function syncFiltersToUrl(){
+ const url=new URL(location.href),p=url.searchParams;
+ const fields=[["q","#marketSearch"],["gov","#marketGov"],["cat","#marketCategory"],["min","#marketMinPrice"],["max","#marketMaxPrice"],["sort","#marketSort"],["condition","#marketCondition"]];
+ for(const [key,sel] of fields){const el=$(sel),value=el?.value?.trim()||"";if(value&&!(key==="sort"&&value==="newest"))p.set(key,value);else p.delete(key);}
+ if($("#marketHasImages")?.checked)p.set("images","1");else p.delete("images");
+ history.replaceState(null,"",url.pathname+(p.toString()?"?"+p.toString():"")+url.hash);
+}
+function restoreFiltersFromUrl(){
+ const p=new URLSearchParams(location.search);
+ const fields=[["q","#marketSearch"],["gov","#marketGov"],["cat","#marketCategory"],["min","#marketMinPrice"],["max","#marketMaxPrice"],["sort","#marketSort"],["condition","#marketCondition"]];
+ for(const [key,sel] of fields){const el=$(sel),value=p.get(key);if(!el||value===null)continue;if(el.tagName==="SELECT"&&![...el.options].some(o=>o.value===value))continue;el.value=value;}
+ if($("#marketHasImages"))$("#marketHasImages").checked=p.get("images")==="1";
+}
+function renderCompareTray(){
+ const tray=$("#marketCompareTray"),count=$("#marketCompareCount"),items=$("#marketCompareItems"),go=$("#marketCompareGo");
+ if(!tray||!count||!items||!go)return;
+ const chosen=[...compareIds].map(id=>listings.find(p=>p.id===id)).filter(Boolean);
+ count.textContent=String(chosen.length);go.disabled=chosen.length<2;
+ items.innerHTML=chosen.map(p=>'<button type="button" class="market-compare-chip" data-compare-remove="'+esc(p.id)+'">'+esc(p.title)+' <span aria-hidden="true">×</span></button>').join("");
+ tray.hidden=chosen.length===0;
+}
+function compareTable(){
+ const chosen=[...compareIds].map(id=>listings.find(p=>p.id===id)).filter(Boolean),host=$("#marketCompareBody");
+ if(!host)return;
+ if(chosen.length<2){host.innerHTML='<p class="market-muted">اختار إعلانين على الأقل حتى تقدر تقارن.</p>';return;}
+ const rows=[["السعر",p=>money(p.price_iqd)],["الحالة",p=>p.condition||"غير محدد"],["الفئة",p=>p.category||"غير محددة"],["المحافظة",p=>p.governorate||"غير محددة"],["البائع",p=>p.seller_name||"بائع سوملي"],["التفاصيل",p=>p.description||"ماكو تفاصيل إضافية"]];
+ host.innerHTML='<div class="market-compare-scroll"><table class="market-compare-table"><thead><tr><th>المواصفة</th>'+chosen.map(p=>'<th>'+esc(p.title)+'</th>').join("")+'</tr></thead><tbody>'+rows.map(([label,get])=>'<tr><th>'+esc(label)+'</th>'+chosen.map(p=>'<td>'+esc(get(p))+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>';
 }
 async function loadListings(){ $("#marketGrid").innerHTML='<div class="market-empty">دا نحمل الإعلانات...</div>';const {data,error}=await db.from("market_listings").select("id,seller_id,seller_name,phone,title,description,category,governorate,condition,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("status","approved").order("created_at",{ascending:false}).limit(200);if(error){$("#marketGrid").innerHTML='<div class="market-empty">تعذر تحميل الإعلانات. جرّب تحديث الصفحة بعد قليل.</div>';console.error("market listings",error.message);return;}listings=(data||[]).sort((a,b)=>{const ap=a.is_promoted&&a.promoted_until&&new Date(a.promoted_until)>new Date()?1:0;const bp=b.is_promoted&&b.promoted_until&&new Date(b.promoted_until)>new Date()?1:0;return bp-ap||new Date(b.created_at)-new Date(a.created_at);});renderListings();}
 async function loadMyListings(){
@@ -136,7 +164,7 @@ $("#sellForm").addEventListener("submit",async e=>{
  finally{btn.disabled=false;btn.textContent=editingId?"حفظ التعديلات":"نشر الإعلان";}
 });
 function showDetail(id){const p=listings.find(x=>x.id===id);if(!p)return;$("#detailTitle").textContent=p.title;$("#detailImages").innerHTML=(p.image_urls||[]).map(u=>'<img src="'+esc(u)+'" alt="'+esc(p.title)+'">').join("");$("#detailBody").innerHTML='<p class="market-price">'+esc(money(p.price_iqd))+'</p><p><b>الفئة:</b> '+esc(p.category)+' · <b>الحالة:</b> '+esc(p.condition)+'</p><p><b>المحافظة:</b> '+esc(p.governorate)+'</p><p><b>البائع:</b> '+esc(p.seller_name)+'</p><p style="white-space:pre-wrap;line-height:1.9">'+esc(p.description||"ماكو تفاصيل إضافية.")+'</p><p><b>رقم التواصل:</b> '+esc(p.phone)+'</p><a class="btn btn-primary btn-full" href="tel:'+esc(p.phone)+'">اتصل بالبائع</a><p class="market-notice">نصيحة: افحص المنتج بنفسك ولا تحول فلوس مقدماً لشخص ما تعرفه.</p>';open("detailDialog");}
-$("#marketGrid").addEventListener("click",async e=>{const fav=e.target.closest("[data-favorite]");if(fav){e.preventDefault();e.stopPropagation();const id=fav.dataset.favorite;if(favoriteIds.has(id)){favoriteIds.delete(id);toast("انشلت من المحفوظات.");}else{favoriteIds.add(id);toast("انحفظ الإعلان على هذا الجهاز.");}saveFavorites();renderListings();return;}const share=e.target.closest("[data-share-listing]");if(share){e.preventDefault();e.stopPropagation();await shareListing(share.dataset.shareListing);return;}const el=e.target.closest("[data-detail]");if(el)showDetail(el.dataset.detail);});
+$("#marketGrid").addEventListener("click",async e=>{const fav=e.target.closest("[data-favorite]");if(fav){e.preventDefault();e.stopPropagation();const id=fav.dataset.favorite;if(favoriteIds.has(id)){favoriteIds.delete(id);toast("انشلت من المحفوظات.");}else{favoriteIds.add(id);toast("انحفظ الإعلان على هذا الجهاز.");}saveFavorites();renderListings();return;}const compare=e.target.closest("[data-compare]");if(compare){e.preventDefault();e.stopPropagation();const id=compare.dataset.compare;if(compareIds.has(id)){compareIds.delete(id);}else if(compareIds.size>=3){toast("تگدر تقارن 3 إعلانات كحد أقصى.");return;}else{compareIds.add(id);}renderListings();return;}const share=e.target.closest("[data-share-listing]");if(share){e.preventDefault();e.stopPropagation();await shareListing(share.dataset.shareListing);return;}const el=e.target.closest("[data-detail]");if(el)showDetail(el.dataset.detail);});
 $("#marketGrid").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".market-card-img[data-detail]")){e.preventDefault();showDetail(e.target.dataset.detail);}});
 $("#myListings").addEventListener("click",async e=>{
  const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]"),sold=e.target.closest("[data-sold]"),relist=e.target.closest("[data-relist]"),promote=e.target.closest("[data-promote]");
@@ -158,6 +186,10 @@ $("#marketPayForm").addEventListener("submit",async e=>{
  try{const {error}=await db.from("market_payments").insert({user_id:currentUser.id,kind:"promotion",listing_id:listingId,package_code:code,amount_iqd:pack.amount,duration_days:pack.days,payment_method:method,transaction_reference:reference,note,status:"pending"});if(error)throw error;close("marketPayDialog");toast("وصل طلب الترويج للإدارة. راح يتفعّل بعد التحقق من التحويل.");await loadPaymentHistory();}catch(err){$("#marketPayMessage").textContent="تعذر إرسال الطلب: "+(err.message||"حاول مرة ثانية.");}finally{btn.disabled=false;btn.textContent="إرسال طلب الترويج";}
 });
 
+$("#marketCompareGo").addEventListener("click",()=>{compareTable();open("compareDialog");});
+$("#marketCompareClear").addEventListener("click",()=>{compareIds.clear();renderListings();});
+$("#marketCompareItems").addEventListener("click",e=>{const b=e.target.closest("[data-compare-remove]");if(!b)return;compareIds.delete(b.dataset.compareRemove);renderListings();});
+$("#marketCompareBody").addEventListener("click",e=>{const b=e.target.closest("[data-compare-remove]");if(!b)return;compareIds.delete(b.dataset.compareRemove);renderListings();compareTable();});
 $("#marketSavedToggle").addEventListener("click",()=>{showSavedOnly=!showSavedOnly;syncFavoriteControls();renderListings();$("#marketListings").scrollIntoView({behavior:"auto",block:"start"});});
 $("#marketShareSite").addEventListener("click",async()=>{try{if(navigator.share)await navigator.share({title:"سوق سوملي المفتوح",text:"تصفح إعلانات البيع والشراء في العراق على سوملي",url:location.href});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);toast("نسخنا رابط السوق.");}else prompt("انسخ رابط السوق:",location.href);}catch(err){if(err?.name!=="AbortError")toast("ما قدرنا نشارك الرابط.");}});
 $("#marketCategoriesToggle").addEventListener("click",()=>{const btn=$("#marketCategoriesToggle"),panel=$("#marketCategoryPanel"),expanded=btn.getAttribute("aria-expanded")==="true";btn.setAttribute("aria-expanded",String(!expanded));panel.hidden=expanded;});
@@ -168,4 +200,4 @@ $("#myListingsReload").addEventListener("click",async()=>{await getSession();toa
 document.querySelectorAll("[data-close-market]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeMarket)));
 document.querySelectorAll(".market-modal").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close();}));
 $("#marketYear").textContent=new Date().getFullYear();
-(async()=>{try{await getSession();await loadListings();if(new URLSearchParams(location.search).get("sell")==="1")startSell();const target=location.hash.startsWith("#listing-")?location.hash.slice(9):"";if(target)setTimeout(()=>showDetail(target),100);}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
+(async()=>{try{restoreFiltersFromUrl();await getSession();await loadListings();if(new URLSearchParams(location.search).get("sell")==="1")startSell();const target=location.hash.startsWith("#listing-")?location.hash.slice(9):"";if(target)setTimeout(()=>showDetail(target),100);}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
