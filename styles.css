@@ -633,3 +633,15 @@ body .request-banner .eyebrow{color:#fff!important}
   .top-actions{flex:0 0 auto;min-width:0}
   .somli-menu-toggle{white-space:nowrap!important;max-width:none!important;font-size:11px!important;padding:8px 9px!important;line-height:1.3;min-height:42px}
 }
+
+
+/* Audit fixes: 320px marketplace header and accessible contrast (2026-10-17) */
+.market-strip,.market-strip-track{color:#fff!important}
+.market-strip-track span,.market-strip-track a{color:#fff!important}
+.floating-tag.tag-top{color:#fff!important;background:#10253d!important}
+.request-banner .eyebrow{color:#fff!important;background:#087f75!important;border-color:#087f75!important}
+@media(max-width:360px){
+  .topbar{padding-left:10px!important;padding-right:10px!important;gap:8px!important}
+  .top-actions{flex:1 1 auto!important;min-width:0!important;justify-content:flex-end!important;gap:4px!important}
+  .top-actions .btn{min-width:0!important;padding:7px 7px!important;font-size:10px!important;white-space:nowrap!important}
+}
