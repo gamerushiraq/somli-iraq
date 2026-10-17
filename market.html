@@ -146,6 +146,10 @@
  .market-compare-tray-actions button{padding:10px}
  .market-compare-dialog{width:96vw;max-width:96vw;padding:0}
 }
+
+.market-check-filter{display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font-size:12px;font-weight:800;min-width:0}
+.market-check-filter input{width:18px!important;height:18px;min-width:18px;accent-color:#087f75;margin:0}
+@media(max-width:640px){.market-controls{grid-template-columns:1fr 1fr}.market-controls #marketSearch{grid-column:1/-1}.market-check-filter{min-height:42px}}
 </style>
 </head>
 <body>
@@ -181,7 +185,7 @@
 <input id="marketSearch" type="search" placeholder="دوّر على موبايل، أثاث، سيارة..." autocomplete="off" aria-label="ابحث عن منتج">
 <select id="marketGov" aria-label="اختيار المحافظة"><option value="">كل المحافظات</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select>
 <select id="marketCategory" aria-label="اختيار الفئة"><option value="">كل الفئات</option><option>إلكترونيات</option><option>أزياء</option><option>منزل وأثاث</option><option>سيارات وقطع</option><option>أجهزة منزلية</option><option>جمال وعناية</option><option>ألعاب</option><option>رياضة</option><option>أطفال</option><option>أدوات</option><option>حيوانات</option><option>أخرى</option></select>
-<input id="marketMinPrice" type="number" min="0" step="500" placeholder="أقل سعر (د.ع)" aria-label="أقل سعر بالدينار"><input id="marketMaxPrice" type="number" min="0" step="500" placeholder="أعلى سعر (د.ع)" aria-label="أعلى سعر بالدينار"><select id="marketSort" aria-label="ترتيب الإعلانات"><option value="newest">الأحدث أولاً</option><option value="price-low">السعر: الأقل أولاً</option><option value="price-high">السعر: الأعلى أولاً</option><option value="oldest">الأقدم أولاً</option></select>
+<input id="marketMinPrice" type="number" min="0" step="500" placeholder="أقل سعر (د.ع)" aria-label="أقل سعر بالدينار"><input id="marketMaxPrice" type="number" min="0" step="500" placeholder="أعلى سعر (د.ع)" aria-label="أعلى سعر بالدينار"><select id="marketSort" aria-label="ترتيب الإعلانات"><option value="newest">الأحدث أولاً</option><option value="price-low">السعر: الأقل أولاً</option><option value="price-high">السعر: الأعلى أولاً</option><option value="oldest">الأقدم أولاً</option></select><select id="marketCondition" aria-label="حالة المنتج"><option value="">كل الحالات</option><option value="جديد">جديد</option><option value="مثل الجديد">مثل الجديد</option><option value="مستعمل">مستعمل</option></select><label class="market-check-filter"><input id="marketHasImages" type="checkbox"> صور فقط</label>
 <button id="marketClearFilters" class="btn btn-outline market-clear-filters" type="button">مسح الفلاتر</button>
 </section>
 <section id="marketListings">
