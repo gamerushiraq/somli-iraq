@@ -386,7 +386,7 @@ if (initialAction.get("login") === "1") refreshAuthUI().then(auth => { if (!auth
     const title=document.querySelector("#showcaseTitle");
     if(title)title.textContent=titles[index];
   }
-  function start(){clearInterval(timer);timer=setInterval(()=>show(index+1),4800);}
+  function start(){clearInterval(timer);}
   dots.forEach(d=>d.addEventListener("click",()=>{show(Number(d.dataset.slideTo));start();}));
   const hero=document.querySelector(".hero-showcase");
   if(hero){
