@@ -6,7 +6,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="description" content="سوق سوملي المفتوح للبيع والشراء في العراق. انشر منتجك مع الصور والسعر وتواصل مباشرة.">
 <title>سوق سوملي المفتوح | بيع واشتري بالعراق</title>
-<link rel="stylesheet" href="styles.css?v=20261017-performance3">
+<link rel="stylesheet" href="styles.css?v=20261017-marketplus1">
 <style>
 .market-wrap{max-width:1200px;margin:28px auto 60px;padding:0 18px}
 .market-hero{background:linear-gradient(125deg,#10253d,#1a4964 65%,#087f75);border-radius:25px;color:#fff;padding:30px;display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:center;overflow:hidden}
@@ -105,6 +105,15 @@
  .topbar .top-actions>a[href="offers.html"]{display:none!important}
  .topbar .top-actions .btn{min-width:0!important;padding:7px 6px!important;font-size:10px!important;white-space:nowrap!important;line-height:1.2}
 }
+
+.market-card-body{position:relative}
+.market-favorite-btn{align-self:flex-start;border:1px solid #fecdd3;border-radius:999px;background:#fff1f2;color:#be123c;padding:4px 11px;font-size:16px;line-height:1.2;cursor:pointer;margin-bottom:8px}
+.market-favorite-btn.is-saved{background:#be123c;color:#fff}
+.market-quick-actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.market-quick-actions button{border:1px solid #dce5ec;background:#fff;border-radius:999px;padding:9px 14px;color:#24394c;font-size:12px;font-weight:850;cursor:pointer}
+.market-quick-actions button.is-active{background:#fff1f2;border-color:#fecdd3;color:#be123c}
+.market-quick-actions #marketSavedToggle span{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#eef2f6;margin-right:4px}
+@media(max-width:640px){.market-quick-actions{display:grid;grid-template-columns:1fr 1fr}.market-quick-actions button{padding:10px 8px;font-size:11px}.market-favorite-btn{padding:4px 10px;font-size:15px}}
 </style>
 </head>
 <body>
@@ -146,6 +155,7 @@
 <section id="marketListings">
 <div class="market-heading"><div><span class="eyebrow">إعلانات الناس</span><h2>تصفّح المنتجات المعروضة</h2></div><button class="btn btn-primary" id="sellOpenList">+ بيع منتج</button></div>
 <div class="market-results-line"><strong id="marketResultsCount">عدد الإعلانات: 0</strong><span id="marketActiveFilters" class="market-active-filters">كل الإعلانات</span></div>
+<div class="market-quick-actions"><button type="button" id="marketSavedToggle" aria-pressed="false">♡ المحفوظات <span id="marketSavedCount">0</span></button><button type="button" id="marketShareSite">↗ مشاركة السوق</button></div>
 <div class="market-grid" id="marketGrid"><div class="market-empty">دا نحمل الإعلانات...</div></div>
 </section>
 <section class="market-my-panel">
@@ -188,5 +198,5 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261016-cleanupnotice1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261017-marketplus1"></script>
 </body></html>
