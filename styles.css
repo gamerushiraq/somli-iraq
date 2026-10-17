@@ -620,3 +620,16 @@ img{content-visibility:auto}
   .showcase-image{width:min(245px,65%);height:235px;top:32px;border-width:7px;border-radius:25px}
   .somli-motion-ticker-track,.market-strip-track{gap:7px 12px;font-size:10px}
 }
+
+
+/* SOMLI final responsive/contrast fixes found in mobile audit */
+body .request-banner h2,
+body .request-banner p,
+body .request-banner .eyebrow{color:#fff!important}
+@media(max-width:360px){
+  .topbar{height:auto!important;min-height:70px;padding:8px 10px!important;gap:8px!important;align-items:center}
+  .brand{font-size:18px!important;gap:6px!important;white-space:nowrap}
+  .brand-mark{flex:0 0 32px}
+  .top-actions{flex:0 0 auto;min-width:0}
+  .somli-menu-toggle{white-space:nowrap!important;max-width:none!important;font-size:11px!important;padding:8px 9px!important;line-height:1.3;min-height:42px}
+}
