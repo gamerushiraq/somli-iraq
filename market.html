@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="description" content="سوق سوملي المفتوح للبيع والشراء في العراق. انشر منتجك مع الصور والسعر وتواصل مباشرة.">
 <title>سوق سوملي المفتوح | بيع واشتري بالعراق</title>
-<link rel="stylesheet" href="styles.css?v=20261017-performance2">
+<link rel="stylesheet" href="styles.css?v=20261017-performance3">
 <style>
 .market-wrap{max-width:1200px;margin:28px auto 60px;padding:0 18px}
 .market-hero{background:linear-gradient(125deg,#10253d,#1a4964 65%,#087f75);border-radius:25px;color:#fff;padding:30px;display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:center;overflow:hidden}
@@ -93,6 +94,17 @@
 @media(max-width:850px){.market-category-panel{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:520px){.market-categories-toggle{padding:12px}.market-category-toggle-icon{width:39px;height:39px}.market-categories-toggle strong{font-size:14px}.market-category-panel{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.market-category-tile{min-height:88px;padding:10px 4px}.market-category-tile span{font-size:24px}.market-category-tile strong{font-size:10px}}
 
+
+/* Mobile audit repair: keep marketplace header within 320px */
+@media(max-width:360px){
+ .topbar{padding-left:10px!important;padding-right:10px!important;gap:7px!important;flex-wrap:nowrap!important}
+ .topbar .brand{font-size:17px!important;gap:5px!important;flex:0 0 auto}
+ .topbar .brand-mark{width:29px!important;height:29px!important;flex:0 0 29px!important}
+ .topbar .desktop-nav{display:none!important}
+ .topbar .top-actions{display:flex!important;flex:1 1 auto!important;min-width:0!important;gap:4px!important;justify-content:flex-end!important}
+ .topbar .top-actions>a[href="offers.html"]{display:none!important}
+ .topbar .top-actions .btn{min-width:0!important;padding:7px 6px!important;font-size:10px!important;white-space:nowrap!important;line-height:1.2}
+}
 </style>
 </head>
 <body>
