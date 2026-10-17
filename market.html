@@ -6,7 +6,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="description" content="سوق سوملي المفتوح للبيع والشراء في العراق. انشر منتجك مع الصور والسعر وتواصل مباشرة.">
 <title>سوق سوملي المفتوح | بيع واشتري بالعراق</title>
-<link rel="stylesheet" href="styles.css?v=20261017-marketplus1">
+<link rel="stylesheet" href="styles.css?v=20261017-marketplus2">
 <style>
 .market-wrap{max-width:1200px;margin:28px auto 60px;padding:0 18px}
 .market-hero{background:linear-gradient(125deg,#10253d,#1a4964 65%,#087f75);border-radius:25px;color:#fff;padding:30px;display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:center;overflow:hidden}
@@ -114,6 +114,38 @@
 .market-quick-actions button.is-active{background:#fff1f2;border-color:#fecdd3;color:#be123c}
 .market-quick-actions #marketSavedToggle span{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#eef2f6;margin-right:4px}
 @media(max-width:640px){.market-quick-actions{display:grid;grid-template-columns:1fr 1fr}.market-quick-actions button{padding:10px 8px;font-size:11px}.market-favorite-btn{padding:4px 10px;font-size:15px}}
+
+.market-favorite-btn{border:1px solid #fecdd3;border-radius:999px;background:#fff1f2;color:#be123c;padding:4px 11px;font-size:16px;line-height:1.2;cursor:pointer;margin-bottom:8px}
+.market-favorite-btn.is-saved{background:#be123c;color:#fff}
+.market-compare-pick{display:block;width:100%;margin:8px 0 10px;border:1px solid #dbe6ed;border-radius:10px;background:#f7fafc;color:#1e4052;padding:8px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.market-compare-pick.is-picked{background:#e5f8f2;border-color:#80d6c1;color:#086d5f}
+.market-share-action{cursor:pointer}
+.market-compare-tray{position:fixed;z-index:70;bottom:12px;left:12px;right:12px;max-width:1000px;margin:0 auto;background:#10253d;color:#fff;border-radius:18px;box-shadow:0 12px 36px #10253d40;padding:12px 14px;max-height:34vh;overflow:auto}
+.market-compare-tray[hidden]{display:none!important}
+.market-compare-tray-inner{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px}
+.market-compare-tray-inner>div:first-child strong,.market-compare-tray-inner>div:first-child span{display:block;white-space:nowrap;font-size:12px}
+.market-compare-tray-inner>div:first-child span{color:#d5e5f1;margin-top:4px}
+.market-compare-items{display:flex;flex-wrap:wrap;gap:6px}
+.market-compare-chip{border:1px solid #557087;border-radius:999px;background:#1e3c56;color:#fff;padding:7px 10px;font-size:11px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.market-compare-chip span{font-size:16px;margin-right:4px}
+.market-compare-tray-actions{display:flex;gap:7px}
+.market-compare-tray-actions button{border:1px solid #70869a;border-radius:10px;background:transparent;color:#fff;padding:8px 10px;font-weight:800}
+.market-compare-tray-actions #marketCompareGo{background:#10a88d;border-color:#10a88d;color:#fff}
+.market-compare-tray-actions #marketCompareGo:disabled{opacity:.5}
+.market-compare-scroll{max-width:100%;overflow-x:auto}
+.market-compare-table{border-collapse:collapse;width:100%;min-width:520px;font-size:13px}
+.market-compare-table th,.market-compare-table td{padding:12px;border-bottom:1px solid #e3eaf0;text-align:right;vertical-align:top}
+.market-compare-table thead th{background:#eef8f6;color:#123b43}
+.market-compare-table tbody th{white-space:nowrap;background:#f8fafc}
+.market-compare-dialog{max-width:min(960px,96vw)}
+@media(max-width:640px){
+ .market-compare-tray{left:8px;right:8px;bottom:8px;padding:10px;border-radius:14px}
+ .market-compare-tray-inner{grid-template-columns:1fr;gap:8px}
+ .market-compare-tray-inner>div:first-child{display:flex;justify-content:space-between;align-items:center}
+ .market-compare-tray-actions{display:grid;grid-template-columns:1fr 2fr}
+ .market-compare-tray-actions button{padding:10px}
+ .market-compare-dialog{width:96vw;max-width:96vw;padding:0}
+}
 </style>
 </head>
 <body>
@@ -198,5 +230,21 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261017-marketplus2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261017-marketplus3"></script>
+
+<section id="marketCompareTray" class="market-compare-tray" aria-label="مقارنة المنتجات" hidden>
+ <div class="market-compare-tray-inner">
+  <div><strong>مقارنة المنتجات</strong><span><b id="marketCompareCount">0</b> / 3 إعلانات</span></div>
+  <div id="marketCompareItems" class="market-compare-items"></div>
+  <div class="market-compare-tray-actions"><button type="button" id="marketCompareClear">مسح</button><button type="button" id="marketCompareGo" disabled>قارن الآن</button></div>
+ </div>
+</section>
+<dialog id="compareDialog" class="market-modal market-compare-dialog">
+ <div class="market-modal-inner">
+  <div class="market-modal-head"><div><span class="eyebrow">سوملي للمقارنة</span><h2>قارن المنتجات جنب بعض</h2></div><button type="button" class="market-close" data-close-market="compareDialog" aria-label="إغلاق">×</button></div>
+  <p class="market-notice">قارن السعر والحالة والمحافظة والتفاصيل. تأكد من الضمان والتوصيل مباشرة من البائع.</p>
+  <div id="marketCompareBody"></div>
+ </div>
+</dialog>
+
 </body></html>
