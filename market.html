@@ -150,6 +150,10 @@
 .market-check-filter{display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font-size:12px;font-weight:800;min-width:0}
 .market-check-filter input{width:18px!important;height:18px;min-width:18px;accent-color:#087f75;margin:0}
 @media(max-width:640px){.market-controls{grid-template-columns:1fr 1fr}.market-controls #marketSearch{grid-column:1/-1}.market-check-filter{min-height:42px}}
+
+.market-empty-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:14px}
+.market-empty-actions a,.market-empty-actions button{min-width:150px;text-decoration:none}
+@media(max-width:420px){.market-empty-actions{display:grid;grid-template-columns:1fr}.market-empty-actions a,.market-empty-actions button{width:100%}}
 </style>
 </head>
 <body>
@@ -234,7 +238,7 @@
 </form></dialog>
 <dialog class="market-modal" id="detailDialog"><div class="market-modal-inner"><div class="market-modal-head"><h2 id="detailTitle">تفاصيل المنتج</h2><button type="button" class="market-close" data-close-market="detailDialog" aria-label="إغلاق">×</button></div><div id="detailImages" class="market-detail-images"></div><div id="detailBody"></div></div></dialog>
 <div class="toast" id="marketToast" role="status"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261017-audit1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="market.js?v=20261017-audit2"></script>
 
 <section id="marketCompareTray" class="market-compare-tray" aria-label="مقارنة المنتجات" hidden>
  <div class="market-compare-tray-inner">
