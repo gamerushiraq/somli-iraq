@@ -5,6 +5,12 @@ const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=v=>v===null||v===undefined||v===""?"السعر قابل للتفاوض":Number(v)===0?"مجاني":new Intl.NumberFormat("ar-IQ").format(v)+" د.ع";
 let currentUser=null, listings=[], myListings=[], authMode="login", toastTimer, resumeSellAfterAuth=false, paymentSettings=null;
+const FAVORITES_KEY="somli-market-favorites-v1";
+let favoriteIds=new Set(),showSavedOnly=false;
+try{favoriteIds=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]").filter(x=>typeof x==="string"));}catch{favoriteIds=new Set();}
+function saveFavorites(){try{localStorage.setItem(FAVORITES_KEY,JSON.stringify([...favoriteIds]));}catch{toast("تعذر حفظ المحفوظات على هذا الجهاز.");}}
+function syncFavoriteControls(){const btn=$("#marketSavedToggle"),count=$("#marketSavedCount");if(btn){btn.setAttribute("aria-pressed",String(showSavedOnly));btn.classList.toggle("is-active",showSavedOnly);btn.innerHTML=(showSavedOnly?"♥":"♡")+" المحفوظات";}if(count)count.textContent=String(favoriteIds.size);}
+async function shareListing(id){const p=listings.find(x=>x.id===id);if(!p)return;const url=new URL(location.href);url.hash="listing-"+id;try{if(navigator.share)await navigator.share({title:p.title,text:"شوف هذا الإعلان على سوق سوملي: "+p.title,url:url.href});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url.href);toast("نسخنا رابط الإعلان حتى تشاركه.");}else prompt("انسخ رابط الإعلان:",url.href);}catch(err){if(err?.name!=="AbortError")toast("ما قدرنا نشارك الرابط. جرّب مرة ثانية.");}}
 function toast(t){const el=$("#marketToast");el.textContent=t;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),3500);}
 function open(id){const d=document.getElementById(id);if(d&&!d.open)d.showModal();}
 function close(id){document.getElementById(id)?.close();}
@@ -28,7 +34,7 @@ function card(p){
   ${promoted?'<span class="market-featured-badge">⭐ إعلان مميز</span>':""}
   ${imageCount>1?'<span class="market-image-count">▧ '+imageCount+' صور</span>':""}
  </div>
- <div class="market-card-body">
+ <div class="market-card-body"><button type="button" class="market-favorite-btn ${saved?"is-saved":""}" data-favorite="${esc(p.id)}" aria-pressed="${saved}" aria-label="${saved?"إزالة من المحفوظات":"حفظ الإعلان"}">${saved?"♥":"♡"}</button>
   <div class="market-card-title-row"><h3>${esc(p.title)}</h3><span class="market-condition-chip">${condition}</span></div>
   <div class="market-price">${esc(money(p.price_iqd))}</div>
   <div class="market-meta">
@@ -46,7 +52,7 @@ function card(p){
 function renderListings(){
  const q=$("#marketSearch").value.trim().toLocaleLowerCase("ar");
  const gov=$("#marketGov").value,cat=$("#marketCategory").value,sort=$("#marketSort")?.value||"newest"; const minText=$("#marketMinPrice")?.value.trim()||"",maxText=$("#marketMaxPrice")?.value.trim()||""; const minPrice=minText===""?null:Number(minText),maxPrice=maxText===""?null:Number(maxText);
- const shown=listings.filter(p=>(!q||[p.title,p.description,p.category,p.governorate,p.seller_name,p.condition].join(" ").toLocaleLowerCase("ar").includes(q))&&(!gov||p.governorate===gov)&&(!cat||p.category===cat)&&(minPrice===null||(p.price_iqd!==null&&p.price_iqd!==undefined&&Number(p.price_iqd)>=minPrice))&&(maxPrice===null||(p.price_iqd!==null&&p.price_iqd!==undefined&&Number(p.price_iqd)<=maxPrice)));
+ const shown=listings.filter(p=>(!showSavedOnly||favoriteIds.has(p.id))&&(!q||[p.title,p.description,p.category,p.governorate,p.seller_name,p.condition].join(" ").toLocaleLowerCase("ar").includes(q))&&(!gov||p.governorate===gov)&&(!cat||p.category===cat)&&(minPrice===null||(p.price_iqd!==null&&p.price_iqd!==undefined&&Number(p.price_iqd)>=minPrice))&&(maxPrice===null||(p.price_iqd!==null&&p.price_iqd!==undefined&&Number(p.price_iqd)<=maxPrice)));
  shown.sort((a,b)=>{
   if(sort==="price-low"||sort==="price-high"){
    const ap=a.price_iqd===null||a.price_iqd===undefined?Infinity:Number(a.price_iqd);
@@ -129,7 +135,7 @@ $("#sellForm").addEventListener("submit",async e=>{
  finally{btn.disabled=false;btn.textContent=editingId?"حفظ التعديلات":"نشر الإعلان";}
 });
 function showDetail(id){const p=listings.find(x=>x.id===id);if(!p)return;$("#detailTitle").textContent=p.title;$("#detailImages").innerHTML=(p.image_urls||[]).map(u=>'<img src="'+esc(u)+'" alt="'+esc(p.title)+'">').join("");$("#detailBody").innerHTML='<p class="market-price">'+esc(money(p.price_iqd))+'</p><p><b>الفئة:</b> '+esc(p.category)+' · <b>الحالة:</b> '+esc(p.condition)+'</p><p><b>المحافظة:</b> '+esc(p.governorate)+'</p><p><b>البائع:</b> '+esc(p.seller_name)+'</p><p style="white-space:pre-wrap;line-height:1.9">'+esc(p.description||"ماكو تفاصيل إضافية.")+'</p><p><b>رقم التواصل:</b> '+esc(p.phone)+'</p><a class="btn btn-primary btn-full" href="tel:'+esc(p.phone)+'">اتصل بالبائع</a><p class="market-notice">نصيحة: افحص المنتج بنفسك ولا تحول فلوس مقدماً لشخص ما تعرفه.</p>';open("detailDialog");}
-$("#marketGrid").addEventListener("click",e=>{const el=e.target.closest("[data-detail]");if(el)showDetail(el.dataset.detail);});
+$("#marketGrid").addEventListener("click",async e=>{const fav=e.target.closest("[data-favorite]");if(fav){e.preventDefault();e.stopPropagation();const id=fav.dataset.favorite;if(favoriteIds.has(id)){favoriteIds.delete(id);toast("انشلت من المحفوظات.");}else{favoriteIds.add(id);toast("انحفظ الإعلان على هذا الجهاز.");}saveFavorites();renderListings();return;}const share=e.target.closest("[data-share-listing]");if(share){e.preventDefault();e.stopPropagation();await shareListing(share.dataset.shareListing);return;}const el=e.target.closest("[data-detail]");if(el)showDetail(el.dataset.detail);});
 $("#marketGrid").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".market-card-img[data-detail]")){e.preventDefault();showDetail(e.target.dataset.detail);}});
 $("#myListings").addEventListener("click",async e=>{
  const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]"),sold=e.target.closest("[data-sold]"),relist=e.target.closest("[data-relist]"),promote=e.target.closest("[data-promote]");
@@ -151,6 +157,8 @@ $("#marketPayForm").addEventListener("submit",async e=>{
  try{const {error}=await db.from("market_payments").insert({user_id:currentUser.id,kind:"promotion",listing_id:listingId,package_code:code,amount_iqd:pack.amount,duration_days:pack.days,payment_method:method,transaction_reference:reference,note,status:"pending"});if(error)throw error;close("marketPayDialog");toast("وصل طلب الترويج للإدارة. راح يتفعّل بعد التحقق من التحويل.");await loadPaymentHistory();}catch(err){$("#marketPayMessage").textContent="تعذر إرسال الطلب: "+(err.message||"حاول مرة ثانية.");}finally{btn.disabled=false;btn.textContent="إرسال طلب الترويج";}
 });
 
+$("#marketSavedToggle").addEventListener("click",()=>{showSavedOnly=!showSavedOnly;syncFavoriteControls();renderListings();$("#marketListings").scrollIntoView({behavior:"auto",block:"start"});});
+$("#marketShareSite").addEventListener("click",async()=>{try{if(navigator.share)await navigator.share({title:"سوق سوملي المفتوح",text:"تصفح إعلانات البيع والشراء في العراق على سوملي",url:location.href});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);toast("نسخنا رابط السوق.");}else prompt("انسخ رابط السوق:",location.href);}catch(err){if(err?.name!=="AbortError")toast("ما قدرنا نشارك الرابط.");}});
 $("#marketCategoriesToggle").addEventListener("click",()=>{const btn=$("#marketCategoriesToggle"),panel=$("#marketCategoryPanel"),expanded=btn.getAttribute("aria-expanded")==="true";btn.setAttribute("aria-expanded",String(!expanded));panel.hidden=expanded;});
 $("#marketCategoryPanel").addEventListener("click",e=>{const tile=e.target.closest("[data-market-category]");if(!tile)return;$("#marketCategory").value=tile.dataset.marketCategory;renderListings();$("#marketListings").scrollIntoView({behavior:"smooth",block:"start"});});
 $("#marketSearch").addEventListener("input",renderListings);$("#marketGov").addEventListener("change",renderListings);$("#marketCategory").addEventListener("change",renderListings);$("#marketSort").addEventListener("change",renderListings);$("#marketMinPrice").addEventListener("input",renderListings);$("#marketMaxPrice").addEventListener("input",renderListings);$("#marketClearFilters").addEventListener("click",()=>{$("#marketSearch").value="";$("#marketGov").value="";$("#marketCategory").value="";$("#marketSort").value="newest";$("#marketMinPrice").value="";$("#marketMaxPrice").value="";renderListings();});
@@ -159,4 +167,4 @@ $("#myListingsReload").addEventListener("click",async()=>{await getSession();toa
 document.querySelectorAll("[data-close-market]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeMarket)));
 document.querySelectorAll(".market-modal").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close();}));
 $("#marketYear").textContent=new Date().getFullYear();
-(async()=>{try{await getSession();await loadListings();if(new URLSearchParams(location.search).get("sell")==="1")startSell();}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
+(async()=>{try{await getSession();await loadListings();if(new URLSearchParams(location.search).get("sell")==="1")startSell();const target=location.hash.startsWith("#listing-")?location.hash.slice(9):"";if(target)setTimeout(()=>showDetail(target),100);}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
