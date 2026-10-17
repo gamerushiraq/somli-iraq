@@ -30,8 +30,9 @@ jobs:
             node --check "$file"
           done
       - name: Check local HTML assets
-        shell: python
+        shell: bash
         run: |
+          python - <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
           from urllib.parse import urlsplit
@@ -65,3 +66,4 @@ jobs:
               print("\n".join(failures))
               sys.exit(1)
           print("All local CSS/JS/image/icon/manifest references exist.")
+          PY
