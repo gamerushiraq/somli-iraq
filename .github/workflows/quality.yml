@@ -1,0 +1,67 @@
+name: Validate SOMLI static site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in ./*.js; do
+            [ -f "$file" ] || continue
+            echo "Checking $file"
+            node --check "$file"
+          done
+      - name: Check local HTML assets
+        shell: python
+        run: |
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import sys
+
+          root = Path(".")
+          failures = []
+          asset_exts = {".css", ".js", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".webmanifest"}
+          class Assets(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.refs = []
+              def handle_starttag(self, tag, attrs):
+                  for key, value in attrs:
+                      if key in {"src", "href"} and value:
+                          self.refs.append(value)
+
+          for page in sorted(root.glob("*.html")):
+              parser = Assets()
+              parser.feed(page.read_text(encoding="utf-8"))
+              for ref in parser.refs:
+                  if ref.startswith(("#", "//")) or "://" in ref or ref.startswith(("mailto:", "tel:", "data:", "javascript:")):
+                      continue
+                  path = urlsplit(ref).path
+                  if not path:
+                      continue
+                  target = (page.parent / path).resolve()
+                  if target.suffix.lower() in asset_exts and not target.is_file():
+                      failures.append(f"{page}: missing local asset {ref}")
+          if failures:
+              print("\n".join(failures))
+              sys.exit(1)
+          print("All local CSS/JS/image/icon/manifest references exist.")
