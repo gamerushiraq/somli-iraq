@@ -7,7 +7,9 @@ let requests = [];
 let sellers = [];
 let products = [];
 let payments = [];
-let sellerImages = [];\nlet marketListings = [];\nlet moderationReviews = [];
+let sellerImages = [];
+let marketListings = [];
+let moderationReviews = [];
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function showNotice(message) { const el=$("#notice"); el.textContent=message; el.classList.remove("hidden"); }
 function hideNotice(){ $("#notice").classList.add("hidden"); }
@@ -27,20 +29,21 @@ async function loadData(){
   $("#requestsList").innerHTML=empty("جاري تحميل الطلبات...");
   $("#sellersList").innerHTML=empty("جاري تحميل طلبات المحلات...");
   $("#productsList").innerHTML=empty("جاري تحميل المنتجات...");
-  $("#paymentsList").innerHTML=empty("جاري تحميل طلبات الدفع...");\n  $("#marketListingsList").innerHTML=empty("جاري تحميل إعلانات السوق...");\n  $("#moderationList").innerHTML=empty("جاري تحميل سجل البوت...");
+  $("#paymentsList").innerHTML=empty("جاري تحميل طلبات الدفع...");
+  $("#marketListingsList").innerHTML=empty("جاري تحميل إعلانات السوق...");
+  $("#moderationList").innerHTML=empty("جاري تحميل سجل البوت...");
   const [rq,sa,pr,pa,si,ml,mr]=await Promise.all([
     db.from("quote_requests").select("id,phone,details,governorate,status,quantity,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("seller_applications").select("id,shop_name,governorate,category,contact,status,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("products").select("id,name,description,price_iqd,governorate,status,created_at,shops(name),categories(name_ar)").order("created_at",{ascending:false}).limit(300),
     db.from("market_payments").select("id,user_id,kind,listing_id,shop_id,package_code,amount_iqd,duration_days,payment_method,transaction_reference,note,status,created_at").order("created_at",{ascending:false}).limit(300),
-    db.from("seller_application_images").select("id,application_id,user_id,storage_path,original_name,content_type,size_bytes,created_at").order("created_at",{ascending:true}).limit(1000)
+    db.from("seller_application_images").select("id,application_id,user_id,storage_path,original_name,content_type,size_bytes,created_at").order("created_at",{ascending:true}).limit(1000),
+    db.from("market_listings").select("id,seller_id,seller_name,phone,title,description,category,governorate,condition,price_iqd,image_urls,status,created_at").order("created_at",{ascending:false}).limit(300),
+    db.from("moderation_reviews").select("id,entity_type,entity_id,decision,risk_score,reasons,requested_by,created_at").order("created_at",{ascending:false}).limit(300)
   ]);
-  if(rq.error) throw rq.error;
-  if(sa.error) throw sa.error;
-  if(pr.error) throw pr.error;
-  if(pa.error) throw pa.error;
-  if(si.error) throw si.error;
+  for (const result of [rq,sa,pr,pa,si,ml,mr]) if(result.error) throw result.error;
   requests=rq.data||[]; sellers=sa.data||[]; products=pr.data||[]; payments=pa.data||[];
+  marketListings=ml.data||[]; moderationReviews=mr.data||[];
   sellerImages=await Promise.all((si.data||[]).map(async image=>{
     const {data,error}=await db.storage.from("somli-pending-images").createSignedUrl(image.storage_path,300);
     return {...image,signedUrl:error?"":(data?.signedUrl||"")};
@@ -126,7 +129,8 @@ async function changeMarketListing(id,status){
  try{await loadData();showNotice(status==="approved"?"تم اعتماد إعلان السوق ونشره.":"تم رفض إعلان السوق.");}
  catch(e){showNotice("تم تحديث الإعلان، لكن تعذر تحديث القائمة: "+(e.message||"خطأ"));}
 }
-\nfunction renderProducts(){
+
+function renderProducts(){
   const list=$("#productsList");
   if(!products.length){list.innerHTML=empty("ماكو منتجات مسجلة لحد الآن.");return;}
   list.innerHTML=products.map(p=>{
@@ -162,11 +166,14 @@ document.querySelectorAll("[data-tab]").forEach(btn=>btn.addEventListener("click
   $("#requestsPanel").classList.toggle("hidden",currentTab!=="requests");
   $("#sellersPanel").classList.toggle("hidden",currentTab!=="sellers");
   $("#productsPanel").classList.toggle("hidden",currentTab!=="products");
-  $("#paymentsPanel").classList.toggle("hidden",currentTab!=="payments");\n  $("#marketListingsPanel").classList.toggle("hidden",currentTab!=="marketListings");\n  $("#moderationPanel").classList.toggle("hidden",currentTab!=="moderation");
+  $("#paymentsPanel").classList.toggle("hidden",currentTab!=="payments");
+  $("#marketListingsPanel").classList.toggle("hidden",currentTab!=="marketListings");
+  $("#moderationPanel").classList.toggle("hidden",currentTab!=="moderation");
 }));
 $("#requestsList").addEventListener("click",e=>{const b=e.target.closest("[data-close-request]");if(b)closeRequest(b.dataset.closeRequest);});
 $("#sellersList").addEventListener("click",e=>{const b=e.target.closest("[data-seller]");if(b)changeSeller(b.dataset.seller,b.dataset.status);});
-$("#productsList").addEventListener("click",e=>{const b=e.target.closest("[data-product]");if(b)changeProduct(b.dataset.product,b.dataset.status);});\n$("#marketListingsList").addEventListener("click",e=>{const b=e.target.closest("[data-market-listing]");if(b)changeMarketListing(b.dataset.marketListing,b.dataset.status);});
+$("#productsList").addEventListener("click",e=>{const b=e.target.closest("[data-product]");if(b)changeProduct(b.dataset.product,b.dataset.status);});
+$("#marketListingsList").addEventListener("click",e=>{const b=e.target.closest("[data-market-listing]");if(b)changeMarketListing(b.dataset.marketListing,b.dataset.status);});
 $("#paymentsList").addEventListener("click",e=>{const b=e.target.closest("[data-payment]");if(b)reviewPayment(b.dataset.payment,b.dataset.status);});
 $("#reloadBtn").addEventListener("click",async()=>{try{if(await verifyAdmin()){await loadData();await loadPaymentSettings();}}catch(e){showNotice("صار خطأ بالتحميل: "+(e.message||"حاول مرة ثانية"));}});
 $("#logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.href="./";});
