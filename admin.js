@@ -7,6 +7,7 @@ let requests = [];
 let sellers = [];
 let products = [];
 let payments = [];
+let sellerImages = [];
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function showNotice(message) { const el=$("#notice"); el.textContent=message; el.classList.remove("hidden"); }
 function hideNotice(){ $("#notice").classList.add("hidden"); }
@@ -27,17 +28,23 @@ async function loadData(){
   $("#sellersList").innerHTML=empty("جاري تحميل طلبات المحلات...");
   $("#productsList").innerHTML=empty("جاري تحميل المنتجات...");
   $("#paymentsList").innerHTML=empty("جاري تحميل طلبات الدفع...");
-  const [rq,sa,pr,pa]=await Promise.all([
+  const [rq,sa,pr,pa,si]=await Promise.all([
     db.from("quote_requests").select("id,phone,details,governorate,status,quantity,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("seller_applications").select("id,shop_name,governorate,category,contact,status,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("products").select("id,name,description,price_iqd,governorate,status,created_at,shops(name),categories(name_ar)").order("created_at",{ascending:false}).limit(300),
-    db.from("market_payments").select("id,user_id,kind,listing_id,shop_id,package_code,amount_iqd,duration_days,payment_method,transaction_reference,note,status,created_at").order("created_at",{ascending:false}).limit(300)
+    db.from("market_payments").select("id,user_id,kind,listing_id,shop_id,package_code,amount_iqd,duration_days,payment_method,transaction_reference,note,status,created_at").order("created_at",{ascending:false}).limit(300),
+    db.from("seller_application_images").select("id,application_id,user_id,storage_path,original_name,content_type,size_bytes,created_at").order("created_at",{ascending:true}).limit(1000)
   ]);
   if(rq.error) throw rq.error;
   if(sa.error) throw sa.error;
   if(pr.error) throw pr.error;
   if(pa.error) throw pa.error;
+  if(si.error) throw si.error;
   requests=rq.data||[]; sellers=sa.data||[]; products=pr.data||[]; payments=pa.data||[];
+  sellerImages=await Promise.all((si.data||[]).map(async image=>{
+    const {data,error}=await db.storage.from("somli-pending-images").createSignedUrl(image.storage_path,300);
+    return {...image,signedUrl:error?"":(data?.signedUrl||"")};
+  }));
   $("#openCount").textContent=requests.filter(x=>x.status==="open").length;
   $("#pendingCount").textContent=sellers.filter(x=>x.status==="pending").length;
   $("#allCount").textContent=requests.length;
@@ -51,7 +58,15 @@ function renderRequests(){
 function renderSellers(){
   const list=$("#sellersList");
   if(!sellers.length){list.innerHTML=empty("ماكو طلبات تسجيل محلات لحد الآن.");return;}
-  list.innerHTML=sellers.map(s=>'<article class="admin-item"><h3>'+esc(s.shop_name)+'</h3><p>الفئة: '+esc(s.category)+' · المحافظة: '+esc(s.governorate)+'</p><p>رقم التواصل: <b>'+esc(s.contact||"ما مضاف")+'</b></p><p>الحالة: <b>'+esc(s.status)+'</b></p><p class="admin-meta">تاريخ الطلب: '+esc(dateLabel(s.created_at))+'</p>'+(s.status==="pending"?'<div class="admin-actions"><button class="approve" data-seller="'+esc(s.id)+'" data-status="approved">موافقة</button><button class="reject" data-seller="'+esc(s.id)+'" data-status="rejected">رفض</button></div>':"")+'</article>').join("");
+  list.innerHTML=sellers.map(s=>{
+    const photos=sellerImages.filter(image=>image.application_id===s.id);
+    const gallery=photos.length
+      ? '<div class="seller-photo-gallery" aria-label="صور تجهيز المحل">'+photos.map(image=>image.signedUrl
+        ? '<a href="'+esc(image.signedUrl)+'" target="_blank" rel="noopener noreferrer"><img src="'+esc(image.signedUrl)+'" alt="'+esc(image.original_name)+'" loading="lazy"><small>'+esc(image.original_name)+'</small></a>'
+        : '<span class="admin-meta">تعذر إنشاء رابط آمن للصورة: '+esc(image.original_name)+'</span>').join("")+'</div>'
+      : '<p class="admin-meta">ماكو صور تجهيز مرفقة.</p>';
+    return '<article class="admin-item"><h3>'+esc(s.shop_name)+'</h3><p>الفئة: '+esc(s.category)+' · المحافظة: '+esc(s.governorate)+'</p><p>رقم التواصل: <b>'+esc(s.contact||"ما مضاف")+'</b></p><p>الحالة: <b>'+esc(s.status)+'</b></p><p class="admin-meta">تاريخ الطلب: '+esc(dateLabel(s.created_at))+'</p><h4>صور التجهيز الخاصة</h4>'+gallery+(s.status==="pending"?'<div class="admin-actions"><button class="approve" data-seller="'+esc(s.id)+'" data-status="approved">موافقة</button><button class="reject" data-seller="'+esc(s.id)+'" data-status="rejected">رفض</button></div>':"")+'</article>';
+  }).join("");
 }
 
 
