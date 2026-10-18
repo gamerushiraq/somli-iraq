@@ -404,6 +404,8 @@ $("#sellerForm").addEventListener("submit", async e => {
         }
       }
     }
+    const botReview = await supabaseClient.functions.invoke("somli-moderate", { body: { entityType: "seller_application", entityId: applicationId } });
+    if (botReview.error) console.warn("Seller application remains pending for admin review:", botReview.error.message);
     closeDialog("sellerDialog");
     form.reset();
     showToast(files.length
