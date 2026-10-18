@@ -18,7 +18,7 @@ async function boot(){
  if(!shop||shop.status!=="approved"){ $("#shopGate").textContent="طلب المحل قيد المراجعة أو يحتاج مراجعة الإدارة.";return;}
  $("#shopIdentity").textContent=shop.name+" · "+shop.governorate+" · محل معتمد";
  $("#shopGate").classList.add("shop-hidden");$("#shopWorkspace").classList.remove("shop-hidden");
- await Promise.all([loadCategories(),loadProducts(),loadRequests(),loadSubscription()]);
+ await Promise.all([loadCategories(),loadProducts(),loadRequests(),loadSubscription(),loadPreparedImages()]);
 }
 
 async function loadShopPaymentInstructions(method){
@@ -29,6 +29,28 @@ async function loadShopPaymentInstructions(method){
  const value=String(paymentSettings[key]||"").trim();
  host.textContent=(value?"بيانات الاستلام عبر "+label+": "+value:"الإدارة ما ضافت بيانات الاستلام عبر "+label+" بعد. لا تحوّل فلوس قبل ما تظهر البيانات الرسمية.")+(paymentSettings.support_phone?" — للاستفسار: "+paymentSettings.support_phone:"");
 }
+async function loadPreparedImages(){
+ const panel=$("#preparedImagesPanel"),host=$("#preparedImages");
+ if(!panel||!host||!user||!shop)return;
+ const {data:apps,error:appError}=await db.from("seller_applications").select("id").eq("user_id",user.id).eq("status","approved").order("created_at",{ascending:false}).limit(1);
+ if(appError)throw appError;
+ const application=apps?.[0];
+ if(!application){panel.classList.add("shop-hidden");return;}
+ const {data:images,error:imageError}=await db.from("seller_application_images").select("id,storage_path,original_name").eq("application_id",application.id).order("created_at",{ascending:true});
+ if(imageError)throw imageError;
+ if(!images?.length){panel.classList.add("shop-hidden");return;}
+ const prepared=await Promise.all(images.map(async image=>{
+  const {data,error}=await db.storage.from("somli-pending-images").createSignedUrl(image.storage_path,600);
+  return {...image,signedUrl:error?"":(data?.signedUrl||"")};
+ }));
+ host.innerHTML=prepared.map(image=>{
+  if(!image.signedUrl)return '<span class="shop-muted">تعذر فتح الصورة '+esc(image.original_name)+'</span>';
+  const downloadUrl=image.signedUrl+(image.signedUrl.includes("?")?"&":"?")+"download="+encodeURIComponent(image.original_name||"somli-image");
+  return '<a href="'+esc(downloadUrl)+'" target="_blank" rel="noopener noreferrer"><img src="'+esc(image.signedUrl)+'" alt="'+esc(image.original_name)+'" loading="lazy"><span>تنزيل · '+esc(image.original_name)+'</span></a>';
+ }).join("");
+ panel.classList.remove("shop-hidden");
+}
+
 async function loadSubscription(){
  const {data:sub,error}=await db.from("shop_subscriptions").select("starts_at,ends_at,status").eq("shop_id",shop.id).maybeSingle();
  if(error)throw error;
