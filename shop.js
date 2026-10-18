@@ -147,7 +147,7 @@ $("#productForm").addEventListener("submit",async e=>{
    const {error:imageError}=await db.from("product_images").insert({product_id:product.id,image_url:publicUrl,sort_order:0});
    if(imageError)throw new Error("انحفظ المنتج لكن تعذر ربط الصورة: "+imageError.message);
   }
-  form.reset();message("تم إرسال المنتج للمراجعة. راح يظهر بالموقع بعد موافقة الإدارة.");await loadProducts();
+  const moderation=await db.functions.invoke("somli-moderate",{body:{entityType:"product",entityId:product.id}});if(moderation.error)console.warn("Somli moderation unavailable; product remains pending:",moderation.error.message);form.reset();message(moderation.data?.decision==="auto_approved"?"تم فحص المنتج وقبوله تلقائياً وفق قواعد السلامة.":moderation.data?.decision==="needs_review"?"تم فحص المنتج وتحويله إلى الإدارة للمراجعة.":"تم إرسال المنتج للمراجعة؛ سيبقى قيد الانتظار إذا تعذر الفحص الآلي.");await loadProducts();
  }catch(err){message("تعذر حفظ المنتج: "+(err.message||"حاول مرة ثانية."));}
  finally{btn.disabled=false;btn.textContent="إرسال للمراجعة";}
 });
