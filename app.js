@@ -327,9 +327,16 @@ $("#sellerForm").addEventListener("submit", async e => {
   const form = e.currentTarget;
   const submit = form.querySelector('button[type="submit"]');
   const originalLabel = submit.textContent;
+  const files = Array.from(form.elements.prep_images.files || []).filter(file => file && file.size);
   submit.disabled = true;
   submit.textContent = "جاري إرسال الطلب...";
   try {
+    if (files.length > 5) throw new Error("تگدر ترفع لحد 5 صور فقط لكل طلب محل.");
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) throw new Error("صيغة إحدى الصور غير مدعومة. استخدم JPG أو PNG أو WebP أو AVIF.");
+      if (file.size > 5 * 1024 * 1024) throw new Error("حجم كل صورة لازم يكون 5 ميگابايت أو أقل.");
+    }
     const data = Object.fromEntries(new FormData(form).entries());
     const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
     if (sessionError) throw sessionError;
@@ -341,23 +348,70 @@ $("#sellerForm").addEventListener("submit", async e => {
       showToast("سجّل دخولك أولاً حتى نرسل طلب تسجيل المحل.");
       return;
     }
-    const { error } = await supabaseClient.from("seller_applications").insert({
-      user_id: user.id,
-      shop_name: String(data.shop || "").trim(),
-      governorate: data.governorate,
-      category: data.category || "أخرى",
-      contact: String(data.contact || "").trim() || null,
-      status: "pending"
-    });
-    if (error) throw error;
+
+    const { data: existing, error: existingError } = await supabaseClient
+      .from("seller_applications").select("id,status")
+      .eq("user_id", user.id).eq("status", "pending")
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (existingError) throw existingError;
+
+    let applicationId = existing?.id;
+    if (!applicationId) {
+      const { data: created, error: createError } = await supabaseClient
+        .from("seller_applications")
+        .insert({
+          user_id: user.id,
+          shop_name: String(data.shop || "").trim(),
+          governorate: data.governorate,
+          category: data.category || "أخرى",
+          contact: String(data.contact || "").trim() || null,
+          status: "pending"
+        }).select("id").single();
+      if (createError) throw createError;
+      applicationId = created.id;
+    } else if (!files.length) {
+      showToast("عندك طلب محل قيد المراجعة بالفعل. تگدر تختار الصور وتضغط إرسال حتى نضيفها للطلب نفسه.");
+      return;
+    }
+
+    if (files.length) {
+      const { data: priorImages, error: priorError } = await supabaseClient
+        .from("seller_application_images").select("id")
+        .eq("application_id", applicationId);
+      if (priorError) throw priorError;
+      if ((priorImages || []).length + files.length > 5) {
+        throw new Error("الطلب يحتوي صوراً مسبقاً؛ المجموع المسموح 5 صور فقط.");
+      }
+      for (const file of files) {
+        const ext = ({ "image/jpeg":"jpg", "image/png":"png", "image/webp":"webp", "image/avif":"avif" })[file.type];
+        const path = user.id + "/" + applicationId + "/" + crypto.randomUUID() + "." + ext;
+        const { error: uploadError } = await supabaseClient.storage
+          .from("somli-pending-images").upload(path, file, { contentType: file.type, upsert: false });
+        if (uploadError) throw new Error("تعذر رفع إحدى الصور الخاصة: " + uploadError.message);
+        const { error: imageError } = await supabaseClient.from("seller_application_images").insert({
+          application_id: applicationId,
+          user_id: user.id,
+          storage_path: path,
+          original_name: file.name.slice(0, 255) || "صورة تجهيز",
+          content_type: file.type,
+          size_bytes: file.size
+        });
+        if (imageError) {
+          await supabaseClient.storage.from("somli-pending-images").remove([path]);
+          throw new Error("تعذر حفظ بيانات إحدى الصور: " + imageError.message);
+        }
+      }
+    }
     closeDialog("sellerDialog");
     form.reset();
-    showToast("وصل طلب تسجيل المحل، وحالته قيد المراجعة.");
+    showToast(files.length
+      ? "وصل طلب المحل وحُفظت الصور بشكل خاص للمراجعة."
+      : "وصل طلب تسجيل المحل، وحالته قيد المراجعة.");
   } catch (err) {
     console.error("Somli seller application error:", err.message);
     showToast(err.code === "23505"
-      ? "عندك طلب تسجيل محل قيد المراجعة بالفعل. انتظر رد الإدارة قبل إرسال طلب جديد."
-      : "تعذر إرسال طلب المحل حالياً. تأكد من الاتصال والحساب وحاول مرة ثانية.");
+      ? "عندك طلب تسجيل محل قيد المراجعة بالفعل. اختار الصور إذا تريد إضافتها."
+      : (err.message || "تعذر إرسال طلب المحل حالياً. تأكد من الاتصال والحساب وحاول مرة ثانية."));
   } finally {
     submit.disabled = false;
     submit.textContent = originalLabel;
