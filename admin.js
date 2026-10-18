@@ -7,7 +7,7 @@ let requests = [];
 let sellers = [];
 let products = [];
 let payments = [];
-let sellerImages = [];
+let sellerImages = [];\nlet marketListings = [];\nlet moderationReviews = [];
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function showNotice(message) { const el=$("#notice"); el.textContent=message; el.classList.remove("hidden"); }
 function hideNotice(){ $("#notice").classList.add("hidden"); }
@@ -27,8 +27,8 @@ async function loadData(){
   $("#requestsList").innerHTML=empty("جاري تحميل الطلبات...");
   $("#sellersList").innerHTML=empty("جاري تحميل طلبات المحلات...");
   $("#productsList").innerHTML=empty("جاري تحميل المنتجات...");
-  $("#paymentsList").innerHTML=empty("جاري تحميل طلبات الدفع...");
-  const [rq,sa,pr,pa,si]=await Promise.all([
+  $("#paymentsList").innerHTML=empty("جاري تحميل طلبات الدفع...");\n  $("#marketListingsList").innerHTML=empty("جاري تحميل إعلانات السوق...");\n  $("#moderationList").innerHTML=empty("جاري تحميل سجل البوت...");
+  const [rq,sa,pr,pa,si,ml,mr]=await Promise.all([
     db.from("quote_requests").select("id,phone,details,governorate,status,quantity,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("seller_applications").select("id,shop_name,governorate,category,contact,status,created_at").order("created_at",{ascending:false}).limit(200),
     db.from("products").select("id,name,description,price_iqd,governorate,status,created_at,shops(name),categories(name_ar)").order("created_at",{ascending:false}).limit(300),
@@ -48,7 +48,7 @@ async function loadData(){
   $("#openCount").textContent=requests.filter(x=>x.status==="open").length;
   $("#pendingCount").textContent=sellers.filter(x=>x.status==="pending").length;
   $("#allCount").textContent=requests.length;
-  renderRequests(); renderSellers(); renderProducts(); renderPayments();
+  renderRequests(); renderSellers(); renderProducts(); renderMarketListings(); renderModerationReviews(); renderPayments();
 }
 function renderRequests(){
   const list=$("#requestsList");
@@ -102,7 +102,31 @@ async function reviewPayment(id,status){
  catch(e){showNotice("تم تحديث حالة الدفع لكن تعذر تحديث القائمة: "+(e.message||"خطأ"));}
 }
 
-function renderProducts(){
+
+function renderMarketListings(){
+ const list=$("#marketListingsList");
+ if(!marketListings.length){list.innerHTML=empty("ماكو إعلانات سوق لحد الآن.");return;}
+ list.innerHTML=marketListings.map(p=>{
+  const price=p.price_iqd==null?"السعر عند الطلب":new Intl.NumberFormat("ar-IQ").format(p.price_iqd)+" د.ع";
+  const images=(p.image_urls||[]).filter(Boolean).slice(0,3).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer"><img src="'+esc(u)+'" alt="صورة الإعلان" style="width:92px;height:80px;object-fit:cover;border-radius:9px;margin:4px"></a>').join("");
+  const actions=p.status==="pending"?'<div class="admin-actions"><button class="approve" data-market-listing="'+esc(p.id)+'" data-status="approved">اعتماد ونشر</button><button class="reject" data-market-listing="'+esc(p.id)+'" data-status="rejected">رفض</button></div>':"";
+  return '<article class="admin-item"><h3>'+esc(p.title)+'</h3><p><b>البائع:</b> '+esc(p.seller_name)+' · <b>السعر:</b> '+esc(price)+'</p><p><b>الفئة:</b> '+esc(p.category)+' · <b>المحافظة:</b> '+esc(p.governorate)+' · <b>الحالة:</b> '+esc(p.condition)+'</p><p><b>رقم التواصل:</b> '+esc(p.phone)+'</p><p>'+esc(p.description||"بدون وصف")+'</p><div>'+images+'</div><p class="admin-meta">حالة النشر: '+esc(p.status)+' · '+esc(dateLabel(p.created_at))+'</p>'+actions+'</article>';
+ }).join("");
+}
+function renderModerationReviews(){
+ const list=$("#moderationList");
+ if(!moderationReviews.length){list.innerHTML=empty("ماكو قرارات مسجلة من البوت بعد. راح تظهر هنا نتائج فحص الإعلانات والمنتجات وطلبات البائعين.");return;}
+ const names={market_listing:"إعلان سوق",product:"منتج",seller_application:"طلب بائع",quote_request:"طلب سعر"};
+ list.innerHTML=moderationReviews.map(r=>'<article class="admin-item"><h3>'+esc(names[r.entity_type]||r.entity_type)+' — '+esc(r.decision==="auto_approved"?"قبول آلي":"تحويل للمراجعة البشرية")+'</h3><p><b>درجة المخاطر:</b> '+esc(r.risk_score)+' / 100</p><p><b>معرّف السجل:</b> '+esc(r.entity_id)+'</p><p><b>الأسباب:</b> '+esc((r.reasons||[]).join("؛ ")||"لم تُسجّل أسباب إضافية")+'</p><p class="admin-meta">'+esc(dateLabel(r.created_at))+'</p></article>').join("");
+}
+async function changeMarketListing(id,status){
+ const {data,error}=await db.from("market_listings").update({status}).eq("id",id).select("id");
+ if(error){showNotice("فشل تحديث إعلان السوق: "+error.message);return;}
+ if(!data?.length){showNotice("ما تغير الإعلان. حدّث القائمة وتأكد من الصلاحيات.");return;}
+ try{await loadData();showNotice(status==="approved"?"تم اعتماد إعلان السوق ونشره.":"تم رفض إعلان السوق.");}
+ catch(e){showNotice("تم تحديث الإعلان، لكن تعذر تحديث القائمة: "+(e.message||"خطأ"));}
+}
+\nfunction renderProducts(){
   const list=$("#productsList");
   if(!products.length){list.innerHTML=empty("ماكو منتجات مسجلة لحد الآن.");return;}
   list.innerHTML=products.map(p=>{
@@ -138,11 +162,11 @@ document.querySelectorAll("[data-tab]").forEach(btn=>btn.addEventListener("click
   $("#requestsPanel").classList.toggle("hidden",currentTab!=="requests");
   $("#sellersPanel").classList.toggle("hidden",currentTab!=="sellers");
   $("#productsPanel").classList.toggle("hidden",currentTab!=="products");
-  $("#paymentsPanel").classList.toggle("hidden",currentTab!=="payments");
+  $("#paymentsPanel").classList.toggle("hidden",currentTab!=="payments");\n  $("#marketListingsPanel").classList.toggle("hidden",currentTab!=="marketListings");\n  $("#moderationPanel").classList.toggle("hidden",currentTab!=="moderation");
 }));
 $("#requestsList").addEventListener("click",e=>{const b=e.target.closest("[data-close-request]");if(b)closeRequest(b.dataset.closeRequest);});
 $("#sellersList").addEventListener("click",e=>{const b=e.target.closest("[data-seller]");if(b)changeSeller(b.dataset.seller,b.dataset.status);});
-$("#productsList").addEventListener("click",e=>{const b=e.target.closest("[data-product]");if(b)changeProduct(b.dataset.product,b.dataset.status);});
+$("#productsList").addEventListener("click",e=>{const b=e.target.closest("[data-product]");if(b)changeProduct(b.dataset.product,b.dataset.status);});\n$("#marketListingsList").addEventListener("click",e=>{const b=e.target.closest("[data-market-listing]");if(b)changeMarketListing(b.dataset.marketListing,b.dataset.status);});
 $("#paymentsList").addEventListener("click",e=>{const b=e.target.closest("[data-payment]");if(b)reviewPayment(b.dataset.payment,b.dataset.status);});
 $("#reloadBtn").addEventListener("click",async()=>{try{if(await verifyAdmin()){await loadData();await loadPaymentSettings();}}catch(e){showNotice("صار خطأ بالتحميل: "+(e.message||"حاول مرة ثانية"));}});
 $("#logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.href="./";});
