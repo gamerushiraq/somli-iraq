@@ -160,7 +160,9 @@ $("#sellForm").addEventListener("submit",async e=>{
   if(editingId)result=await db.from("market_listings").update(payload).eq("id",editingId).eq("seller_id",currentUser.id);
   else result=await db.from("market_listings").insert({id:listingId,...payload});
   if(result.error)throw result.error;
-  close("sellDialog");toast(editingId?"تم حفظ تعديلات الإعلان.":"تم إرسال إعلانك للمراجعة. راح يظهر بعد موافقة الإدارة.");await loadListings();await loadMyListings();
+  let moderation=null;
+  if(!editingId){const reviewed=await db.functions.invoke("somli-moderate",{body:{entityType:"market_listing",entityId:listingId}});if(reviewed.error)console.warn("Somli moderation unavailable; listing remains pending:",reviewed.error.message);else moderation=reviewed.data;}
+  close("sellDialog");toast(editingId?"تم حفظ تعديلات الإعلان.":moderation?.decision==="auto_approved"?"تم قبول الإعلان تلقائياً بعد فحص قواعد السلامة.":moderation?.decision==="needs_review"?"تم فحص الإعلان وتحويله إلى الإدارة للمراجعة.":"تم إرسال إعلانك للمراجعة؛ سيبقى قيد الانتظار إذا تعذر الفحص الآلي.");await loadListings();await loadMyListings();
  }catch(err){console.error("market save error",err.message);$("#sellMessage").textContent="تعذر حفظ الإعلان: "+(err.message||"حاول مرة ثانية.");}
  finally{btn.disabled=false;btn.textContent=editingId?"حفظ التعديلات":"نشر الإعلان";}
 });
