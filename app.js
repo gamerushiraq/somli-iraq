@@ -65,7 +65,7 @@ async function loadProducts() {
   $("#productGrid").innerHTML = "<p>دا نحمل المنتجات...</p>";
   const { data, error } = await supabaseClient
     .from("products")
-    .select("id,name,description,price_iqd,governorate,category_id,shops(name,status,pro_until),categories(name_ar),product_images(image_url,sort_order)")
+    .select("id,name,description,price_iqd,governorate,category_id,shops(name,status,owner_id,pro_until),categories(name_ar),product_images(image_url,sort_order)")
     .eq("status", "approved")
     .order("created_at", { ascending: false });
   if (error) {
@@ -82,6 +82,7 @@ async function loadProducts() {
     category: p.categories?.name_ar || "أخرى",
     price: p.price_iqd,
     shop: p.shops?.name || "محل",
+    shopOwnerId: p.shops?.owner_id || null,
     isPro: !!p.shops?.pro_until && new Date(p.shops.pro_until) > new Date(),
     governorate: p.governorate,
     image: (p.product_images || []).sort((a,b) => a.sort_order - b.sort_order)[0]?.image_url || "",
@@ -269,6 +270,7 @@ $("#productGrid").addEventListener("click", e => {
   $("#productDetailCategory").textContent = p.category;
   $("#productDetailPrice").textContent = p.price == null ? "السعر عند الطلب" : formatPrice(p.price);
   $("#productDetailShop").textContent = p.shop;
+  $("#productDetailChat").href = "chat.html?product=" + encodeURIComponent(p.id);
   $("#productDetailGovernorate").textContent = p.governorate || "العراق";
   $("#productDetailDescription").textContent = p.description || "ماكو تفاصيل إضافية لهذا المنتج حالياً.";
   $("#productDetailAsk").onclick = () => { closeDialog("productDetailDialog"); openRequest(p); };
