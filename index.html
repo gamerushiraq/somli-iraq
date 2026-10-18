@@ -168,6 +168,7 @@
       <label>اسم المحل<input name="shop" required maxlength="100" placeholder="اسم المحل"></label>
       <div class="form-row"><label>المحافظة<select name="governorate" required><option value="">اختار</option><option>البصرة</option><option>بغداد</option><option>نينوى</option><option>أربيل</option><option>النجف</option><option>كربلاء</option><option>ذي قار</option><option>بابل</option><option>الأنبار</option><option>ديالى</option><option>كركوك</option><option>واسط</option><option>ميسان</option><option>المثنى</option><option>القادسية</option><option>صلاح الدين</option><option>دهوك</option><option>السليمانية</option></select></label><label>الفئة الرئيسية<select name="category"><option>إلكترونيات</option><option>أزياء</option><option>منزل</option><option>سيارات</option><option>أجهزة منزلية</option><option>جمال</option><option>أخرى</option></select></label></div>
       <label>رقم تواصل (اختياري)<input name="contact" inputmode="tel" maxlength="30" placeholder="لا تدخل معلومات حساسة"></label>
+      <label>صور تجهيز المحل (اختياري، لحد 5 صور)<input name="prep_images" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small>تبقى الصور خاصة وما تنعرض للعامة أثناء المراجعة. الحد الأقصى 5 ميگابايت للصورة.</small></label>
       <button class="btn btn-primary btn-full" type="submit">حفظ اهتمامي</button>
     </form>
   </dialog>
@@ -198,6 +199,6 @@
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20261018-slider1"></script>
+  <script src="app.js?v=20261018-pendingphotos1"></script>
 </body>
 </html>
