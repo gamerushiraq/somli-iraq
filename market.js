@@ -98,7 +98,22 @@ function compareTable(){
  const rows=[["السعر",p=>money(p.price_iqd)],["الحالة",p=>p.condition||"غير محدد"],["الفئة",p=>p.category||"غير محددة"],["المحافظة",p=>p.governorate||"غير محددة"],["البائع",p=>p.seller_name||"بائع سوملي"],["التفاصيل",p=>p.description||"ماكو تفاصيل إضافية"]];
  host.innerHTML='<div class="market-compare-scroll"><table class="market-compare-table"><thead><tr><th>المواصفة</th>'+chosen.map(p=>'<th>'+esc(p.title)+'</th>').join("")+'</tr></thead><tbody>'+rows.map(([label,get])=>'<tr><th>'+esc(label)+'</th>'+chosen.map(p=>'<td>'+esc(get(p))+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>';
 }
-async function loadListings(){ $("#marketGrid").innerHTML='<div class="market-empty">دا نحمل الإعلانات...</div>';const {data,error}=await db.from("market_listings").select("id,seller_id,seller_name,phone,title,description,category,governorate,condition,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("status","approved").order("created_at",{ascending:false}).limit(200);if(error){$("#marketGrid").innerHTML='<div class="market-empty">تعذر تحميل الإعلانات. جرّب تحديث الصفحة بعد قليل.</div>';console.error("market listings",error.message);return;}listings=(data||[]).sort((a,b)=>{const ap=a.is_promoted&&a.promoted_until&&new Date(a.promoted_until)>new Date()?1:0;const bp=b.is_promoted&&b.promoted_until&&new Date(b.promoted_until)>new Date()?1:0;return bp-ap||new Date(b.created_at)-new Date(a.created_at);});renderListings();}
+async function loadListings(){
+ const grid=$("#marketGrid");
+ grid.innerHTML='<div class="market-empty">دا نحمل الإعلانات...</div>';
+ const controller=new AbortController();
+ let timeoutId;
+ try{
+  const request=db.from("market_listings").select("id,seller_id,seller_name,phone,title,description,category,governorate,condition,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("status","approved").order("created_at",{ascending:false}).limit(200).abortSignal(controller.signal);
+  const result=await Promise.race([request,new Promise((_,reject)=>{timeoutId=setTimeout(()=>{controller.abort();reject(new Error("انتهت مهلة الاتصال بالسوق."));},12000);})]);
+  if(result.error)throw result.error;
+  listings=(result.data||[]).sort((a,b)=>{const ap=a.is_promoted&&a.promoted_until&&new Date(a.promoted_until)>new Date()?1:0;const bp=b.is_promoted&&b.promoted_until&&new Date(b.promoted_until)>new Date()?1:0;return bp-ap||new Date(b.created_at)-new Date(a.created_at);});
+  renderListings();
+ }catch(error){
+  grid.innerHTML='<div class="market-empty">تعذر تحميل الإعلانات. جرّب تحديث الصفحة بعد قليل.</div>';
+  console.error("market listings",error?.message||error);
+ }finally{clearTimeout(timeoutId);}
+}
 async function loadMyListings(){
  if(!currentUser){$("#myListings").innerHTML="";return;}
  const {data,error}=await db.from("market_listings").select("id,seller_id,title,description,category,governorate,condition,phone,seller_name,price_iqd,image_urls,status,created_at,is_promoted,promoted_until").eq("seller_id",currentUser.id).order("created_at",{ascending:false}).limit(100);
@@ -203,4 +218,14 @@ $("#myListingsReload").addEventListener("click",async()=>{await getSession();toa
 document.querySelectorAll("[data-close-market]").forEach(b=>b.addEventListener("click",()=>close(b.dataset.closeMarket)));
 document.querySelectorAll(".market-modal").forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close();}));
 $("#marketYear").textContent=new Date().getFullYear();
-(async()=>{try{restoreFiltersFromUrl();await getSession();await loadListings();if(new URLSearchParams(location.search).get("sell")==="1")startSell();const target=location.hash.startsWith("#listing-")?location.hash.slice(9):"";if(target)setTimeout(()=>showDetail(target),100);}catch(e){console.error(e);$("#marketGrid").innerHTML='<div class="market-empty">تعذر الاتصال بالسوق حالياً. حدّث الصفحة وجرب مرة ثانية.</div>';}})();
+(async()=>{
+ restoreFiltersFromUrl();
+ // Start the public listings request independently so session/profile delays cannot block the market.
+ const listingsPromise=loadListings();
+ try{await getSession();}
+ catch(e){console.error("market session",e);$("#marketAuthBtn").textContent="دخول / حساب جديد";$("#myListings").innerHTML='<div class="market-empty">تعذر تحميل بيانات الحساب. تگدر تتصفح الإعلانات وتحاول تسجيل الدخول مرة ثانية.</div>';}
+ await listingsPromise;
+ if(new URLSearchParams(location.search).get("sell")==="1")startSell();
+ const target=location.hash.startsWith("#listing-")?location.hash.slice(9):"";
+ if(target)setTimeout(()=>showDetail(target),100);
+})();
